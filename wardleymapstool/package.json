@@ -1,0 +1,45 @@
+{
+  "name": "wardleymaptool",
+  "version": "1.0.0",
+  "description": "A tool for creating Wardley Maps",
+  "keywords": [
+    "OpenShift",
+    "Node.js",
+    "application",
+    "openshift"
+  ],
+  "author": {
+    "name": "Krzysztof Daniel",
+    "email": "krzysztof.daniel@gmail.com",
+    "url": "http://www.openshift.com/"
+  },
+  "homepage": "http://wardleymaps.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openshift/origin-server"
+  },
+
+  "engines": {
+    "node": ">= 0.6.0",
+    "npm": ">= 1.0.0"
+  },
+
+  "dependencies": {
+    "express": "~3.4.4",
+    "passport": "*",
+    "passport-google-oauth" : "*",
+    "mongojs":"*",
+    "qs":"*",
+    "node-serialize" :"*",
+    "log4js": "*",
+    "querystring":"*",
+    "tv4":"*"
+  },
+  
+  "devDependencies": {},
+  "bundleDependencies": [],
+
+  "private": true,
+  "main": "server/server.js",
+  "license" : "ASL 2.0"
+}

@@ -1,0 +1,164 @@
+<!--Copyright 2014 Krzysztof Daniel
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Wardley Maps Tool</title>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js "></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"></link>
+<script type="text/javascript"
+	src="https://raw.githubusercontent.com/nnnick/Chart.js/master/Chart.js"></script>
+
+
+<script src="/jquery.jsPlumb-1.6.2.js"></script>
+
+<style type="text/css">
+#map-container {
+	border: 1px solid gray;
+	width: 100%;
+	min-height: 800px;
+	overflow: auto;
+	height: auto;
+	background-image: url('/background.svg');
+	background-size: 100% 100%;
+	position:relative;
+}
+
+.item {
+	border: 1px solid black;
+	background-color: silver;
+	min-height: 20px;
+	min-width: 20px;
+	max-width: 20px;
+	max-height: 20px;
+	position: absolute;
+	border-radius: 10px;
+	position:absolute;
+}
+
+.itemCaption {
+	top: -10px;
+	left: 23px;
+	position: relative;
+	z-index: 2;
+	text-shadow: 2px 2px white;
+	width: 10px;
+	height: 10px;
+	max-width: 10px;
+	max-height: 10px;
+	margin-bottom: -20px;
+	font-size: 10px;
+}
+
+.competitorChart {
+	max-width: 10px;
+	max-height: 10px;
+	position: relative;
+	min-width: 10px;
+	min-height: 10px;
+	width: 10px;
+	height: 10px;
+}
+
+.itemMenu {
+	width: 130px;
+	z-index: 10;
+	position: relative;
+	left: -35px;
+	top: -10px;
+}
+
+.mapUserNeed {
+	border-width: 4px;
+	border-style: double;
+}
+
+.context-node-menu {
+	display: none;
+	z-index: 1000;
+	position: absolute;
+	overflow: hidden;
+	border: 1px solid #CCC;
+	white-space: nowrap;
+	color: #333;
+	border-radius: 5px;
+	list-style: none;
+	background-color: white;
+}
+
+.context-node-menu li {
+  padding: 5px;
+  }
+
+.context-node-menu li:hover {
+  background-color: #DDD;
+  }
+
+#participants {
+	border-width: 1px;
+	position: fixed;
+	bottom: 0;
+	left:0;
+	margin:30px;
+	background:white;
+	position:absolute;
+}
+</style>
+
+</head>
+<body>
+	<b>Map Editor</b>
+	<!-- a very primitive menu -->
+	<a href="/">Back</a> |
+	<a href="/" id="saveButton">Save</a>
+	<br />
+	<!-- copied from the index page, exactly the same as map  creation -->
+	<label for="name">Name:</label>
+	<input type="text" name="name" value="" id="name"></input>
+	<br />
+	<label for="description">Description:</label>
+	<input type="text" name="description" value="" id="description"></input>
+	<!-- canvas -->
+	<div id="map-container">
+		<!-- node menu -->
+		<ul class='context-node-menu' id="context-node-menu">
+			<li data-action="edit">Edit</li>
+			<li data-action="delete">Delete</li>
+		</ul>
+		<!--  node edit dialog -->
+		<div id="nodeEditDialog" title="Edit node" style="display:none">
+			<label for="name">Name</label> <input type="text" name="name"
+				id="nodeName" value="A component"
+				class="text ui-widget-content ui-corner-all"/>
+		</div>
+		<!-- participants -->
+		<!-- temporarily hidden, will complete this section later -->
+		<!-- TODO: implement -->
+		<div id="participants" style="display:none">
+			Participants:
+			<table id="listOfParticipants">
+			</table>
+			<input type="color" id='participantColor'/>
+			<input type="text" id='participantName'/>
+			<input type="button" id='participantAdd' value="Add new"/>
+		</div>
+	</div>
+	<script src="/mapeditor.js"></script>
+</body>
+</html>

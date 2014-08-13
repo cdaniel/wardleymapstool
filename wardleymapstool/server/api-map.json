@@ -1,0 +1,71 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "http://wardleymaps.com/thetool/api/map",
+	"title": "A Wardley Map",
+	"description": "A map for building corporate strategy",
+	"type": "object",
+	"definitions": 
+	{
+		"participant": 
+		{
+			"type": "object",
+			"properties": 
+			{
+				"name": "string",
+				"color": "string"
+			}
+		},
+
+		"component": 
+		{
+			"type": "object",
+			"properties": 
+			{
+				"name": "string",
+				"internalId": "string",
+				"value": "number",
+				"ubiquity": "number"
+			}
+		},
+
+		"dependency": 
+		{
+			"type": "object",
+			"properties": 
+			{
+				"sourceInternalId": "string",
+				"sinkInternalId": "string"
+			}
+		}
+	},
+	"properties": 
+	{
+		"name": {"type": "string"},
+		"description": {"type": "string"},
+		"userId": {"type":"string"},
+		"participants": 
+		{
+			"type": "array",
+			"items": 
+			{	 
+				"$ref": "#/definitions/participant"
+			}
+		},
+		"components": 
+		{
+			"type": "array",
+			"items": 
+			{	 
+				"$ref": "#/definitions/component"
+			}
+		},
+		"dependencies": 
+		{
+			"type": "array",
+			"items": 
+			{	 
+				"$ref": "#/definitions/dependency"
+			}
+		}
+	}
+}
