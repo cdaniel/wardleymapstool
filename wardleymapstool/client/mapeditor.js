@@ -207,6 +207,7 @@ function bindWidgets(){
 }
 
 function init(){
+	$( "#context-node-menu" ).menu();
 	bindWidgets();
 	initializeMapId();
 	loadMap();
