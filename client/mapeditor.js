@@ -178,6 +178,10 @@ function bindWidgets(){
 		e.preventDefault();
 		saveMap();
 	});
+	$('#feedbackButton').on("click", function(e){
+		e.preventDefault();
+		$('#feedbackframe').toggle();
+	});
 	// TODO:
 	// I guess this can be make simpler
 	$('#name').on('change', function(){
