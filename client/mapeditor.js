@@ -32,6 +32,10 @@ function initializeMapId(){
 	var segments = pathname.split('/');
 	/* last segment of the url */
 	mapId = segments[segments.length - 1];
+	
+	
+	$('#exportButton').attr("href", '/api/map/' + mapId + '/export/' + mapId + '.png');
+	$('#exportButton').attr("download", mapId + '.png');
 }
 
 function loadMap() {

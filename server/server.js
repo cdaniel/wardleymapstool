@@ -21,6 +21,7 @@ var GoogleAuth = require('./config/googleauth');
 var user = require('./user').user;
 var logger = require('./util/log').log.getLogger('server');
 var maps = require('./maps');
+var exportmap = require('./export');
 
 function ensureAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {
@@ -200,6 +201,13 @@ var WardleyMapsApp = function() {
 			ensureAuthenticated(req, res, function(req, res){
 				res.setHeader('Content-Type', 'text/html');
 				res.send(self.cache_get('mapeditor.html'));
+			});
+		};
+		
+		// 6. export
+		self.routes.get['/api/map/:mapid/export/:name'] = function(req, res) {
+			ensureAuthenticated(req, res, function(req, res){
+				exportmap.exportmap(req, res, req.params.mapid, req.params.name);
 			});
 		};
 		

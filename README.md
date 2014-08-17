@@ -10,8 +10,9 @@ Requirements:
 ---------------
 1. install and start mongodb
 2. install node.js
-3. start server by invoking <code>node server/server.js</code>
-4. open [http://127.0.0.1:8080/](http://127.0.0.1:8080/) in a browser. 
+3. install https://github.com/Automattic/node-canvas (this can't be done automatically)
+4. start server by invoking <code>node server/server.js</code>
+5. open [http://127.0.0.1:8080/](http://127.0.0.1:8080/) in a browser. 
 he hardcoded g+ key works only with this address.
 
 Big things to do:

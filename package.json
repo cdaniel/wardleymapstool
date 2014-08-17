@@ -33,7 +33,8 @@
     "node-serialize" :"*",
     "log4js": "*",
     "querystring":"*",
-    "tv4":"*"
+    "tv4":"*",
+    "canvas" : "*"
   },
   
   "devDependencies": {},
