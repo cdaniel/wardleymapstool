@@ -291,8 +291,10 @@ function Node(parentNode, id) {
 		isSource : true
 	}, endpointOptions);
 	
+	self.entered=false;
 	
 	self.internalNode.on("mouseenter", function(){
+		self.entered = true;
 		var ps = self.endpointOut.getPaintStyle();
 		ps = jQuery.extend({},ps);
 		ps.radius = 10;
@@ -300,13 +302,18 @@ function Node(parentNode, id) {
 	});
 	
 	self.makeEndpointSmaller = function () {
+			self.entered = false;
 			var ps = self.endpointOut.getPaintStyle();
 			var en = self.endpointOut;
 			ps = jQuery.extend({},ps);
 			ps.radius = 1;
 			setTimeout(function(){
-				en.setPaintStyle(ps);
-			},300);
+				if(self.entered){
+					self.makeEndpointSmaller();
+				} else {
+					en.setPaintStyle(ps);					
+				}
+			},500);
 	};
 	self.internalNode.on("mouseleave", self.makeEndpointSmaller);
 	
