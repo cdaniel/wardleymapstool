@@ -69,6 +69,8 @@ var WardleyMapsApp = function() {
 			cache('mapeditor.js');
 			cache('logout.html');
 			cache('background.svg');
+			cache('delete.png');
+			cache('new-icon.png');
 			cache('jquery.jsPlumb-1.6.2.js');
 		}
 	};
@@ -156,6 +158,9 @@ var WardleyMapsApp = function() {
 				if(endsWith(req.params.filename, ".svg")){
 					res.setHeader('Content-Type', 'image/svg+xml');
 				}
+				if(endsWith(req.params.filename, ".png")){
+					res.setHeader('Content-Type', 'image/png');
+				}
 				res.send(self.cache_get(req.params.filename));
 			});
 		};
@@ -208,6 +213,13 @@ var WardleyMapsApp = function() {
 		self.routes.get['/api/map/:mapid/export/:name'] = function(req, res) {
 			ensureAuthenticated(req, res, function(req, res){
 				exportmap.exportmap(req, res, req.params.mapid, req.params.name);
+			});
+		};
+		
+		// 7. thumbnail 100x100
+		self.routes.get['/api/map/:mapid/thumbnail.png'] = function(req, res) {
+			ensureAuthenticated(req, res, function(req, res){
+				exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
 			});
 		};
 		

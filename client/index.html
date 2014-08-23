@@ -19,15 +19,76 @@ limitations under the License. -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js "></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 <!--  for form handling -->
-<script src="http://malsup.github.com/jquery.form.js"></script> 
+<script src="http://malsup.github.com/jquery.form.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"></link>
+<style type="text/css">
+#content {
+	display: none;
+}
+
+#preload {
+	width: 100px;
+	height: 100px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+}
+
+#error {
+	display: none;
+	color: red; position : fixed;
+	top: 50%;
+	left: 50%;
+	position: fixed;
+}
+
+.mapselector {
+	width: 150px;
+	height: 150px;
+	display: inline-block;
+	position:relative;
+}
+
+.mapselectorimage {
+	width: 100px;
+	height: 100px;
+	border-color: black;
+	border-width: 1px;
+	border-style: dotted;
+	top: auto;
+	margin-left: auto;
+    margin-right: auto;
+}
+
+.deleteoverlay {
+	position: absolute;
+	display: none;
+	z-index: 100;
+	top:0px;
+	right:50px;
+}
+
+.deleteoverlayimage {
+	width: 20px;
+	height: 20px;
+}
+
+#newMapFormDialog {
+	display:none;
+}
+</style>
 </head>
 <body>
-<b>A list of maps:</b>
-	<table id="listOfMaps">
-	</table>
+<div id="preload">
+	<img src="http://i.imgur.com/KUJoe.gif">
+</div>
+<div id="content">
+<b>Your maps:</b><br/><br/></br>
+	<div id="selectors"></div>
 	
-<br/></br>	
-<b>Create a new map:</b>
+<br/></br>
+<div id="newMapFormDialog" title="Create a new map">
 	<form action="/api/map/" method='post' id="newMapCreationForm">
 		<label for="name">Name:</label>
 		<input type="text" name="name" value="" id="name"></input><br/>
@@ -36,7 +97,13 @@ limitations under the License. -->
 		<input type="submit" name="button" value="create new" value=""></input>
 	</form>
 <br/><br/>
+</div>
 <a href="/logout">logout</a>
+</div>
+<div id="error">
+	Something went really wrong, and indeed is it embarrassing. <br/>
+	Please tell <a href="https://twitter.com/wardleymaps">us</a>.
+</div>
 <a href="https://github.com/cdaniel/wardleymapstool"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
 	<script src="index.js"></script>
 </body>

@@ -24,9 +24,70 @@ function bindDeleteMap(a, mapId){
 				},
 				error : function(request, error) {
 					console.log('deleting a map failed' + error);
+					$("#preload").fadeOut(100);
+					$("#content").fadeOut(100);
+					$("#error").fadeIn(100);
 				}
 			});
 		});
+}
+
+function createDeleteOverlay(div, mapId) {
+	var overlay = $('<div>').attr('class','deleteoverlay');
+	div.append(overlay);
+	var link = $('<a>');
+	var image = $('<img>').attr('class','deleteoverlayimage');
+	image.attr('src','delete.png');
+	
+	overlay.append(link);
+	link.append(image);
+	
+	bindDeleteMap(link, mapId);
+	
+	div.mouseover(function() {
+		overlay.show();
+	});
+	div.mouseout(function() {
+		overlay.hide();
+	});
+}
+
+function showAddMapDialog(event) {
+	event.preventDefault();
+	$("#newMapFormDialog").dialog({
+		autoOpen : true,
+		height : 300,
+		width : 350,
+		modal : true,
+
+		close : function() {
+			$("#name").val('');
+			$("#description").val('');
+		}
+	});
+}
+
+function createNewMapButton(selectors) {
+	var cell = $('<div>').attr('class','mapselector');
+	
+	cell.attr('title', 'Click to create a new map.');
+
+	var caption = $('<div>');
+	caption.text('New map...');
+	
+	var link =  $('<a>');
+	link.attr('href','#');
+	link.on('click',showAddMapDialog);
+	
+	var image = $('<img>');
+	image.attr('src','/new-icon.png');
+	image.attr('class','mapselectorimage');
+	image.css('opacity','0.5');
+	
+	selectors.append(cell);
+	link.append(image);
+	cell.append(link);
+	cell.append(caption);
 }
 
 function loadListOfMaps() {
@@ -38,43 +99,45 @@ function loadListOfMaps() {
 			console.log(result);
 			if (result.status) {
 				console.log('something went wrong');
+				$("#preload").fadeOut(100);
+				$("#error").fadeIn(100);
 			} else {
-				var table = $('#listOfMaps');
-				table.empty();
+				var selectors = $('#selectors');
+				selectors.empty();
 
-				var row = "";
+				
 				for ( var mapIndex in result) {
 					var aMap = result[mapIndex];
-					var row = $('<tr>');
-
-					var cell = $('<td>');
-					cell.text(aMap.name);
-					row.append(cell);
-
-					cell = $('<td>');
-					cell.text(aMap.description);
-					row.append(cell);
+					var cell = $('<div>').attr('class','mapselector');
 					
-					cell = $('<td>');
-					var link = $('<a>').attr('href','/map/'+aMap._id);
-					link.text('Edit');
-					cell.append(link);
-					row.append(cell);
-					
-					cell = $('<td>');
-					link = $('<a>').attr('href', '#');
-					bindDeleteMap(link, aMap._id);
-					link.text('Delete');
-					cell.append(link);
-					row.append(cell);
+					cell.attr('title', aMap.description);
 
-					table.append(row);
+					var caption = $('<div>');
+					caption.text(aMap.name);
+					
+					var link =  $('<a>');
+					link.attr('href','/map/'+aMap._id);
+					
+					var image = $('<img>');
+					image.attr('src','api/map/' + aMap._id + '/thumbnail.png');
+					image.attr('class','mapselectorimage');
+					
+					selectors.append(cell);
+					link.append(image);
+					cell.append(link);
+					cell.append(caption);
+					
+					createDeleteOverlay(cell, aMap._id);
 				}
-
+				createNewMapButton(selectors);
+				$("#preload").fadeOut(100);
+				$("#content").fadeIn(100);
 			}
 		},
 		error : function(request, error) {
 			console.log('An error while getting map list!', error);
+			$("#preload").fadeOut(100);
+			$("#error").fadeIn(100);
 		}
 	});
 }
