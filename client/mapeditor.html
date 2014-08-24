@@ -38,6 +38,7 @@ limitations under the License. -->
 	background-image: url('/background.svg');
 	background-size: 100% 100%;
 	position:relative;
+	z-index:2;
 }
 
 .item {
@@ -119,6 +120,20 @@ limitations under the License. -->
 	background:white;
 	position:absolute;
 }
+
+#value {
+	z-index: 1;
+	top: 40px;
+	left: 25px;
+	position: absolute;
+}
+
+#ubiquity {
+	z-index: 1;
+	bottom: 25px;
+	right: 10px;
+	position: absolute;
+}
 </style>
 
 </head>
@@ -160,6 +175,10 @@ limitations under the License. -->
 			<input type="text" id='participantName'/>
 			<input type="button" id='participantAdd' value="Add new"/>
 		</div>
+		
+		
+		<div id="value">Value</div>
+		<div id="ubiquity">Ubiquity</div>
 	</div>
 	<iframe id="feedbackframe" src="https://docs.google.com/forms/d/1yjmDU3YncL2x1euA1rQMv9jhAAAYU9P-cTBWDflVE1g/viewform?embedded=true" width="400" height="440" frameborder="0" marginheight="0" marginwidth="0" style="display:none;top:0px;left:400px;position:absolute">Loading...</iframe>
 	<script src="/mapeditor.js"></script>
