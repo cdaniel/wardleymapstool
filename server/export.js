@@ -17,6 +17,52 @@ var db = require('./db').database;
 var Canvas = require('canvas')
 , Image = Canvas.Image;
 
+var arrow = [
+             [ 2, 0 ],
+             [ -10, -4 ],
+             [ -10, 4]
+         ];
+
+function drawFilledPolygon(ctx, shape) {
+    ctx.beginPath();
+    ctx.moveTo(shape[0][0],shape[0][1]);
+
+    for(p in shape)
+        if (p > 0) ctx.lineTo(shape[p][0],shape[p][1]);
+
+    ctx.lineTo(shape[0][0],shape[0][1]);
+    ctx.fill();
+};
+
+function translateShape(shape,x,y) {
+    var rv = [];
+    for(p in shape)
+        rv.push([ shape[p][0] + x, shape[p][1] + y ]);
+    return rv;
+};
+
+function rotateShape(shape,ang) {
+    var rv = [];
+    for(p in shape)
+        rv.push(rotatePoint(ang,shape[p][0],shape[p][1]));
+    return rv;
+};
+function rotatePoint(ang,x,y) {
+    return [
+        (x * Math.cos(ang)) - (y * Math.sin(ang)),
+        (x * Math.sin(ang)) + (y * Math.cos(ang))
+    ];
+};
+
+function drawLineArrow(ctx, x1,y1,x2,y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+    var ang = Math.atan2(y2-y1,x2-x1);
+    drawFilledPolygon(ctx, translateShape(rotateShape(arrow,ang),x2,y2));
+};
+
 var draw = function(res, filename, map){
 	var x = 1280;
 	var y = 800;
@@ -28,6 +74,7 @@ var draw = function(res, filename, map){
 	ctx.fillStyle = "#FFFFFF";
 	ctx.fillRect(0,0,x,y);
 	
+	ctx.strokeStyle = "#000000";
 	ctx.fillStyle = "#000000";
 	ctx.font = 'bold 12px Impact';
 	
@@ -43,7 +90,13 @@ var draw = function(res, filename, map){
 	var createdAtMeasure = ctx.measureText(createdAt);
 	ctx.fillText(createdAt, x - 30 - createdAtMeasure.width, 15);
 	
+	
 	//TODO: draw axes here (30px from each border)
+	drawLineArrow(ctx, 30, y - 30, 30, 40);
+	drawLineArrow(ctx, 30, y - 30, x - 30, y - 30); 
+	
+	ctx.fillText('Ubiquity', x - 60, y - 15);
+	ctx.fillText('Value', 33, 60);
 	
 	
 	// calculate nodes
@@ -63,7 +116,7 @@ var draw = function(res, filename, map){
 			componentId : node.componentId
 		});
 	}
-	
+	ctx.stroke();
 	//draw connections
 	for(var index in map.connections){
 		var connection = map.connections[index];
@@ -81,11 +134,13 @@ var draw = function(res, filename, map){
 			}
 			
 		}
+		ctx.strokeStyle = 'silver';
 		ctx.moveTo(start.x, start.y);
 		ctx.lineTo(end.x,end.y);
 		ctx.stroke();
 	}
 	
+	ctx.strokeStyle = 'black';
 	//and now draw nodes
 	for ( var index in calculatedNodes) {
 		ctx.beginPath();
