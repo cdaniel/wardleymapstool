@@ -63,9 +63,7 @@ function drawLineArrow(ctx, x1,y1,x2,y2) {
     drawFilledPolygon(ctx, translateShape(rotateShape(arrow,ang),x2,y2));
 };
 
-var draw = function(res, filename, map){
-	var x = 1280;
-	var y = 800;
+var draw = function(res, filename, map, x, y){
 	var canvas = new Canvas(x,y);
 	var stream = canvas.pngStream();
 	var ctx = canvas.getContext('2d');
@@ -242,11 +240,27 @@ var thumbnail_draw = function(res, filename, map){
 	});
 };
 
-var exportmap = function(req, res, mapId, filename) {
+var exportmap = function(req, res, mapId, filename, scale) {
 	var userId = require('./db').toDatabaseId(req.user);
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("drawing map", mapId, "for user", userId);
 
+	var x = 1280;
+	var y = 800;
+	if(scale == 1){
+		x = 640;
+		y = 480;
+	} else if (scale == 2) {
+		x = 800;
+		y = 600;
+	} else if (scale == 3) {
+		x = 1024;
+		y = 768;
+	} else if (scale == 4) {
+		x = 1280;
+		y = 800;
+	}
+	
 	db.maps.find({
 		"userId" : userId,
 		"_id" : mapId
@@ -257,7 +271,7 @@ var exportmap = function(req, res, mapId, filename) {
 			res.statusCode = 500;
 			res.send(JSON.stringify(err));
 		} else {
-			draw(res, mapId, maps[0]);
+			draw(res, mapId, maps[0],x,y);
 		}
 	});
 };

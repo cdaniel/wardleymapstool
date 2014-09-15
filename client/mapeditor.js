@@ -19,6 +19,11 @@ var mapId = "";
  */
 var map = null;
 
+
+function calculateDownloadURL(size){
+	return '/api/map/' + mapId + '/export/' + size + '/' + mapId + '.png';
+}
+
 /**
  * The map editor link usually has a format of:
  * http://127.0.0.1:8080/map/53e663580f1a83730329e6e5.
@@ -34,7 +39,7 @@ function initializeMapId(){
 	mapId = segments[segments.length - 1];
 	
 	
-	$('#exportButton').attr("href", '/api/map/' + mapId + '/export/' + mapId + '.png');
+	$('#exportButton').attr("href", calculateDownloadURL(/*default size, the smallest one*/1));
 	$('#exportButton').attr("download", mapId + '.png');
 }
 
@@ -212,6 +217,9 @@ function bindWidgets(){
 			drawParticipants();
 		}
 	});*/
+	$('#exportsize').on('change', function(){
+		$('#exportButton').attr("href", calculateDownloadURL($('#exportsize').val()));
+	});
 }
 
 function init(){

@@ -210,9 +210,9 @@ var WardleyMapsApp = function() {
 		};
 		
 		// 6. export
-		self.routes.get['/api/map/:mapid/export/:name'] = function(req, res) {
+		self.routes.get['/api/map/:mapid/export/:size/:name'] = function(req, res) {
 			ensureAuthenticated(req, res, function(req, res){
-				exportmap.exportmap(req, res, req.params.mapid, req.params.name);
+				exportmap.exportmap(req, res, req.params.mapid, req.params.name, req.params.size);
 			});
 		};
 		
