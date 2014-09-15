@@ -151,8 +151,12 @@ var draw = function(res, filename, map, x, y){
 		ctx.fill();
 		
 		ctx.fillStyle = 'black';
-		ctx.fillText(calculatedNodes[index].name,
-				calculatedNodes[index].x + 10, calculatedNodes[index].y - 10); 
+		
+		var words = calculatedNodes[index].name.split(' ');
+		for(var wordIndex in words) {
+			ctx.fillText(words[wordIndex],
+				calculatedNodes[index].x + 11, calculatedNodes[index].y - 10 + wordIndex * 11);
+		}
 	}
 	
 	
