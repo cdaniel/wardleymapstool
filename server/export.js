@@ -115,11 +115,13 @@ var draw = function(res, filename, map, x, y){
 		});
 	}
 	ctx.stroke();
+	
 	//draw connections
 	for(var index in map.connections){
 		var connection = map.connections[index];
 		var source = connection.pageSourceId;
 		var target = connection.pageTargetId;
+		var scope = connection.scope;
 		var start;
 		var end;
 		for(var nodeIndex in calculatedNodes){
@@ -132,10 +134,19 @@ var draw = function(res, filename, map, x, y){
 			}
 			
 		}
-		ctx.strokeStyle = 'silver';
-		ctx.moveTo(start.x, start.y);
-		ctx.lineTo(end.x,end.y);
-		ctx.stroke();
+		if(scope == "jsPlumb_DefaultScope"){
+			ctx.strokeStyle = 'silver';
+			ctx.moveTo(start.x, start.y);
+			ctx.lineTo(end.x,end.y);
+			ctx.stroke();			
+		}
+		if(scope == "Actions"){
+			ctx.strokeStyle = 'green';
+			var lineLength = Math.sqrt((start.x - end.x)*(start.x - end.x) + (start.y - end.y)*(start.y - end.y));
+			var deltaX = 10 * (start.x - end.x) / lineLength;
+			var deltaY = 10 * (start.y - end.y) / lineLength;
+			drawLineArrow(ctx, start.x, start.y, end.x + deltaX, end.y + deltaY);
+		}
 	}
 	
 	ctx.strokeStyle = 'black';
@@ -144,21 +155,38 @@ var draw = function(res, filename, map, x, y){
 		ctx.beginPath();
 		ctx.arc(calculatedNodes[index].x, calculatedNodes[index].y, 10, 0,
 				2 * Math.PI);
-		ctx.stroke();
 		
 		//background
 		ctx.fillStyle = 'silver';
 		ctx.fill();
+		ctx.stroke();
+	}
+	
+	for ( var index in calculatedNodes) {
+		ctx.beginPath();
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = 'white';
 		
 		ctx.fillStyle = 'black';
+		ctx.shadowColor = 'white';
+		ctx.shadowBlur = 2;
+		ctx.shadowOffsetX = 2;
+		ctx.shadowOffsetY = 2;
 		
 		var words = calculatedNodes[index].name.split(' ');
 		for(var wordIndex in words) {
 			ctx.fillText(words[wordIndex],
 				calculatedNodes[index].x + 11, calculatedNodes[index].y - 10 + wordIndex * 11);
+			//intentionally copied over to make the shadow blur more visible
+			ctx.fillText(words[wordIndex],
+					calculatedNodes[index].x + 11, calculatedNodes[index].y - 10 + wordIndex * 11);
+			ctx.fillText(words[wordIndex],
+					calculatedNodes[index].x + 11, calculatedNodes[index].y - 10 + wordIndex * 11);
+			ctx.fillText(words[wordIndex],
+					calculatedNodes[index].x + 11, calculatedNodes[index].y - 10 + wordIndex * 11);
 		}
+		ctx.stroke();
 	}
-	
 	
 	res.setHeader('Content-Type', 'image/png');
 	stream.on('data', function(chunk){
