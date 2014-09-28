@@ -157,7 +157,8 @@ function drawMap(){
 							}).get(0);
 							var connection = jsPlumb.connect({
 								source : src,
-								target : trg
+								target : trg,
+								deleteEndpointsOnDetach:false
 							});	
 							// this was used to prepare hover menus
 							// on connections.
@@ -264,7 +265,8 @@ var endpointOptions = {
 	},
 	endpoint : [ "Dot", {
 		radius : 1
-	} ]
+	} ],
+	deleteEndpointsOnDetach:false
 };
 
 var actionEndpointOptions = {
@@ -276,7 +278,8 @@ var actionEndpointOptions = {
 		endpoint : [ "Dot", {
 			radius : 1
 		} ],
-		connectorOverlays: [ [ "Arrow", { location:1.0 } ] ]
+		connectorOverlays: [ [ "Arrow", { location:1.0 } ] ],
+		deleteEndpointsOnDetach:false
 	};
 
 function Node(parentNode, id) {
@@ -542,7 +545,8 @@ jsPlumb.bind("connectionDragStop", function(info, e) {
 		var trg = jsPlumb.selectEndpoints({target:info.targetId,scope:info.scope}).get(0);
 		jsPlumb.connect({
 			source : src,
-			target : trg
+			target : trg,
+			deleteEndpointsOnDetach:false
 		});
 		jsPlumb.detach(info);
 		return;
@@ -568,7 +572,8 @@ jsPlumb.bind("connectionDragStop", function(info, e) {
 	}).get(0);
 	jsPlumb.connect({
 		source : src,
-		target : trg
+		target : trg,
+		deleteEndpointsOnDetach:false
 	});	
 });
 
