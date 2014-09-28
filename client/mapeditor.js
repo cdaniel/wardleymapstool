@@ -84,9 +84,10 @@ function saveMap() {
 		    
 		    $.each(jsPlumb.getAllConnections(), function (idx, connection) {
 		    	connections.push({
-		        connectionId: connection.id,
-		        pageSourceId: connection.sourceId,
-		        pageTargetId: connection.targetId,
+		    		connectionId: connection.id,
+		    		pageSourceId: connection.sourceId,
+		    		pageTargetId: connection.targetId,
+		    		scope: connection.scope
 		        });
 		    });
 		    //overwrite whatever we have
@@ -141,10 +142,23 @@ function drawMap(){
 				.each(
 						map.connections,
 						function(index, elem) {
-							var connection = jsPlumb.connect({
+							var scope = elem.scope;
+							//backward compatibility, no scope defined
+							if(scope == undefined){
+								scope = jsPlumb.getDefaultScope();
+							}
+							var src = jsPlumb.selectEndpoints({
 								source : elem.pageSourceId,
-								target : elem.pageTargetId
-							}, endpointOptions);
+								scope : scope
+							}).get(0);
+							var trg = jsPlumb.selectEndpoints({
+								target : elem.pageTargetId,
+								scope : scope
+							}).get(0);
+							var connection = jsPlumb.connect({
+								source : src,
+								target : trg
+							});	
 							// this was used to prepare hover menus
 							// on connections.
 							/*prepareConnectionMenu(connection);*/
@@ -253,6 +267,18 @@ var endpointOptions = {
 	} ]
 };
 
+var actionEndpointOptions = {
+		connector : "Straight",
+		connectorStyle : {
+			lineWidth : 2,
+			strokeStyle : 'green'
+		},
+		endpoint : [ "Dot", {
+			radius : 1
+		} ],
+		connectorOverlays: [ [ "Arrow", { location:1.0 } ] ]
+	};
+
 function Node(parentNode, id) {
 	var self = this;
 	
@@ -288,38 +314,84 @@ function Node(parentNode, id) {
 	});
 	
 	// accept incoming connections
-	jsPlumb.makeTarget(self.internalNode, {
-		anchor: 'TopCenter'
-	}, endpointOptions);
 	
 	
-	
-	self.endpointOut = jsPlumb.addEndpoint(self.internalNode, {
-		anchor : "BottomCenter",
-		isSource : true
-	}, endpointOptions);
+	jsPlumb.makeTarget(self.internalNode,{scope:"Actions"});
+
+	self.endpointIn = jsPlumb.addEndpoint(self.internalNode, endpointOptions, {
+		anchor : "TopCenter",
+		isTarget : true,
+		scope : jsPlumb.getDefaultScope(),
+		dropOptions : {
+			scope : jsPlumb.getDefaultScope(),
+			tolerance:'touch'
+		},
+		uniqueEndpoint : true
+	});
+	self.endpointOut = jsPlumb.addEndpoint(self.internalNode, endpointOptions,
+			{
+				anchor : "BottomCenter",
+				isSource : true,
+				scope : jsPlumb.getDefaultScope(),
+				uniqueEndpoint : true,
+				dragOptions : {
+					scope : "Actions"
+				}
+			});
+
+	self.actionEndpointIn = jsPlumb.addEndpoint(self.internalNode,
+			actionEndpointOptions, {
+				anchor : "Left",
+				isTarget : true,
+				scope : "Actions",
+				dropOptions : {
+					scope : "Actions",
+					tolerance:'touch'
+				},
+				uniqueEndpoint : true
+			});
+
+	self.actionEndpointOut = jsPlumb.addEndpoint(self.internalNode, actionEndpointOptions,{
+		anchor : "Right",
+		isSource : true,
+		scope : "Actions",
+		uniqueEndpoint : true,
+		dragOptions : {
+			scope : "Actions"
+		}
+	});
 	
 	self.entered=false;
 	
 	self.internalNode.on("mouseenter", function(){
 		self.entered = true;
-		var ps = self.endpointOut.getPaintStyle();
-		ps = jQuery.extend({},ps);
-		ps.radius = 10;
-		self.endpoint= self.endpointOut.setPaintStyle(ps);
+		var endpoints = [self.endpointOut, self.actionEndpointOut];
+		for (var i = 0; i < endpoints.length;i++){
+			var ps = endpoints[i].getPaintStyle();
+			ps = jQuery.extend({},ps);
+			ps.radius = 8;
+			endpoints[i].setPaintStyle(ps);
+		}
 	});
 	
 	self.makeEndpointSmaller = function () {
 			self.entered = false;
-			var ps = self.endpointOut.getPaintStyle();
-			var en = self.endpointOut;
-			ps = jQuery.extend({},ps);
-			ps.radius = 1;
+			var endpoints = [self.endpointOut, self.actionEndpointOut];
+			var styles = [];
+			for (var i = 0; i < endpoints.length;i++){
+				var ps = endpoints[i].getPaintStyle();
+				var en = endpoints[i];
+				ps = jQuery.extend({},ps);
+				ps.radius = 1;
+				styles.push(ps);
+			}
 			setTimeout(function(){
 				if(self.entered){
 					self.makeEndpointSmaller();
 				} else {
-					en.setPaintStyle(ps);					
+					for (var i = 0; i < endpoints.length;i++){
+						endpoints[i].setPaintStyle(styles[i]);					
+					}
 				}
 			},500);
 	};
@@ -365,6 +437,9 @@ function Node(parentNode, id) {
 	
 	self.remove = function(){
 		jsPlumb.deleteEndpoint(self.endpointOut);
+		jsPlumb.deleteEndpoint(self.actionEndpointOut);
+		jsPlumb.deleteEndpoint(self.endpointIn);
+		jsPlumb.deleteEndpoint(self.actionEndpointIn);
 		jsPlumb.detachAllConnections(self.internalNode);
 		self.internalNode.remove();
 		// TODO: remove from a map, if it will be stored there
@@ -458,6 +533,43 @@ jsPlumb.bind("contextmenu", function(component, event) {
     	top: event.currentTarget.offsetTop,
         left: event.pageX
     });
+});
+
+jsPlumb.bind("connectionDragStop", function(info, e) {
+	//those two are nulls if the connection was aborted, i.e. it was not possible to create one (f.e. there was no target).
+	if(info.source != null || info.target != null){
+		var src = jsPlumb.selectEndpoints({source:info.sourceId,scope:info.scope}).get(0);
+		var trg = jsPlumb.selectEndpoints({target:info.targetId,scope:info.scope}).get(0);
+		jsPlumb.connect({
+			source : src,
+			target : trg
+		});
+		jsPlumb.detach(info);
+		return;
+	}
+	var sourceId = info.sourceId;
+	
+	var mapContainer = $('#map-container');
+	
+	var n = new Node(mapContainer);
+	n.move({
+		'top' : e.clientY - mapContainer.offset().top -10 /*node size*/,
+		'left' : e.clientX - mapContainer.offset().left -10/*node size*/
+	}, true);
+	
+
+	var src = jsPlumb.selectEndpoints({
+		source : sourceId,
+		scope : info.scope
+	}).get(0);
+	var trg = jsPlumb.selectEndpoints({
+		target : "" + n.id,
+		scope : info.scope
+	}).get(0);
+	jsPlumb.connect({
+		source : src,
+		target : trg
+	});	
 });
 
 
