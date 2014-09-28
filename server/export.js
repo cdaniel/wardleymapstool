@@ -218,9 +218,13 @@ var thumbnail_draw = function(res, filename, map){
 			}
 			
 		}
-		ctx.moveTo(start.x, start.y);
-		ctx.lineTo(end.x,end.y);
-		ctx.stroke();
+		if(start == undefined || end == undefined){
+			logger.error('found connection' + connection + ' without nodes');
+		} else {
+			ctx.moveTo(start.x, start.y);
+			ctx.lineTo(end.x,end.y);
+			ctx.stroke();
+		}
 	}
 	
 	//and now draw nodes
