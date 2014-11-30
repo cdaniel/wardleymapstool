@@ -23,6 +23,12 @@ Big things to do:
 - [ ] other than g+ login mechanisms
 - [ ] prepare mediums of communication
 
+UI Sketches:
+-----------------
+The sketches in the ui-sketches folder (those with the *.ep extension) are created with the Evolus Pencil tool, 
+which is open source and can be downloaded for all platforms from [http://pencil.evolus.vn/](its homepage).
+
+
 Support, questions and similar:
 -----------------
 TBD
