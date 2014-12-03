@@ -16,27 +16,35 @@ limitations under the License. -->
 <head>
 <meta charset="utf-8">
 <title>Wardley Maps Tool</title>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js "></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js "></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 <!--  for form handling -->
 <script src="http://malsup.github.com/jquery.form.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"></link>
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
 <!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
 
 <!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
 <style type="text/css">
 #content {
 	display: none;
 }
 
-.thumbnail img { min-height:100px; height:100px; }
+.thumbnail img {
+	min-height: 100px;
+	height: 100px;
+}
 
 #preload {
 	width: 100px;
@@ -48,7 +56,8 @@ limitations under the License. -->
 
 #error {
 	display: none;
-	color: red; position : fixed;
+	color: red;
+	position: fixed;
 	top: 50%;
 	left: 50%;
 	position: fixed;
@@ -68,41 +77,92 @@ limitations under the License. -->
 }
 
 #newMapFormDialog {
-	display:none;
+	display: none;
 }
 </style>
 </head>
 <body>
-<div id="preload">
-	<img src="http://i.imgur.com/KUJoe.gif">
-</div>
-<div id="content">
+	<div id="preload">
+		<img src="http://i.imgur.com/KUJoe.gif">
+	</div>
+	<div id="content">
 
-<div class="container-fluid">
-		<h1>Your maps:</h1>
-	    <div class="row" id="selectors">
+		<div class="container-fluid">
 
+
+
+			<nav role="navigation" class="navbar navbar-default">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" data-target="#navbarCollapse"
+						data-toggle="collapse" class="navbar-toggle">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a href="/" class="navbar-brand">Wardley Maps Tool</a>
+				</div>
+				<!-- Collection of nav links and other content for toggling -->
+				<div id="navbarCollapse" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="/">Home</a></li>
+						<li><a href="http://wardleymaps.com" target="_blank">The
+								Wardley Map Portal</a></li>
+						<li><a href="http://wardleymaps.com/forum.html"
+							target="_blank">Forum</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/logout">Logout</a></li>
+					</ul>
+				</div>
+			</nav>
+
+
+
+			<h1>Your maps:</h1>
+			<div class="row" id="selectors"></div>
 		</div>
-</div>
-	
-<br/></br>
-<div id="newMapFormDialog" title="Create a new map">
-	<form action="/api/map/" method='post' id="newMapCreationForm">
-		<label for="name">Name:</label>
-		<input type="text" name="name" value="" id="name"></input><br/>
-		<label for="description">Description:</label>
-		<input type="text" name="description" value="" id="description"></input>
-		<input type="submit" name="button" value="create new" value=""></input>
-	</form>
-<br/><br/>
-</div>
-<a href="http://www.wardleymaps.com/forum.html" target="_blank">Have a question?</a> | <a href="http://www.wardleymaps.com">Main page</a> | <a href="/logout">Logout</a>
-</div>
-<div id="error">
-	Something went really wrong, and indeed is it embarrassing. <br/>
-	Please tell <a href="https://twitter.com/wardleymaps">us</a>.
-</div>
-<a href="https://github.com/cdaniel/wardleymapstool"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+		<br /></br>
+		<div id="newMapFormDialog" title="Create a new map">
+			<form action="/api/map/" method='post' id="newMapCreationForm">
+				<label for="name">Name:</label> <input type="text" name="name"
+					value="" id="name"></input><br /> <label for="description">Description:</label>
+				<input type="text" name="description" value="" id="description"></input>
+				<input type="submit" name="button" value="create new" value=""></input>
+			</form>
+			<br />
+			<br />
+		</div>
+
+
+
+
+
+	</div>
+	<div id="error">
+		Something went really wrong, and indeed is it embarrassing. <br />
+		Please tell <a href="https://twitter.com/wardleymaps">us</a>.
+	</div>
+	<div class="container">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<p class="text-info">This community tool is based on the work of
+					Simon Wardley, the Wardley mapping technique creator. Simon works
+					for LEF and runs training courses for LEF members, and is not
+					associated with this page. All contents are licensed under
+					CC-BY-SA. This site is a preview, early access, highly unstable and
+					quite dangerous. It may kill your cat, destroy the entire galaxy or
+					make you leave your job. Be warned. It may record your every move.
+					It is not even alpha.</p>
+			</div>
+		</div>
+	</div>
+	<a href="https://github.com/cdaniel/wardleymapstool"><img
+		style="position: absolute; top: 0; right: 0; border: 0;"
+		src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
+		alt="Fork me on GitHub"
+		data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
 	<script src="index.js"></script>
 </body>
 </html>
