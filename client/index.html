@@ -22,10 +22,21 @@ limitations under the License. -->
 <script src="http://malsup.github.com/jquery.form.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"></link>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
 <style type="text/css">
 #content {
 	display: none;
 }
+
+.thumbnail img { min-height:100px; height:100px; }
 
 #preload {
 	width: 100px;
@@ -43,30 +54,12 @@ limitations under the License. -->
 	position: fixed;
 }
 
-.mapselector {
-	width: 150px;
-	height: 150px;
-	display: inline-block;
-	position:relative;
-}
-
-.mapselectorimage {
-	width: 100px;
-	height: 100px;
-	border-color: black;
-	border-width: 1px;
-	border-style: dotted;
-	top: auto;
-	margin-left: auto;
-    margin-right: auto;
-}
-
 .deleteoverlay {
 	position: absolute;
 	display: none;
 	z-index: 100;
-	top:0px;
-	right:50px;
+	right: 0px;
+	top: 0px;
 }
 
 .deleteoverlayimage {
@@ -84,8 +77,13 @@ limitations under the License. -->
 	<img src="http://i.imgur.com/KUJoe.gif">
 </div>
 <div id="content">
-<b>Your maps:</b><br/><br/></br>
-	<div id="selectors"></div>
+
+<div class="container-fluid">
+		<h1>Your maps:</h1>
+	    <div class="row" id="selectors">
+
+		</div>
+</div>
 	
 <br/></br>
 <div id="newMapFormDialog" title="Create a new map">

@@ -198,8 +198,8 @@ var draw = function(res, filename, map, x, y){
 };
 
 var thumbnail_draw = function(res, filename, map){
-	var x = 100;
-	var y = 100;
+	var x = 200;
+	var y = 200;
 	var canvas = new Canvas(x,y);
 	var stream = canvas.pngStream();
 	var ctx = canvas.getContext('2d');

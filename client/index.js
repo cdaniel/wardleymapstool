@@ -68,26 +68,38 @@ function showAddMapDialog(event) {
 }
 
 function createNewMapButton(selectors) {
-	var cell = $('<div>').attr('class','mapselector');
+	var cell = $('<div/>');
+	cell.attr('class','col-xs-12 col-sm-6 col-md-3 col-lg-2');
 	
-	cell.attr('title', 'Click to create a new map.');
-
-	var caption = $('<div>');
-	caption.text('New map...');
+	var thumbnail = $('<div/>');
+	thumbnail.attr('class','thumbnail');
 	
-	var link =  $('<a>');
+	var link =  $('<a/>');
 	link.attr('href','#');
 	link.on('click',showAddMapDialog);
 	
-	var image = $('<img>');
-	image.attr('src','/new-icon.png');
-	image.attr('class','mapselectorimage');
-	image.css('opacity','0.5');
+	var image = $('<img/>');
+	image.attr('src', '/new-icon.png');
+	image.attr('class','img-thumbnail');
+	image.attr('title', 'Click to create a new map.');
+	image.attr('width','200px');
+	image.attr('height','200px');
+	image.attr('opacity', '0.5');
+	
+	var caption = $('<div/>');
+	caption.attr('class','caption');
+	
+	var captiontitle = $('<h3/>');
+	captiontitle.text('New map...');
+	
+	caption.append(captiontitle);
 	
 	selectors.append(cell);
-	link.append(image);
-	cell.append(link);
+	cell.append(thumbnail);
 	cell.append(caption);
+
+	thumbnail.append(link);
+	link.append(image);
 }
 
 function loadListOfMaps() {
@@ -104,32 +116,43 @@ function loadListOfMaps() {
 			} else {
 				var selectors = $('#selectors');
 				selectors.empty();
-
+				createNewMapButton(selectors);
 				
 				for ( var mapIndex in result) {
 					var aMap = result[mapIndex];
-					var cell = $('<div>').attr('class','mapselector');
+					var cell = $('<div/>');
+					cell.attr('class','col-xs-12 col-sm-6 col-md-3 col-lg-2');
 					
-					cell.attr('title', aMap.description);
-
-					var caption = $('<div>');
-					caption.text(aMap.name);
+					var thumbnail = $('<div/>');
+					thumbnail.attr('class','thumbnail');
 					
-					var link =  $('<a>');
+					var link =  $('<a/>');
 					link.attr('href','/map/'+aMap._id);
 					
-					var image = $('<img>');
+					var image = $('<img/>');
 					image.attr('src','api/map/' + aMap._id + '/thumbnail.png');
-					image.attr('class','mapselectorimage');
+					image.attr('class','img-thumbnail');
+					image.attr('title', aMap.description);
+					
+					var caption = $('<div/>');
+					caption.attr('class','caption');
+					
+					var captiontitle = $('<h3/>');
+					captiontitle.text(aMap.name);
+					
+					caption.append(captiontitle);
 					
 					selectors.append(cell);
-					link.append(image);
-					cell.append(link);
+					cell.append(thumbnail);
 					cell.append(caption);
+
+					thumbnail.append(link);
+					link.append(image);
+					
 					
 					createDeleteOverlay(cell, aMap._id);
 				}
-				createNewMapButton(selectors);
+				
 				$("#preload").fadeOut(100);
 				$("#content").fadeIn(100);
 			}
