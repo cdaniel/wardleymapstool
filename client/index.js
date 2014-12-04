@@ -54,17 +54,21 @@ function createDeleteOverlay(div, mapId) {
 
 function showAddMapDialog(event) {
 	event.preventDefault();
-	$("#newMapFormDialog").dialog({
-		autoOpen : true,
-		height : 300,
-		width : 350,
-		modal : true,
-
-		close : function() {
-			$("#name").val('');
-			$("#description").val('');
-		}
-	});
+//	$("#newMapFormDialog").dialog({
+//		autoOpen : true,
+//		height : 300,
+//		width : 350,
+//		modal : true,
+//
+//		close : function() {
+//			$("#name").val('');
+//			$("#description").val('');
+//		}
+//	});
+	var options = {
+		    "backdrop" : "static"
+		};
+	$('#basicModal').modal(options);
 }
 
 function createNewMapButton(selectors) {
@@ -165,11 +169,17 @@ function loadListOfMaps() {
 	});
 }
 
-function init(){
+function init() {
 	loadListOfMaps();
-	$('#newMapCreationForm').ajaxForm(function() { 
-		window.location.reload();
-    });
+	$(function() {
+		$("input,select,textarea").not("[type=submit]").jqBootstrapValidation({
+			 submitSuccess: function ($form, event) {
+				 window.location.reload();
+			}
+		});
+		
+	});
 }
 
 $(document).ready(init);
+

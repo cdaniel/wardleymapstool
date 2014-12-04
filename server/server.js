@@ -72,6 +72,7 @@ var WardleyMapsApp = function() {
 			cache('delete.png');
 			cache('new-icon.png');
 			cache('jquery.jsPlumb-1.6.2.js');
+			cache('jqBootstrapValidation.js');
 		}
 	};
 

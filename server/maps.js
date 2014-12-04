@@ -65,7 +65,9 @@ function createNewMap(req, res){
 		if(saved) {
 			logger.debug("new map", saved._id, "created for user", userId);
 			res.writeHead(302, {
-				'Location' : ('/api/map/'+saved._id)
+				// TODO: this may be a hack
+				// I do not like the fact that the UI index UI is driven from here.
+				'Location' : ('/map/'+saved._id)
 			});
 			res.end();
 		}
