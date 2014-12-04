@@ -54,17 +54,6 @@ function createDeleteOverlay(div, mapId) {
 
 function showAddMapDialog(event) {
 	event.preventDefault();
-//	$("#newMapFormDialog").dialog({
-//		autoOpen : true,
-//		height : 300,
-//		width : 350,
-//		modal : true,
-//
-//		close : function() {
-//			$("#name").val('');
-//			$("#description").val('');
-//		}
-//	});
 	var options = {
 		    "backdrop" : "static"
 		};
@@ -143,8 +132,10 @@ function loadListOfMaps() {
 					
 					var captiontitle = $('<h3/>');
 					captiontitle.text(aMap.name);
-					
+					var subcaption = $('<p/>');
+					subcaption.text(aMap.description);
 					caption.append(captiontitle);
+					caption.append(subcaption);
 					
 					selectors.append(cell);
 					cell.append(thumbnail);
