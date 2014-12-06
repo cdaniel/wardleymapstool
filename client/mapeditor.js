@@ -123,6 +123,8 @@ function drawMap(){
 	$('#name').text(map.name);
 	$('#name').editable();
 	$('#description').val(map.description);
+	$('#description').text(map.description);
+	$('#description').editable();
 	
 	var mapContainer = $('#map-container');
 	var width = mapContainer.width();
