@@ -130,6 +130,39 @@ function updateMap(req, res, mapId) {
 	});
 }
 
+function partialMapUpdate(req, res, mapId) {
+	var userId = require('./db').toDatabaseId(req.user);
+	mapId = require('./db').toDatabaseId(mapId);
+	var load = req.body;
+	var updateObject = {};
+	updateObject[load.pk]  = load.value;
+	logger.debug("updating map partially", mapId, "for user", userId, " request" + JSON.stringify(load));
+	
+	
+	db.maps.findAndModify({
+		query : {
+			userId : userId,
+			_id : mapId
+		},
+		update : {
+			$set : updateObject
+		},
+		upsert : true,
+	}, function(err, object) {
+		if (err !== null) {
+			logger.error(err);
+			res.setHeader('Content-Type', 'application/json');
+			res.statusCode = 500;
+			res.send(JSON.stringify(err));
+		} else {
+			res.writeHead(200, {
+				'content-type' : 'text/html'
+			});
+			res.end();
+		}
+	});
+}
+
 function getMap(req, res, mapId) {
 
 	var userId = require('./db').toDatabaseId(req.user);
@@ -178,6 +211,7 @@ function getMaps(req, res) {
 exports.createNewMap = createNewMap;
 exports.deleteMap = deleteMap;
 exports.updateMap = updateMap;
+exports.partialMapUpdate = partialMapUpdate;
 /* get single map */
 exports.getMap = getMap;
 /* get all the maps of the user */

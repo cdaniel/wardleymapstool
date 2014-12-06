@@ -24,6 +24,9 @@ function calculateDownloadURL(size){
 	return '/api/map/' + mapId + '/export/' + size + '/' + mapId + '.png';
 }
 
+function calculatePartialUpdateURL(){
+	return '/api/map/partial/' + mapId;
+}
 /**
  * The map editor link usually has a format of:
  * http://127.0.0.1:8080/map/53e663580f1a83730329e6e5.
@@ -121,10 +124,22 @@ function saveMap() {
 function drawMap(){
 	$('#name').val(map.name);
 	$('#name').text(map.name);
-	$('#name').editable();
+	$('#name').attr('data-pk', 'name');
+	$('#name').attr('data-url', calculatePartialUpdateURL());
+	$('#name').editable({
+		success: function(data, config){
+			map.name = config;
+		}
+	});
 	$('#description').val(map.description);
 	$('#description').text(map.description);
-	$('#description').editable();
+	$('#description').attr('data-pk', 'description');
+	$('#description').attr('data-url', calculatePartialUpdateURL());
+	$('#description').editable({
+		success: function(data, config){
+			map.description = config;
+		}
+	});
 	
 	var mapContainer = $('#map-container');
 	var width = mapContainer.width();

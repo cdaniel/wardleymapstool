@@ -174,12 +174,20 @@ var WardleyMapsApp = function() {
 			});
 		};
 		
-		// 2. update a map
+		// 2a. update a map (partially)
+		self.routes.post['/api/map/partial/:mapid'] = function(req, res) {
+			ensureAuthenticated(req, res, function(req, res){
+				maps.partialMapUpdate(req, res, req.params.mapid);
+			});
+		};
+		
+		// 2b. update a map
 		self.routes.post['/api/map/:mapid'] = function(req, res) {
 			ensureAuthenticated(req, res, function(req, res){
 				maps.updateMap(req, res, req.params.mapid);
 			});
 		};
+		
 		
 		// 3. get a map
 		self.routes.get['/api/map/:mapid'] = function(req, res) {
