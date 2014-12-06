@@ -120,6 +120,8 @@ function saveMap() {
 
 function drawMap(){
 	$('#name').val(map.name);
+	$('#name').text(map.name);
+	$('#name').editable();
 	$('#description').val(map.description);
 	
 	var mapContainer = $('#map-container');
@@ -214,11 +216,11 @@ function bindWidgets(){
 //	});
 	// TODO:
 	// I guess this can be make simpler
-	$('#name').on('change', function(){
+/*	$('#name').on('change', function(){
 		if(map != null){
 			map.name =$('#name').val();
 		}
-	});
+	});*/
 	$('#description').on('change', function(){
 		if(map != null){
 			map.description =$('#description').val();
@@ -241,6 +243,9 @@ function bindWidgets(){
 }
 
 function init(){
+	//turn to inline mode
+	$.fn.editable.defaults.mode = 'inline';
+	
 	$( "#context-node-menu" ).menu();
 	bindWidgets();
 	initializeMapId();

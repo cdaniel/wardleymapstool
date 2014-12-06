@@ -37,6 +37,10 @@ limitations under the License. -->
 <!-- Optional theme -->
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+	
+	
+<link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
 <style type="text/css">
 #map-container {
@@ -149,9 +153,6 @@ limitations under the License. -->
 </head>
 <body>
 	<div class="container-fluid">
-
-
-
 		<nav role="navigation" class="navbar navbar-default">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -166,6 +167,7 @@ limitations under the License. -->
 			<!-- Collection of nav links and other content for toggling -->
 			<div id="navbarCollapse" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
+					<li><a href="#" id="name" data-type="text" data-title="Map name" value="">loading...</a></li>
 					<li><a href="#" id="saveButton">Save</a></li>
 					<li class="dropdown">
 						<a data-toggle="dropdown" class="dropdown-toggle" href="#">Export<b class="caret"></b></a>
@@ -188,9 +190,6 @@ limitations under the License. -->
 		help?</a>
 	<br /> -->
 	<!-- copied from the index page, exactly the same as map  creation -->
-	<label for="name">Name:</label>
-	<input type="text" name="name" value="" id="name"></input>
-	<br />
 	<label for="description">Description:</label>
 	<input type="text" name="description" value="" id="description"></input>
 	<!-- canvas -->
