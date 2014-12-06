@@ -25,8 +25,18 @@ limitations under the License. -->
 <script type="text/javascript"
 	src="https://raw.githubusercontent.com/nnnick/Chart.js/master/Chart.js"></script>
 
-
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	
 <script src="/jquery.jsPlumb-1.6.2.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
 
 <style type="text/css">
 #map-container {
@@ -37,8 +47,8 @@ limitations under the License. -->
 	height: auto;
 	background-image: url('/background.svg');
 	background-size: 100% 100%;
-	position:relative;
-	z-index:2;
+	position: relative;
+	z-index: 2;
 }
 
 .item {
@@ -50,7 +60,7 @@ limitations under the License. -->
 	max-height: 20px;
 	position: absolute;
 	border-radius: 10px;
-	position:absolute;
+	position: absolute;
 }
 
 .itemCaption {
@@ -104,21 +114,21 @@ limitations under the License. -->
 }
 
 .context-node-menu li {
-  padding: 5px;
-  }
+	padding: 5px;
+}
 
 .context-node-menu li:hover {
-  background-color: #DDD;
-  }
+	background-color: #DDD;
+}
 
 #participants {
 	border-width: 1px;
 	position: fixed;
 	bottom: 0;
-	left:0;
-	margin:30px;
-	background:white;
-	position:absolute;
+	left: 0;
+	margin: 30px;
+	background: white;
+	position: absolute;
 }
 
 #value {
@@ -138,20 +148,45 @@ limitations under the License. -->
 
 </head>
 <body>
-	<b>Map Editor</b><br/>
+	<div class="container-fluid">
+
+
+
+		<nav role="navigation" class="navbar navbar-default">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" data-target="#navbarCollapse"
+					data-toggle="collapse" class="navbar-toggle">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a href="/" class="navbar-brand">Wardley Maps Tool</a>
+			</div>
+			<!-- Collection of nav links and other content for toggling -->
+			<div id="navbarCollapse" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="#" id="saveButton">Save</a></li>
+					<li class="dropdown">
+						<a data-toggle="dropdown" class="dropdown-toggle" href="#">Export<b class="caret"></b></a>
+						<ul role="menu" class="dropdown-menu">
+							<li><a  id="exportsmall">Small</a></li>
+							<li><a  id="exportmedium">Medium</a></li>
+							<li><a  id="exportlarge">Large</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+	</div>
 	<!-- a very primitive menu -->
-	<a href="/">Back</a> |
-	<a href="/" id="saveButton">Save</a> |
-	<select name="size" id="exportsize">
-			<option value="1" selected="selected">640x480</option>
-			<option value="2">800x600</option>
-			<option value="3">1024x768</option>
-			<option value="4">1280x800</option>
-	</select>
+	<!-- 
 	<a href="/" id="exportButton">Export</a> |
 	<a href="/" id="feedbackButton">Feedback</a> |
-	<a href="http://www.wardleymaps.com/forum.html" target="_blank">Need help?</a> 
-	<br />
+	<a href="http://www.wardleymaps.com/forum.html" target="_blank">Need
+		help?</a>
+	<br /> -->
 	<!-- copied from the index page, exactly the same as map  creation -->
 	<label for="name">Name:</label>
 	<input type="text" name="name" value="" id="name"></input>
@@ -166,28 +201,32 @@ limitations under the License. -->
 			<li data-action="delete">Delete</li>
 		</ul>
 		<!--  node edit dialog -->
-		<div id="nodeEditDialog" title="Edit node" style="display:none">
+		<div id="nodeEditDialog" title="Edit node" style="display: none">
 			<label for="name">Name</label> <input type="text" name="name"
 				id="nodeName" value="A component"
-				class="text ui-widget-content ui-corner-all"/>
+				class="text ui-widget-content ui-corner-all" />
 		</div>
 		<!-- participants -->
 		<!-- temporarily hidden, will complete this section later -->
 		<!-- TODO: implement -->
-		<div id="participants" style="display:none">
+		<div id="participants" style="display: none">
 			Participants:
 			<table id="listOfParticipants">
 			</table>
-			<input type="color" id='participantColor'/>
-			<input type="text" id='participantName'/>
-			<input type="button" id='participantAdd' value="Add new"/>
+			<input type="color" id='participantColor' /> <input type="text"
+				id='participantName' /> <input type="button" id='participantAdd'
+				value="Add new" />
 		</div>
-		
-		
+
+
 		<div id="value">Value</div>
 		<div id="ubiquity">Ubiquity</div>
 	</div>
-	<iframe id="feedbackframe" src="https://docs.google.com/forms/d/1yjmDU3YncL2x1euA1rQMv9jhAAAYU9P-cTBWDflVE1g/viewform?embedded=true" width="400" height="440" frameborder="0" marginheight="0" marginwidth="0" style="display:none;top:0px;left:400px;position:absolute">Loading...</iframe>
+	<iframe id="feedbackframe"
+		src="https://docs.google.com/forms/d/1yjmDU3YncL2x1euA1rQMv9jhAAAYU9P-cTBWDflVE1g/viewform?embedded=true"
+		width="400" height="440" frameborder="0" marginheight="0"
+		marginwidth="0"
+		style="display: none; top: 0px; left: 400px; position: absolute">Loading...</iframe>
 	<script src="/mapeditor.js"></script>
 </body>
 </html>

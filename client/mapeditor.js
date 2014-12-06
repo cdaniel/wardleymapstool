@@ -38,9 +38,15 @@ function initializeMapId(){
 	/* last segment of the url */
 	mapId = segments[segments.length - 1];
 	
+	// populate exports link in the editor
+	$('#exportsmall').attr("href", calculateDownloadURL(/*default size, the smallest one*/1));
+	$('#exportsmall').attr("download", mapId + '.png');
 	
-	$('#exportButton').attr("href", calculateDownloadURL(/*default size, the smallest one*/1));
-	$('#exportButton').attr("download", mapId + '.png');
+	$('#exportmedium').attr("href", calculateDownloadURL(2));
+	$('#exportmedium').attr("download", mapId + '.png');
+	
+	$('#exportlarge').attr("href", calculateDownloadURL(3));
+	$('#exportlarge').attr("download", mapId + '.png');
 }
 
 function loadMap() {
@@ -202,10 +208,10 @@ function bindWidgets(){
 		e.preventDefault();
 		saveMap();
 	});
-	$('#feedbackButton').on("click", function(e){
-		e.preventDefault();
-		$('#feedbackframe').toggle();
-	});
+//	$('#feedbackButton').on("click", function(e){
+//		e.preventDefault();
+//		$('#feedbackframe').toggle();
+//	});
 	// TODO:
 	// I guess this can be make simpler
 	$('#name').on('change', function(){
@@ -232,9 +238,6 @@ function bindWidgets(){
 			drawParticipants();
 		}
 	});*/
-	$('#exportsize').on('change', function(){
-		$('#exportButton').attr("href", calculateDownloadURL($('#exportsize').val()));
-	});
 }
 
 function init(){
