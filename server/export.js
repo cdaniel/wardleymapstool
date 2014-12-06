@@ -93,7 +93,7 @@ var draw = function(res, filename, map, x, y){
 	drawLineArrow(ctx, 30, y - 30, 30, 40);
 	drawLineArrow(ctx, 30, y - 30, x - 30, y - 30); 
 	
-	ctx.fillText('Ubiquity', x - 60, y - 15);
+	ctx.fillText('Evolution', x - 60, y - 15);
 	ctx.fillText('Value', 33, 60);
 	
 	
