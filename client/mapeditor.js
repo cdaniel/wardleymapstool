@@ -291,7 +291,8 @@ var endpointOptions = {
 	endpoint : [ "Dot", {
 		radius : 1
 	} ],
-	deleteEndpointsOnDetach:false
+	deleteEndpointsOnDetach:false, 
+	uniqueEndpoints: true
 };
 
 var actionEndpointOptions = {
@@ -304,7 +305,8 @@ var actionEndpointOptions = {
 			radius : 1
 		} ],
 		connectorOverlays: [ [ "Arrow", { location:1.0 } ] ],
-		deleteEndpointsOnDetach:false
+		deleteEndpointsOnDetach:false,
+		uniqueEndpoints: true
 	};
 
 function Node(parentNode, id) {
@@ -344,7 +346,11 @@ function Node(parentNode, id) {
 	// accept incoming connections
 	
 	
-	jsPlumb.makeTarget(self.internalNode,{scope:"Actions"});
+
+	jsPlumb.makeTarget(self.internalNode, {
+		scope : "Actions " + jsPlumb.getDefaultScope(),
+		deleteEndpointsOnDetach : true
+	});
 
 	self.endpointIn = jsPlumb.addEndpoint(self.internalNode, endpointOptions, {
 		anchor : "TopCenter",
@@ -354,17 +360,22 @@ function Node(parentNode, id) {
 			scope : jsPlumb.getDefaultScope(),
 			tolerance:'touch'
 		},
-		uniqueEndpoint : true
+//		uniqueEndpoint : true,
+		deleteEndpointsOnDetach : false,
+		uuid : self.id + jsPlumb.getDefaultScope() +"i"
 	});
+	
 	self.endpointOut = jsPlumb.addEndpoint(self.internalNode, endpointOptions,
 			{
 				anchor : "BottomCenter",
 				isSource : true,
 				scope : jsPlumb.getDefaultScope(),
-				uniqueEndpoint : true,
+//				uniqueEndpoint : true,
+				deleteEndpointsOnDetach : false,
 				dragOptions : {
 					scope : "Actions"
-				}
+				},
+				uuid : self.id + jsPlumb.getDefaultScope() +"o"
 			});
 
 	self.actionEndpointIn = jsPlumb.addEndpoint(self.internalNode,
@@ -376,14 +387,18 @@ function Node(parentNode, id) {
 					scope : "Actions",
 					tolerance:'touch'
 				},
-				uniqueEndpoint : true
+				deleteEndpointsOnDetach : false,
+//				uniqueEndpoint : true,
+				uuid : self.id + "Actions" +"i"
 			});
 
 	self.actionEndpointOut = jsPlumb.addEndpoint(self.internalNode, actionEndpointOptions,{
 		anchor : "Right",
 		isSource : true,
 		scope : "Actions",
-		uniqueEndpoint : true,
+//		uniqueEndpoint : true,
+		deleteEndpointsOnDetach : false,
+		uuid : self.id + "Actions" +"o",
 		dragOptions : {
 			scope : "Actions"
 		}
@@ -450,7 +465,7 @@ function Node(parentNode, id) {
 	self.move = function(newposition,repaint){
 		self.internalNode.css(newposition);
 		if("" + repaint === 'true'){
-			jsPlumb.repaint(self.internalNode);
+			jsPlumb.repaintEverything();
 		}
 	};
 	
@@ -533,17 +548,6 @@ jsPlumb.ready(function() {
 	});
 });
 
-//programatically created connections have menu created during creation,
-//but drag and drop must be intercepted.
-//
-//also, we don't allow self-connect
-jsPlumb.bind("beforeDrop", function(connection) {
-	if (connection.sourceId == connection.targetId){
-		return false;
-	 }
-	/*prepareConnectionMenu(connection.connection);*/
-	return true;
-});
 
 jsPlumb.bind("contextmenu", function(component, event) {
 	// Avoid the real one
@@ -562,44 +566,88 @@ jsPlumb.bind("contextmenu", function(component, event) {
         left: event.pageX
     });
 });
+// programatically created connections have menu created during creation,
+// but drag and drop must be intercepted.
+//
+// also, we don't allow self-connect
+//
+// even more, we don't create any connections via drag and drop. We cancel
+// the drag and drop and recreate connections using connect, because
+// we need to care about using proper endpoints.
+jsPlumb.bind("beforeDrop", function(connection) {
+	// console.log('before drop', connection)
+
+	if (connection.sourceId == connection.targetId) {
+		return false;
+	}
+	/* prepareConnectionMenu(connection.connection); */
+
+	var outcomingEndpointId = connection.sourceId + connection.scope + "o";
+	var acceptingEndpointId = connection.targetId + connection.scope + "i";
+
+	var c = jsPlumb.connect({
+		uuids : [ outcomingEndpointId, acceptingEndpointId, ],
+		deleteEndpointsOnDetach : false
+	});
+
+	// this is a giant hack that cost me 2 weeks of investigation.
+	// makeTarget creates endpoints, and we need to remove them,
+	// because connect creates their own.
+	// but we should not delete the endpoint if the user happens
+	// to drop exactly on 1 pixel proper endpoint.
+	// since our universal endpoint has two scopes, and proper
+	// endpoints have one scope, we use it to determine whether to delete
+	// the endpoint or not.
+	// console.log(connection.dropEndpoint.scope, connection.scope);
+	if (connection.dropEndpoint.scope !== connection.scope) {
+		// console.log(connection.dropEndpoint);
+		jsPlumb.deleteEndpoint(connection.dropEndpoint);
+	}
+	jsPlumb.repaintEverything();
+	// console.log('after delete endpoint');
+
+	return false;
+});
 
 jsPlumb.bind("connectionDragStop", function(info, e) {
-	//those two are nulls if the connection was aborted, i.e. it was not possible to create one (f.e. there was no target).
-	if(info.source != null || info.target != null){
-		var src = jsPlumb.selectEndpoints({source:info.sourceId,scope:info.scope}).get(0);
-		var trg = jsPlumb.selectEndpoints({target:info.targetId,scope:info.scope}).get(0);
-		jsPlumb.connect({
-			source : src,
-			target : trg,
-			deleteEndpointsOnDetach:false
-		});
-		jsPlumb.detach(info);
-		return;
-	}
-	var sourceId = info.sourceId;
+//	console.log('dragstop', info.source, info.target);
+	console.log('dragstop', info);
 	
+	var sourceId = info.sourceId;
+	var targetId = info.targetId;
 	var mapContainer = $('#map-container');
 	
-	var n = new Node(mapContainer);
-	n.move({
-		'top' : e.clientY - mapContainer.offset().top -10 /*node size*/,
-		'left' : e.clientX - mapContainer.offset().left -10/*node size*/
-	}, true);
-	
+	if(info.target == null || info.targetId.indexOf('jsPlumb') == 0){
+		console.log('wrong target, creating node' , info.targetId);
+		var n = new Node(mapContainer);
+		n.move({
+			'top' : e.clientY - mapContainer.offset().top -10 /*node size*/,
+			'left' : e.clientX - mapContainer.offset().left -10/*node size*/
+		}, true);
+		targetId = "" + n.id; 
+	}
 
 	var src = jsPlumb.selectEndpoints({
 		source : sourceId,
 		scope : info.scope
 	}).get(0);
+	
 	var trg = jsPlumb.selectEndpoints({
-		target : "" + n.id,
+		target : targetId,
 		scope : info.scope
 	}).get(0);
-	jsPlumb.connect({
+	
+	var c = jsPlumb.connect({
 		source : src,
 		target : trg,
 		deleteEndpointsOnDetach:false
-	});	
+	});
+	
+	console.log(c, info);
+	if(info.target == null || info.targetId.indexOf('jsPlumb') == 0){
+		jsPlumb.detach(info);
+	}
+
 });
 
 
