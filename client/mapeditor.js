@@ -575,7 +575,7 @@ jsPlumb.bind("contextmenu", function(component, event) {
 // the drag and drop and recreate connections using connect, because
 // we need to care about using proper endpoints.
 jsPlumb.bind("beforeDrop", function(connection) {
-	// console.log('before drop', connection)
+	// console.log('before drop');
 
 	if (connection.sourceId == connection.targetId) {
 		return false;
@@ -609,46 +609,44 @@ jsPlumb.bind("beforeDrop", function(connection) {
 	return false;
 });
 
-jsPlumb.bind("connectionDragStop", function(info, e) {
-//	console.log('dragstop', info.source, info.target);
-	console.log('dragstop', info);
-	
-	var sourceId = info.sourceId;
-	var targetId = info.targetId;
-	var mapContainer = $('#map-container');
-	
-	if(info.target == null || info.targetId.indexOf('jsPlumb') == 0){
-		console.log('wrong target, creating node' , info.targetId);
-		var n = new Node(mapContainer);
-		n.move({
-			'top' : e.clientY - mapContainer.offset().top -10 /*node size*/,
-			'left' : e.clientX - mapContainer.offset().left -10/*node size*/
-		}, true);
-		targetId = "" + n.id; 
-	}
+jsPlumb
+		.bind(
+				"connectionDragStop",
+				function(info, e) {
+					// console.log('dragstop', info.sourceId, info.targetId);
 
-	var src = jsPlumb.selectEndpoints({
-		source : sourceId,
-		scope : info.scope
-	}).get(0);
-	
-	var trg = jsPlumb.selectEndpoints({
-		target : targetId,
-		scope : info.scope
-	}).get(0);
-	
-	var c = jsPlumb.connect({
-		source : src,
-		target : trg,
-		deleteEndpointsOnDetach:false
-	});
-	
-	console.log(c, info);
-	if(info.target == null || info.targetId.indexOf('jsPlumb') == 0){
-		jsPlumb.detach(info);
-	}
+					var sourceId = info.sourceId;
+					var targetId = info.targetId;
+					var mapContainer = $('#map-container');
 
-});
+					if (info.targetId.indexOf('jsPlumb') === 0) {
+						// console.log('wrong target, creating node',
+						// info.targetId);
+						var n = new Node(mapContainer);
+						n
+								.move(
+										{
+											'top' : e.clientY
+													- mapContainer.offset().top
+													- 10 /* node size */,
+											'left' : e.clientX
+													- mapContainer.offset().left
+													- 10/* node size */
+										}, true);
+						targetId = "" + n.id;
+
+						var outcomingEndpointId = info.sourceId + info.scope
+								+ "o";
+						var acceptingEndpointId = targetId + info.scope + "i";
+
+						var c = jsPlumb
+								.connect({
+									uuids : [ outcomingEndpointId,
+											acceptingEndpointId, ],
+									deleteEndpointsOnDetach : false
+								});
+					}
+				});
 
 
 $("#context-node-menu > li").click(function(){
