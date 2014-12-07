@@ -622,3 +622,7 @@ $("#context-node-menu > li").click(function(){
 //=======================================
 
 $(document).ready(init);
+
+window.onbeforeunload = function (e) {
+	  saveMap();
+};
