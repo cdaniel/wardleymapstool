@@ -331,8 +331,19 @@ function Node(parentNode, id) {
 	parentNode.append(self.internalNode);
 	
 	//a placeholder for the text
-	self.caption = $('<div>').addClass("itemCaption").attr('id', self.id + 'itemCaption');
+	self.caption = $('<a>').addClass("itemCaption").attr('id', self.id + 'itemCaption').attr('href','#');
 	self.internalNode.append(self.caption);
+	self.caption.attr('data-type', 'text');
+	self.caption.attr('data-title', 'Component Name');
+	self.caption.text(self.name);
+	self.caption.editable({
+		 value : self.name,
+		 success: function(response, newValue) {
+			 self.name = newValue; //update backbone model
+		},
+		unsavedclass : null,
+		mode : 'popup'
+	});
 	
 	
 /*	self.chart = $('<canvas>').addClass('competitorChart').attr('width','10px').attr('height', '10px');
@@ -344,9 +355,6 @@ function Node(parentNode, id) {
 	});
 	
 	// accept incoming connections
-	
-	
-
 	jsPlumb.makeTarget(self.internalNode, {
 		scope : "Actions " + jsPlumb.getDefaultScope(),
 		deleteEndpointsOnDetach : true
@@ -360,7 +368,6 @@ function Node(parentNode, id) {
 			scope : jsPlumb.getDefaultScope(),
 			tolerance:'touch'
 		},
-//		uniqueEndpoint : true,
 		deleteEndpointsOnDetach : false,
 		uuid : self.id + jsPlumb.getDefaultScope() +"i"
 	});
@@ -370,7 +377,6 @@ function Node(parentNode, id) {
 				anchor : "BottomCenter",
 				isSource : true,
 				scope : jsPlumb.getDefaultScope(),
-//				uniqueEndpoint : true,
 				deleteEndpointsOnDetach : false,
 				dragOptions : {
 					scope : "Actions"
@@ -388,7 +394,6 @@ function Node(parentNode, id) {
 					tolerance:'touch'
 				},
 				deleteEndpointsOnDetach : false,
-//				uniqueEndpoint : true,
 				uuid : self.id + "Actions" +"i"
 			});
 
@@ -396,7 +401,6 @@ function Node(parentNode, id) {
 		anchor : "Right",
 		isSource : true,
 		scope : "Actions",
-//		uniqueEndpoint : true,
 		deleteEndpointsOnDetach : false,
 		uuid : self.id + "Actions" +"o",
 		dragOptions : {
@@ -471,7 +475,7 @@ function Node(parentNode, id) {
 	
 	self.setText = function(text){
 		self.name = text;
-		self.caption.text(self.name);
+		self.caption.editable('setValue', text);
 	};
 	
 	self.getText = function(){
@@ -496,30 +500,6 @@ function Node(parentNode, id) {
 			self.internalNode.removeClass("mapUserNeed");
 		}
 	};
-	
-	self.edit = function() {
-		var  dialog = $( "#nodeEditDialog" ).dialog({
-			autoOpen: false,
-			height: 300,
-			width: 350,
-			modal: true,
-			buttons: {
-			"Save": function(){
-				self.setText($('#nodeName').val());
-				dialog.dialog( "close" );
-			},
-			Cancel: function() {
-				dialog.dialog( "close" );
-			}
-			},
-			close: function() {
-				dialog.dialog( "close" );
-			}
-			});
-		$('#nodeName').val(self.getText());
-		dialog.dialog("open");
-	};
-	
 }
 
 jsPlumb.setContainer($('#map-container'));
@@ -663,7 +643,6 @@ $("#context-node-menu > li").click(function(){
     // This is the triggered action name
     switch($(this).attr("data-action")) {
         // A case for each action. Your actions here
-        case "edit": node.edit(); break;
         case "delete": node.remove(); break;
     }
   

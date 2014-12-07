@@ -199,41 +199,15 @@ limitations under the License. -->
 		</nav>
 
 	</div>
-	<!-- a very primitive menu -->
-	<!-- 
-	<a href="/" id="exportButton">Export</a> |
-	<a href="/" id="feedbackButton">Feedback</a> |
-	<a href="http://www.wardleymaps.com/forum.html" target="_blank">Need
-		help?</a>
-	<br /> -->
-	<p>Your goal: <a href="#" id="description" data-type="text" data-title="Your goal" value="">loading...</a></p>
+	
+	<p>Your goal: <a href="#" id="description" data-type="text" data-title="Your goal">loading...</a></p>
 	
 	<!-- canvas -->
 	<div id="map-container">
 		<!-- node menu -->
 		<ul class='context-node-menu' id="context-node-menu">
-			<li data-action="edit">Edit</li>
 			<li data-action="delete">Delete</li>
 		</ul>
-		<!--  node edit dialog -->
-		<div id="nodeEditDialog" title="Edit node" style="display: none">
-			<label for="name">Name</label> <input type="text" name="name"
-				id="nodeName" value="A component"
-				class="text ui-widget-content ui-corner-all" />
-		</div>
-		<!-- participants -->
-		<!-- temporarily hidden, will complete this section later -->
-		<!-- TODO: implement -->
-		<div id="participants" style="display: none">
-			Participants:
-			<table id="listOfParticipants">
-			</table>
-			<input type="color" id='participantColor' /> <input type="text"
-				id='participantName' /> <input type="button" id='participantAdd'
-				value="Add new" />
-		</div>
-
-
 		<div id="value">Value</div>
 		<div id="evolution">Evolution</div>
 	</div>
