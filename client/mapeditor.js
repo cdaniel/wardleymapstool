@@ -227,36 +227,6 @@ function bindWidgets(){
 		e.preventDefault();
 		saveMap();
 	});
-//	$('#feedbackButton').on("click", function(e){
-//		e.preventDefault();
-//		$('#feedbackframe').toggle();
-//	});
-	// TODO:
-	// I guess this can be make simpler
-/*	$('#name').on('change', function(){
-		if(map != null){
-			map.name =$('#name').val();
-		}
-	});*/
-	$('#description').on('change', function(){
-		if(map != null){
-			map.description =$('#description').val();
-		}
-	});
-/*	$('#participantAdd').on('click', function() {
-		var color = $('#participantColor').val();
-		var name = $('#participantName').val();
-		if (map !== null) {
-			if (typeof map['participants'] === 'undefined') {
-				map['participants'] = [];
-			}
-			map.participants.push({
-				color : color,
-				name : name
-			});
-			drawParticipants();
-		}
-	});*/
 }
 
 function init(){
