@@ -19,6 +19,10 @@ var mapId = "";
  */
 var map = null;
 
+/**
+ * This global variable holds a recently selected node.
+ */
+var selectedNode = null;
 
 function calculateDownloadURL(size){
 	return '/api/map/' + mapId + '/export/' + size + '/' + mapId + '.png';
@@ -378,41 +382,39 @@ function Node(parentNode, id) {
 		}
 	});
 	
-	self.entered=false;
 	
-	self.internalNode.on("mouseenter", function(){
-		self.entered = true;
-		var endpoints = [self.endpointOut, self.actionEndpointOut];
-		for (var i = 0; i < endpoints.length;i++){
+
+	self.focus = function() {
+		if (selectedNode != null) {
+			selectedNode.blur();
+		}
+		selectedNode = self;
+		var endpoints = [ self.endpointOut, self.actionEndpointOut ];
+		for (var i = 0; i < endpoints.length; i++) {
 			var ps = endpoints[i].getPaintStyle();
-			ps = jQuery.extend({},ps);
+			ps = jQuery.extend({}, ps);
 			ps.radius = 8;
 			endpoints[i].setPaintStyle(ps);
 		}
-	});
-	
-	self.makeEndpointSmaller = function () {
-			self.entered = false;
-			var endpoints = [self.endpointOut, self.actionEndpointOut];
-			var styles = [];
-			for (var i = 0; i < endpoints.length;i++){
-				var ps = endpoints[i].getPaintStyle();
-				var en = endpoints[i];
-				ps = jQuery.extend({},ps);
-				ps.radius = 1;
-				styles.push(ps);
-			}
-			setTimeout(function(){
-				if(self.entered){
-					self.makeEndpointSmaller();
-				} else {
-					for (var i = 0; i < endpoints.length;i++){
-						endpoints[i].setPaintStyle(styles[i]);					
-					}
-				}
-			},500);
+		self.internalNode.addClass('itemSelected');
 	};
-	self.internalNode.on("mouseleave", self.makeEndpointSmaller);
+
+	self.blur = function() {
+		var endpoints = [ self.endpointOut, self.actionEndpointOut ];
+		var styles = [];
+		for (var i = 0; i < endpoints.length; i++) {
+			var ps = endpoints[i].getPaintStyle();
+			var en = endpoints[i];
+			ps = jQuery.extend({}, ps);
+			ps.radius = 1;
+			styles.push(ps);
+		}
+		for (var i = 0; i < endpoints.length; i++) {
+			endpoints[i].setPaintStyle(styles[i]);
+		}
+		selectedNode = null;
+		self.internalNode.removeClass('itemSelected');
+	};
 	
 
 	self.internalNode.on("contextmenu", function(event) {
@@ -431,6 +433,21 @@ function Node(parentNode, id) {
 	    	top: event.currentTarget.offsetTop,
 	        left: event.pageX
 	    });
+	});
+	
+
+	self.internalNode.on("click", function(event) {
+		// Hide contextmenu if still visible.
+	    if($('#context-node-menu').is(':visible')){
+	    	$("#context-node-menu").hide(100);
+	    }
+	    
+	    if(selectedNode == self) {
+	    	self.blur();
+	    } else {
+	    	self.focus();
+	    }
+	    
 	});
 	
 	/**
@@ -494,6 +511,7 @@ jsPlumb.ready(function() {
 				'top' : e.pageY - e.target.offsetTop,
 				'left' : e.pageX - e.target.offsetLeft
 			}, true);
+			n.focus();
 		}
 	});
 });
@@ -595,6 +613,7 @@ jsPlumb
 											acceptingEndpointId, ],
 									deleteEndpointsOnDetach : false
 								});
+						n.focus();
 					}
 				});
 
