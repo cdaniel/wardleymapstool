@@ -470,6 +470,9 @@ function Node(parentNode, id) {
 	};
 	
 	self.remove = function(){
+		
+		self.blur();
+		
 		jsPlumb.deleteEndpoint(self.endpointOut);
 		jsPlumb.deleteEndpoint(self.actionEndpointOut);
 		jsPlumb.deleteEndpoint(self.endpointIn);
