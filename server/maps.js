@@ -45,16 +45,28 @@ function createNewMap(req, res){
 		description = req.body.description;
 	}
 	
+	var date = null;
+	if(typeof req.body.description !== 'undefined'){
+		date = req.body.date;
+	}
+	
 	var stub = {
 			name : name,
 			description : description,
-			userId : userId
-		};
+			userDate : date,
+			serverDate : new Date()
+	};
+	
+	var meta = {
+			deleted : false,
+			userId : userId,
+			history : [stub]
+	}
 	
 	
-	logger.debug("creating map",stub);
+	logger.debug("creating map", meta);
 	
-	db.maps.save(stub, function(err, saved) {
+	db.maps.save(meta, function(err, saved) {
 		if (err !== null) {
 			logger.error(err);
 			res.setHeader('Content-Type', 'application/json');
@@ -66,7 +78,8 @@ function createNewMap(req, res){
 			logger.debug("new map", saved._id, "created for user", userId);
 			res.writeHead(302, {
 				// TODO: this may be a hack
-				// I do not like the fact that the UI index UI is driven from here.
+				// I do not like the fact that the UI index UI is driven from here,
+				// but it is an extremely easy way to change what page is visible in the browser 
 				'Location' : ('/map/'+saved._id)
 			});
 			res.end();
@@ -80,10 +93,28 @@ function deleteMap(req, res, mapId) {
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("deleting map", mapId, "for user", userId);
 	
-	db.maps.remove({
-		"userId" : userId,
-		"_id" : mapId
-	}, function(err, map) {
+	var userDate = null; //TODO: if I will ever care what time was in the client when a map was deleted.
+	
+	db.maps.findAndModify({
+		query : {
+			userId : userId,
+			_id : mapId,
+			deleted : false
+		},
+		update : {
+			$set : {
+				deleted : true
+			},
+			$push : {
+				// null object in the history
+				history : {
+					userDate : userDate,
+					serverDate : new Date()
+				}
+			}
+		},
+		upsert : true,
+	}, function(err, object) {
 		if (err !== null) {
 			logger.error(err);
 			res.setHeader('Content-Type', 'application/json');
@@ -94,6 +125,7 @@ function deleteMap(req, res, mapId) {
 			res.end();
 		}
 	});
+
 }
 
 
@@ -101,20 +133,25 @@ function updateMap(req, res, mapId) {
 	var userId = require('./db').toDatabaseId(req.user);
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("updating map", mapId, "for user", userId);
-	var map = req.body;
+	var historyEntry = req.body;
 	// objectID there, replace
-	map._id = mapId;
-	map.userId = userId;
+	historyEntry._id = mapId;
+	historyEntry.userId = userId;
+	historyEntry.serverDate = new Date();
 
-	logger.debug('map', map);
+	logger.debug('map', historyEntry);
 
 	db.maps.findAndModify({
 		query : {
 			userId : userId,
-			_id : mapId
+			_id : mapId,
+			deleted : false /* don't modify deleted maps */
 		},
-		update : map,
-		upsert : true,
+		update : {
+			$push : {
+				history : historyEntry
+			}
+		},
 	}, function(err, object) {
 		if (err !== null) {
 			logger.error(err);
@@ -134,31 +171,55 @@ function partialMapUpdate(req, res, mapId) {
 	var userId = require('./db').toDatabaseId(req.user);
 	mapId = require('./db').toDatabaseId(mapId);
 	var load = req.body;
-	var updateObject = {};
-	updateObject[load.pk]  = load.value;
-	logger.debug("updating map partially", mapId, "for user", userId, " request" + JSON.stringify(load));
-	
-	
-	db.maps.findAndModify({
-		query : {
-			userId : userId,
-			_id : mapId
-		},
-		update : {
-			$set : updateObject
-		},
-		upsert : true,
-	}, function(err, object) {
+	logger.debug("updating map partially", mapId, "for user", userId,
+			" request" + JSON.stringify(load));
+
+	db.maps.find({
+		"userId" : userId,
+		"_id" : mapId,
+		deleted : false
+	/* don't return deleted maps */
+	}, {
+		history : {
+			$slice : -1
+		}
+	}).toArray(function(err, map) {
+		res.setHeader('Content-Type', 'application/json');
 		if (err !== null) {
 			logger.error(err);
-			res.setHeader('Content-Type', 'application/json');
 			res.statusCode = 500;
 			res.send(JSON.stringify(err));
 		} else {
-			res.writeHead(200, {
-				'content-type' : 'text/html'
+			// clone last history entry
+			var historyEntry = (JSON.parse(JSON.stringify(map[0].history[0])));
+			historyEntry.serverDate = new Date();
+			historyEntry[load.pk] = load.value;
+
+			db.maps.findAndModify({
+				query : {
+					userId : userId,
+					_id : mapId,
+					deleted : false
+				/* don't modify deleted maps */
+				},
+				update : {
+					$push : {
+						history : historyEntry
+					}
+				},
+			}, function(err, object) {
+				if (err !== null) {
+					logger.error(err);
+					res.setHeader('Content-Type', 'application/json');
+					res.statusCode = 500;
+					res.send(JSON.stringify(err));
+				} else {
+					res.writeHead(200, {
+						'content-type' : 'text/html'
+					});
+					res.end();
+				}
 			});
-			res.end();
 		}
 	});
 }
@@ -171,7 +232,13 @@ function getMap(req, res, mapId) {
 
 	db.maps.find({
 		"userId" : userId,
-		"_id" : mapId
+		"_id" : mapId,
+		deleted : false
+	/* don't return deleted maps */
+	}, {
+		history : {
+			$slice : -1
+		}
 	}).toArray(function(err, maps) {
 		res.setHeader('Content-Type', 'application/json');
 		if (err !== null) {
@@ -179,7 +246,7 @@ function getMap(req, res, mapId) {
 			res.statusCode = 500;
 			res.send(JSON.stringify(err));
 		} else {
-			res.send(JSON.stringify(maps[0]));
+			res.send(JSON.stringify(maps[0].history[0]));
 		}
 	});
 	
@@ -188,12 +255,15 @@ function getMap(req, res, mapId) {
 function getMaps(req, res) {
 	var userId = require('./db').toDatabaseId(req.user);
 	logger.debug("getting maps for user", userId);
-
+	                   	
 	db.maps.find({
 		"userId" : userId,
+		deleted : false
+	/* don't return deleted maps */
 	}, {
-		name : 1, // fields to return
-		description : 1
+		history : {
+			$slice : -1
+		}
 	}).toArray(function(err, maps) {
 		res.setHeader('Content-Type', 'application/json');
 		if (err !== null) {
@@ -201,9 +271,19 @@ function getMaps(req, res) {
 			res.statusCode = 500;
 			res.send(JSON.stringify(err));
 		} else {
-			res.send(JSON.stringify(maps));
+			//limit what goes with generic maps
+			var response = [];
+			for (var i = 0; i < maps.length; i++) {
+				var singleMap = {};
+				singleMap._id = maps[i]._id;
+				singleMap.name = maps[i].history[0].name;
+				singleMap.description = maps[i].history[0].description;
+				singleMap.userDate = maps[i].history[0].userDate;
+				singleMap.serverDate = maps[i].history[0].serverDate;
+				response.push(singleMap);
+			}
+			res.send(JSON.stringify(response));
 		}
-
 	});
 }
 

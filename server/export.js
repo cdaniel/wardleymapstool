@@ -300,6 +300,10 @@ var exportmap = function(req, res, mapId, filename, scale) {
 	db.maps.find({
 		"userId" : userId,
 		"_id" : mapId
+	},{
+		history : {
+			$slice : -1
+		}
 	}).toArray(function(err, maps) {
 		res.setHeader('Content-Type', 'application/json');
 		if (err !== null) {
@@ -307,7 +311,7 @@ var exportmap = function(req, res, mapId, filename, scale) {
 			res.statusCode = 500;
 			res.send(JSON.stringify(err));
 		} else {
-			draw(res, mapId, maps[0],x,y);
+			draw(res, mapId, maps[0].history[0] ,x,y);
 		}
 	});
 };
@@ -320,6 +324,10 @@ var thumbnail = function(req, res, mapId, filename) {
 	db.maps.find({
 		"userId" : userId,
 		"_id" : mapId
+	},{
+		history : {
+			$slice : -1
+		}
 	}).toArray(function(err, maps) {
 		res.setHeader('Content-Type', 'application/json');
 		if (err !== null) {
@@ -327,7 +335,7 @@ var thumbnail = function(req, res, mapId, filename) {
 			res.statusCode = 500;
 			res.send(JSON.stringify(err));
 		} else {
-			thumbnail_draw(res, mapId, maps[0]);
+			thumbnail_draw(res, mapId, maps[0].history[0]);
 		}
 	});
 };
