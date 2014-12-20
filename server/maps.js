@@ -288,6 +288,50 @@ function getMaps(req, res) {
 }
 
 
+function migrate(){
+	db.maps.find({
+		history : {
+			$exists : false
+		}
+	}).toArray(function(err, maps) {
+		for(var i = 0; i < maps.length; i++){
+			var mapToUpdate = maps[i];
+			logger.debug('updating map ' + i);
+			logger.debug('updating map ' + mapToUpdate);
+			
+
+			var newBody = {};
+			
+			newBody.userId = mapToUpdate.userId;
+			newBody.deleted = false;
+			newBody._id = mapToUpdate._id;
+
+			var historyEntry = mapToUpdate;
+			historyEntry.serverDate = new Date();
+			historyEntry.userDate = null;
+			historyEntry.nodes = mapToUpdate.nodes;
+			historyEntry.connections = mapToUpdate.connections;
+			historyEntry.name = mapToUpdate.name;
+			historyEntry.description = mapToUpdate.description;
+
+			newBody.history = [ historyEntry ];
+			
+			db.maps.findAndModify({
+				query : {
+					_id : newBody._id,
+				},
+				update : newBody
+			}, function(err, object) {
+				if (err !== null) {
+					logger.error(err);
+				} else {
+					logger.debug('success!');
+				}
+			});
+		}
+	});
+}
+
 exports.createNewMap = createNewMap;
 exports.deleteMap = deleteMap;
 exports.updateMap = updateMap;
@@ -296,3 +340,4 @@ exports.partialMapUpdate = partialMapUpdate;
 exports.getMap = getMap;
 /* get all the maps of the user */
 exports.getMaps = getMaps;
+exports.migrate = migrate;
