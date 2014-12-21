@@ -37,10 +37,18 @@
     "canvas" : "*"
   },
   
-  "devDependencies": {},
+  "devDependencies": {
+	  "mocha" : "*",
+	  "should" : "*"
+  },
+  
   "bundleDependencies": [],
 
   "private": true,
   "main": "server/server.js",
-  "license" : "ASL 2.0"
+  "license" : "ASL 2.0",
+  
+  "scripts": {
+	    "test": "mocha server-tests"
+  }
 }

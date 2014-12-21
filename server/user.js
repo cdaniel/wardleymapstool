@@ -1,4 +1,4 @@
-/* Copyright 2014 Krzysztof Daniel
+/* Copyright 2014 by Krzysztof Daniel
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ var user = function() {
 		if (typeof profile === 'undefined' || profile == false) {
 			logger.debug('no profile found');
 			done(null, false);
+			return;
 		}
 		
 		// only google supported for now
@@ -30,10 +31,14 @@ var user = function() {
 		if (provider !== 'google') {
 			logger.debug('unknown provider', provider);
 			done(null, false);
+			return;
 		}
 
 		// universal id
 		var aggregatedID = provider + profile.id;
+		
+		var userData = {};
+		userData[provider] = profile;
 		
 		db.users.findAndModify({
 			query : {
@@ -45,13 +50,17 @@ var user = function() {
 				},
 				$push : {
 					loginHistory : {
-						type : provider,
+						type : profile.id,
 						time : Date.now()
 					}
 
+				},
+				$set : {
+					providedProfiles : userData
 				}
 			},
-			"upsert" : true
+			"upsert" : true,
+			"new" : true
 		}, function(err, object) {
 			if (err != null) {
 				logger.error(err);
