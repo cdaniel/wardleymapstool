@@ -34,16 +34,8 @@ function googleauth() {
 		return result;
 	};
 	
-	this.getCallbackURL = function () {
-		var result = "http://127.0.0.1:8080/auth/google/return";
-		if(result === "http://127.0.0.1:8080/auth/google/return"){
-			console.log("please consider creating your own keys!");
-		}
-		return result;
-	};
-	
 }
 
-var googleauthdata = new googleauth();
+var googleauth = new googleauth();
 
-exports.wardleyMapsGoogleAuth = googleauthdata;
+exports.googleauth = googleauth;
