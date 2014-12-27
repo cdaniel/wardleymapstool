@@ -115,13 +115,10 @@ var user = function() {
 					}
 				}, {
 					multi : true
-				});
-				logger.debug('Migrated ' + updateResult.nModified + ' maps');
-				if(updateResult.writeConcernError || updateResult.writeError){
-					logger.error(updateResult.writeConcernError, updateResult.writeError);
-				} else {
+				}, function(error, value){
+					logger.debug('Migrated maps', error, value);
 					next();
-				}
+				});
 			} else {
 				next();
 			}
