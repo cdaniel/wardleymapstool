@@ -22,61 +22,7 @@ logger.setLevel('ALL');
 var user = function() {
 	
 	var self = this;
-	
-	this.createOrUpdateLoginInfo = function(profile, done) {
 		
-		if (typeof profile === 'undefined' || profile == false) {
-			logger.debug('no profile found');
-			done(null, false);
-			return;
-		}
-		
-		// only google supported for now
-		var provider = profile.provider;
-		if (provider !== 'google') {
-			logger.debug('unknown provider', provider);
-			done(null, false);
-			return;
-		}
-
-        // universal id
-        var aggregatedID = provider + profile.id;
-
-		var userData = {};
-		userData[provider] = profile;
-		
-		db.users.findAndModify({
-			query : {
-				aggregatedID : aggregatedID
-			},
-			update : {
-				$inc : {
-					loginCount : 1
-				},
-				$push : {
-					loginHistory : {
-						type : profile.id,
-						time : Date.now()
-					}
-
-				},
-				$set : {
-					providedProfiles : userData
-				}
-			},
-			"upsert" : true,
-			"new" : true
-		}, function(err, object) {
-			if (err) {
-				logger.error(err);
-				done(err);
-			}
-			logger.debug('user found', object._id);
-			done(err, object._id);
-		});
-	};
-	
-
 	this.fetchStormPathProviderData = function(account, res, next) {
 		account.getProviderData(function(err, providerData) {
 			if (err) {
