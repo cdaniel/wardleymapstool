@@ -277,7 +277,7 @@ var thumbnail_draw = function(res, filename, map){
 };
 
 var exportmap = function(req, res, mapId, filename, scale) {
-	var userId = require('./db').toDatabaseId(req.user);
+	var userId = req.user.href;
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("drawing map", mapId, "for user", userId);
 
@@ -317,7 +317,7 @@ var exportmap = function(req, res, mapId, filename, scale) {
 };
 
 var thumbnail = function(req, res, mapId, filename) {
-	var userId = require('./db').toDatabaseId(req.user);
+	var userId = req.user.href;
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("drawing thumbnail", mapId, "for user", userId);
 

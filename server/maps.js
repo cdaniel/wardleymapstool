@@ -32,7 +32,7 @@ fs.readFile('server/api-map.json', 'utf8', function(err, data) {
 
 function createNewMap(req, res){
 	
-	var userId = require('./db').toDatabaseId(req.user);
+	var userId = req.user.href;
 	logger.debug("new map creation requested for user", userId);
 	
 	
@@ -61,7 +61,7 @@ function createNewMap(req, res){
 			deleted : false,
 			userId : userId,
 			history : [stub]
-	}
+	};
 	
 	
 	logger.debug("creating map", meta);
@@ -89,7 +89,9 @@ function createNewMap(req, res){
 
 
 function deleteMap(req, res, mapId) {
-	var userId = require('./db').toDatabaseId(req.user);
+	
+	var userId = req.user.href;
+	
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("deleting map", mapId, "for user", userId);
 	
@@ -130,7 +132,8 @@ function deleteMap(req, res, mapId) {
 
 
 function updateMap(req, res, mapId) {
-	var userId = require('./db').toDatabaseId(req.user);
+	var userId = req.user.href;
+	
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("updating map", mapId, "for user", userId);
 	var historyEntry = req.body;
@@ -168,7 +171,8 @@ function updateMap(req, res, mapId) {
 }
 
 function partialMapUpdate(req, res, mapId) {
-	var userId = require('./db').toDatabaseId(req.user);
+	var userId = req.user.href;
+	
 	mapId = require('./db').toDatabaseId(mapId);
 	var load = req.body;
 	logger.debug("updating map partially", mapId, "for user", userId,
@@ -226,7 +230,8 @@ function partialMapUpdate(req, res, mapId) {
 
 function getMap(req, res, mapId) {
 
-	var userId = require('./db').toDatabaseId(req.user);
+	var userId = req.user.href;
+	
 	mapId = require('./db').toDatabaseId(mapId);
 	logger.debug("getting map", mapId, "for user", userId);
 
@@ -253,9 +258,10 @@ function getMap(req, res, mapId) {
 }
 
 function getMaps(req, res) {
-	var userId = require('./db').toDatabaseId(req.user);
+	var userId = req.user.href;
+	
 	logger.debug("getting maps for user", userId);
-	                   	
+
 	db.maps.find({
 		"userId" : userId,
 		deleted : false

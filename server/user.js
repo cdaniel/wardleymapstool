@@ -14,10 +14,15 @@ limitations under the License.*/
 
 var db = require('./db').database;
 var logger = require('./util/log.js').log.getLogger('user');
+var request = require('request');
+
+
 logger.setLevel('ALL');
 
 var user = function() {
-
+	
+	var self = this;
+	
 	this.createOrUpdateLoginInfo = function(profile, done) {
 		
 		if (typeof profile === 'undefined' || profile == false) {
@@ -34,9 +39,9 @@ var user = function() {
 			return;
 		}
 
-		// universal id
-		var aggregatedID = provider + profile.id;
-		
+        // universal id
+        var aggregatedID = provider + profile.id;
+
 		var userData = {};
 		userData[provider] = profile;
 		
@@ -62,7 +67,7 @@ var user = function() {
 			"upsert" : true,
 			"new" : true
 		}, function(err, object) {
-			if (err != null) {
+			if (err) {
 				logger.error(err);
 				done(err);
 			}
@@ -70,7 +75,81 @@ var user = function() {
 			done(err, object._id);
 		});
 	};
+	
 
+	this.fetchStormPathProviderData = function(account, res, next) {
+		account.getProviderData(function(err, providerData) {
+			if (err) {
+				logger.error(err);
+				return;
+			}
+			if (providerData == null) {
+				logger.warn("no data for " + account);
+				return;
+			}
+			if (providerData.providerId === 'google') {
+				account.providerData = providerData;
+				self.fetchAndStoreGoogleProfile(account, account.providerData.accessToken, next);
+			}
+		});
+	};
+	
+	this.migrateMapsFromOldLogin = function(account, next){
+		var aggregatedID = account.providerData.providerId + account.customData.googleProfile.id;
+		db.users.find({
+			aggregatedID : aggregatedID
+		}).toArray(function(err, obj) {
+			if(err){
+				logger.error('could not find aggregatedID', aggregatedID, err);
+				return;
+			}
+			if(obj.length > 0){
+				var legacyId = obj[0]._id;
+				db.maps.findAndModify({
+					query : {
+						userId : legacyId
+					},
+					update : {
+						userIdGoogle : user.href
+					},
+				}, function(err, object) {
+					if(err){
+						logger.err(err);
+					}
+					next();
+				});
+			} else {
+				next();
+			}
+		});
+	};
+
+	this.fetchAndStoreGoogleProfile = function(account, token, next) {
+		request('https://www.googleapis.com/oauth2/v2/userinfo?access_token='
+				+ token, function(err, res1, body) {
+			if (err) {
+				logger.error(err);
+				return;
+			}
+			if (res1.statusCode !== 200) {
+				return logger.error('Invalid access token: ' + body);
+			} else {
+				account.customData.googleProfile = JSON.parse(body);
+				account.save(function(err) {
+					if (err) {
+						logger.error('error while getting user profile' + err);
+					}
+					self.migrateMapsFromOldLogin(account, next);
+				});
+			}
+		});
+	};
+
+	this.normalizeLoginInfo = function(account, res, next) {
+		//TODO: mix with traditional login
+		self.fetchStormPathProviderData(account, res, next);
+	};
+	
 };
 
 exports.user = new user();

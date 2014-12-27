@@ -15,20 +15,13 @@ limitations under the License.*/
 
 var express = require('express');
 var fs = require('fs');
-var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var GoogleAuth = require('./config/googleauth');
+var stormpathconfig = require('./config/stormpathconfig').stormpathconfig;
+var googleauth = require('./config/googleauth').googleauth;
 var user = require('./user').user;
 var logger = require('./util/log').log.getLogger('server');
 var maps = require('./maps');
 var exportmap = require('./export');
-
-function ensureAuthenticated(req, res, next) {
-	if (req.isAuthenticated()) {
-		return next(req,res);
-	}
-	res.redirect('/auth/google');
-}
+var stormpath = require('express-stormpath');
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -53,6 +46,9 @@ var WardleyMapsApp = function() {
 		self.localmode = true;
 	};
 
+	self.cache = function(name){
+		self.zcache[name] = fs.readFileSync('client/' + name);
+	};
 	
 	/**
 	 * Populate the cache.
@@ -60,19 +56,16 @@ var WardleyMapsApp = function() {
 	self.populateCache = function() {
 		if (typeof self.zcache === "undefined") {
 			self.zcache = {};
-			function cache(name){
-				self.zcache[name] = fs.readFileSync('client/' + name);
-			};
-			cache('index.html');
-			cache('index.js');
-			cache('mapeditor.html');
-			cache('mapeditor.js');
-			cache('logout.html');
-			cache('background.svg');
-			cache('delete.png');
-			cache('new-icon.png');
-			cache('dom.jsPlumb-1.7.2.js');
-			cache('jqBootstrapValidation.js');
+			self.cache('index.html');
+			self.cache('index.js');
+			self.cache('mapeditor.html');
+			self.cache('mapeditor.js');
+			self.cache('logout.html');
+			self.cache('background.svg');
+			self.cache('delete.png');
+			self.cache('new-icon.png');
+			self.cache('dom.jsPlumb-1.7.2.js');
+			self.cache('jqBootstrapValidation.js');
 		}
 	};
 
@@ -133,112 +126,77 @@ var WardleyMapsApp = function() {
 		self.routes.get = {};
 		self.routes.post = {};
 		self.routes.del = {};
-		
-		
-		self.routes.get['/logout.html'] = function(req, res) {
-				req.logout();
-				res.setHeader('Content-Type', 'text/html');
-				res.send(self.cache_get('logout.html'));
-		};
-		
-		// passport logout
-		self.routes.get['/logout'] = function(req, res) {
-			req.logout();
-			res.redirect('/logout.html');
-		};
-		
+
 		//generic access to protected files
-		self.routes.get['/:filename'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				if(endsWith(req.params.filename, ".js")){
-					res.setHeader('Content-Type', 'text/javascript');
-				}
-				if(endsWith(req.params.filename, ".html")){
-					res.setHeader('Content-Type', 'text/html');
-				}
-				if(endsWith(req.params.filename, ".svg")){
-					res.setHeader('Content-Type', 'image/svg+xml');
-				}
-				if(endsWith(req.params.filename, ".png")){
-					res.setHeader('Content-Type', 'image/png');
-				}
-				res.send(self.cache_get(req.params.filename));
-			});
+		self.routes.get['/:filename'] = function(req1, res1) {
+			if (endsWith(req1.params.filename, ".js")) {
+				res1.setHeader('Content-Type', 'text/javascript');
+			}
+			if (endsWith(req1.params.filename, ".html")) {
+				res1.setHeader('Content-Type', 'text/html');
+			}
+			if (endsWith(req1.params.filename, ".svg")) {
+				res1.setHeader('Content-Type', 'image/svg+xml');
+			}
+			if (endsWith(req1.params.filename, ".png")) {
+				res1.setHeader('Content-Type', 'image/png');
+			}
+			res1.send(self.cache_get(req1.params.filename));
 		};
 		// api
 		
 		// 1. create a map
 		self.routes.post['/api/map/'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				maps.createNewMap(req, res);
-			});
+			maps.createNewMap(req, res);
 		};
 		
 		// 2a. update a map (partially)
 		self.routes.post['/api/map/partial/:mapid'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				maps.partialMapUpdate(req, res, req.params.mapid);
-			});
+			maps.partialMapUpdate(req, res, req.params.mapid);
 		};
 		
 		// 2b. update a map
 		self.routes.post['/api/map/:mapid'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				maps.updateMap(req, res, req.params.mapid);
-			});
+			maps.updateMap(req, res, req.params.mapid);
 		};
-		
 		
 		// 3. get a map
 		self.routes.get['/api/map/:mapid'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res) {
-				maps.getMap(req, res, req.params.mapid);
-			});
+			maps.getMap(req, res, req.params.mapid);
 		};
 		
 		// 4. delete a map
 		self.routes.del['/api/map/:mapid'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				maps.deleteMap(req, res, req.params.mapid);
-			});
+			maps.deleteMap(req, res, req.params.mapid);
 		};
 		
 		// 5. lists user maps
 		self.routes.get['/api/maps'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				maps.getMaps(req, res);
-			});
+			maps.getMaps(req, res);
 		};
 		
 		// 5. map editor
 		self.routes.get['/map/:mapid'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				res.setHeader('Content-Type', 'text/html');
-				res.send(self.cache_get('mapeditor.html'));
-			});
+			res.setHeader('Content-Type', 'text/html');
+			res.send(self.cache_get('mapeditor.html'));
 		};
 		
 		// 6. export
-		self.routes.get['/api/map/:mapid/export/:size/:name'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				exportmap.exportmap(req, res, req.params.mapid, req.params.name, req.params.size);
-			});
+		self.routes.get['/api/map/:mapid/export/:size/:name'] = function(req,
+				res) {
+			exportmap.exportmap(req, res, req.params.mapid, req.params.name,
+					req.params.size);
 		};
 		
 		// 7. thumbnail 100x100
 		self.routes.get['/api/map/:mapid/thumbnail.png'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-				exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
-			});
+			exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
 		};
 		
 		// main entry point
 		self.routes.get['/'] = function(req, res) {
-			ensureAuthenticated(req, res, function(req, res){
-					res.setHeader('Content-Type', 'text/html');
-					res.send(self.cache_get('index.html'));
-				}
-			);
+			res.setHeader('Content-Type', 'text/html');
+			res.send(self.cache_get('index.html'));
 		};
 	};
 
@@ -247,60 +205,54 @@ var WardleyMapsApp = function() {
 	 * handlers.
 	 */
 	self.initializeServer = function() {
-		// passport initialization - google
-		passport
-				.use(new GoogleStrategy(
-						{
-							clientID : GoogleAuth.wardleyMapsGoogleAuth.getClientID(),
-							clientSecret : GoogleAuth.wardleyMapsGoogleAuth.getClientSecret(),
-							callbackURL : GoogleAuth.wardleyMapsGoogleAuth.getCallbackURL()
-						}, function(accessToken, refreshToken, profile, done) {
-								user.createOrUpdateLoginInfo(profile, done);
-						}));
-		
-
-		passport.serializeUser(function(user, done) {
-			done(null, user);
-		});
-
-		passport.deserializeUser(function(obj, done) {
-			done(null, obj);
-		});
 
 		self.createRoutes();
-		self.app = express.createServer();
+
+		self.app = express();
 		self.app.use(express.cookieParser());
 		self.app.use(express.bodyParser());
 		self.app.use(express.session({
 			secret : 'modecommcd90le'
 		}));
-		self.app.use(passport.initialize());
-		self.app.use(passport.session());
 
-		// Redirect the user to Google for authentication. When
-		// complete, Google
-		// will redirect the user back to the application at
-		// /auth/google/return
-		self.app.get('/auth/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email']}));
-
-		// Google will redirect the user to this URL after authentication.
-		// Finish
-		// the process by verifying the assertion. If valid, the user will be
-		// logged in. Otherwise, authentication has failed.
-		self.app.get('/auth/google/return', passport.authenticate('google', {
-			successRedirect : '/',
-			failureRedirect : '/logout'
-		}));
+		self.app
+				.use(stormpath
+						.init(
+								self.app,
+								{
+									apiKeyId : stormpathconfig.getApiKeyId(),
+									apiKeySecret : stormpathconfig
+											.getApiKeySecret(),
+									secretKey : stormpathconfig.getSecretKey(),
+									application : stormpathconfig
+											.getApplication(),
+									postRegistrationHandler : function(account,
+											res, next) {
+										user.normalizeLoginInfo(account, res,
+												next);
+									},
+									enableGoogle : true,
+									social : {
+										google : {
+											clientId : googleauth.getClientID(),
+											clientSecret : googleauth.getClientSecret(),
+										},
+									},
+									expandProviderData : true,
+									expandCustomData : true
+								}));
 		
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {
-			self.app.get(r, self.routes.get[r]);
+			self.app.get(r, stormpath.loginRequired, self.routes.get[r]);
 		}
+		
 		for ( var r in self.routes.post) {
-			self.app.post(r, self.routes.post[r]);
+			self.app.post(r, stormpath.loginRequired, self.routes.post[r]);
 		}
+		
 		for ( var r in self.routes.del) {
-			self.app.del(r, self.routes.del[r]);
+			self.app.del(r, stormpath.loginRequired, self.routes.del[r]);
 		}
 
 	};

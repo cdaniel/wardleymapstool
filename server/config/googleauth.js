@@ -19,16 +19,16 @@ limitations under the License.*/
 function googleauth() {
 	
 	this.getClientID = function (){
-		var result = "465155999503-93j04e0hsc7h9gl7oora0ectkc69m4vk.apps.googleusercontent.com";
-		if(result === "465155999503-93j04e0hsc7h9gl7oora0ectkc69m4vk.apps.googleusercontent.com"){
+		var result = '465155999503-93j04e0hsc7h9gl7oora0ectkc69m4vk.apps.googleusercontent.com';
+		if(result === '465155999503-93j04e0hsc7h9gl7oora0ectkc69m4vk.apps.googleusercontent.com'){
 			console.log("please consider creating your own keys!");
 		}
 		return result;
 	};
 	
 	this.getClientSecret = function () {
-		var result = "MbvdykOgwRvxYCJMzy9OHPtC";
-		if(result === "MbvdykOgwRvxYCJMzy9OHPtC"){
+		var result = 'MbvdykOgwRvxYCJMzy9OHPtC';
+		if(result === 'MbvdykOgwRvxYCJMzy9OHPtC'){
 			console.log("please consider creating your own keys!");
 		}
 		return result;
