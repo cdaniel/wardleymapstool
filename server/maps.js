@@ -59,7 +59,7 @@ function createNewMap(req, res){
 	
 	var meta = {
 			deleted : false,
-			userId : userId,
+			userIdGoogle : userId,
 			history : [stub]
 	};
 	
@@ -99,7 +99,7 @@ function deleteMap(req, res, mapId) {
 	
 	db.maps.findAndModify({
 		query : {
-			userId : userId,
+			userIdGoogle : userId,
 			_id : mapId,
 			deleted : false
 		},
@@ -146,7 +146,7 @@ function updateMap(req, res, mapId) {
 
 	db.maps.findAndModify({
 		query : {
-			userId : userId,
+			userIdGoogle : userId,
 			_id : mapId,
 			deleted : false /* don't modify deleted maps */
 		},
@@ -179,7 +179,7 @@ function partialMapUpdate(req, res, mapId) {
 			" request" + JSON.stringify(load));
 
 	db.maps.find({
-		"userId" : userId,
+		"userIdGoogle" : userId,
 		"_id" : mapId,
 		deleted : false
 	/* don't return deleted maps */
@@ -201,7 +201,7 @@ function partialMapUpdate(req, res, mapId) {
 
 			db.maps.findAndModify({
 				query : {
-					userId : userId,
+					userIdGoogle : userId,
 					_id : mapId,
 					deleted : false
 				/* don't modify deleted maps */
@@ -236,7 +236,7 @@ function getMap(req, res, mapId) {
 	logger.debug("getting map", mapId, "for user", userId);
 
 	db.maps.find({
-		"userId" : userId,
+		"userIdGoogle" : userId,
 		"_id" : mapId,
 		deleted : false
 	/* don't return deleted maps */
@@ -263,7 +263,7 @@ function getMaps(req, res) {
 	logger.debug("getting maps for user", userId);
 
 	db.maps.find({
-		"userId" : userId,
+		"userIdGoogle" : userId,
 		deleted : false
 	/* don't return deleted maps */
 	}, {

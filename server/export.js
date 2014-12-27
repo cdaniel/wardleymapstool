@@ -298,7 +298,7 @@ var exportmap = function(req, res, mapId, filename, scale) {
 	}
 	
 	db.maps.find({
-		"userId" : userId,
+		"userIdGoogle" : userId,
 		"_id" : mapId
 	},{
 		history : {
@@ -322,7 +322,7 @@ var thumbnail = function(req, res, mapId, filename) {
 	logger.debug("drawing thumbnail", mapId, "for user", userId);
 
 	db.maps.find({
-		"userId" : userId,
+		"userIdGoogle" : userId,
 		"_id" : mapId
 	},{
 		history : {
