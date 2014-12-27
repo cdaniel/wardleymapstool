@@ -18,6 +18,7 @@ var mongodbdata = require('./config/mongodbdata').dbdata;
 var log = require('./util/log.js').log;
 
 var logger = log.getLogger("db");
+
 /**
  * default collections that will be used
  */
@@ -28,8 +29,6 @@ var DEFAULT_COLLECTIONS = ['users', 'maps'];
 var db = mongojs(mongodbdata.getConnectionString(), DEFAULT_COLLECTIONS);
 db.collection('users');
 db.collection('maps');
-logger.info('db created');
-logger.info(mongodbdata.getConnectionString());
 
 db.users.ensureIndex({
 	"aggregatedID" : 1
@@ -40,7 +39,7 @@ db.users.ensureIndex({
 exports.database = db;
 
 /**
- * I hate that but... to perform effective searches by ID passed from JSON you need to conver it to 
+ * I hate that but... to perform effective searches by ID passed from JSON you need to convert it to 
  * mongojs Object ID, therefore the helper here.
  */
 exports.toDatabaseId = db.ObjectId;
