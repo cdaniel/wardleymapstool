@@ -111,7 +111,7 @@ var user = function() {
 					userId : legacyId
 				}, {
 					$set : {
-						userIdGoogle : user.href
+						userIdGoogle : account.href
 					}
 				}, {
 					multi : true
