@@ -88,6 +88,7 @@ var user = function() {
 				return;
 			}
 			if (providerData.providerId === 'google') {
+				logger.debug('got google stormpath data for ' + account);
 				account.providerData = providerData;
 				self.fetchAndStoreGoogleProfile(account, account.providerData.accessToken, next);
 			}
@@ -105,6 +106,7 @@ var user = function() {
 			}
 			if(obj.length > 0){
 				var legacyId = obj[0]._id;
+				logger.debug('migrating maps', aggregatedID, err);
 				db.maps.findAndModify({
 					query : {
 						userId : legacyId
@@ -125,6 +127,7 @@ var user = function() {
 	};
 
 	this.fetchAndStoreGoogleProfile = function(account, token, next) {
+		logger.debug('requested google profile  for ' + account);
 		request('https://www.googleapis.com/oauth2/v2/userinfo?access_token='
 				+ token, function(err, res1, body) {
 			if (err) {
@@ -139,6 +142,7 @@ var user = function() {
 					if (err) {
 						logger.error('error while getting user profile' + err);
 					}
+					logger.debug('stored google profile  for ' + account);
 					self.migrateMapsFromOldLogin(account, next);
 				});
 			}
@@ -147,6 +151,7 @@ var user = function() {
 
 	this.normalizeLoginInfo = function(account, res, next) {
 		//TODO: mix with traditional login
+		logger.debug('normalizingLoginInfo for ' + account);
 		self.fetchStormPathProviderData(account, res, next);
 	};
 	
