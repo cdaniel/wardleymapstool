@@ -91,6 +91,9 @@ var user = function() {
 				logger.debug('got google stormpath data for ' + account);
 				account.providerData = providerData;
 				self.fetchAndStoreGoogleProfile(account, account.providerData.accessToken, next);
+			} else {
+				logger.error('support for ' + providerData.providerId + ' not implemented');
+				next();
 			}
 		});
 	};
