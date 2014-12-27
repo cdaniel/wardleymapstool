@@ -107,19 +107,21 @@ var user = function() {
 			if(obj.length > 0){
 				var legacyId = obj[0]._id;
 				logger.debug('migrating maps', aggregatedID, err);
-				db.maps.findAndModify({
-					query : {
-						userId : legacyId
-					},
-					update : {
+				var updateResult = db.maps.update({
+					userId : legacyId
+				}, {
+					$set : {
 						userIdGoogle : user.href
-					},
-				}, function(err, object) {
-					if(err){
-						logger.err(err);
 					}
-					next();
+				}, {
+					multi : true
 				});
+				logger.debug('Migrated ' + updateResult.nModified + ' maps');
+				if(updateResult.writeConcernError || updateResult.writeError){
+					logger.error(updateResult.writeConcernError, updateResult.writeError);
+				} else {
+					next();
+				}
 			} else {
 				next();
 			}
