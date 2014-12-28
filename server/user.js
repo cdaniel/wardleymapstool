@@ -29,7 +29,7 @@ var user = function() {
 				logger.error(err);
 				return;
 			}
-			if (providerData == null) {
+			if (!providerData) {
 				logger.warn("no data for " + account);
 				return;
 			}
