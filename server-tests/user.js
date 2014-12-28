@@ -21,7 +21,7 @@ describe(
 		function() {
 
 			describe(
-					'normalize login info',
+					'post registration handler',
 					function() {
 
 						it(
@@ -29,7 +29,7 @@ describe(
 								sinon
 										.test(function(done) {
 
-											var fetchStormPathProviderData = sinon
+											var fetchStormPathProviderData = this
 													.stub(user,
 															'fetchStormPathProviderData');
 
@@ -43,7 +43,82 @@ describe(
 											user.normalizeLoginInfo(args[0],
 													args[1], args[2]);
 										}));
+						
+						it(
+								'fetchStormPathProviderData should choose correct path depending on the dataProvider - error - early quit',
+								sinon
+										.test(function(done) {
+											
+											var account = new function () {
+												this.href = "testy.test/testtttt"
+												this.getProviderData = function(callback){
+													callback('test error', 'data');
+													done();
+												};
+											};
+											
+											user.fetchStormPathProviderData(account, null, should.fail);
+										}));
+						
+						it(
+								'fetchStormPathProviderData should choose correct path depending on the dataProvider - no data - early quit',
+								sinon
+										.test(function(done) {
+											
+											var account = new function () {
+												this.href = "testy.test/testtttt"
+												this.getProviderData = function(callback){
+													callback(null, null);
+													done();
+												};
+											};
+											
+											user.fetchStormPathProviderData(account, null, should.fail);
+										}));
+						
+						it(
+								'fetchStormPathProviderData should choose correct path depending on the dataProvider - unknown provider - continue',
+								sinon
+										.test(function(done) {
+											
+											var account = new function () {
+												this.href = "testy.test/testtttt"
+												this.getProviderData = function(callback){
+													callback(null, {providerId:'provider surprise!'});
+												};
+											};
+											
+											user.fetchStormPathProviderData(account, null, done);
+										}));
+						
+						it(
+								'fetchStormPathProviderData should choose correct path depending on the dataProvider - google provider - continue to fetching google profile',
+								sinon
+										.test(function(done) {
+											
+											var providerData = {providerId:'google', accessToken : "accessToken"};
+
+											var account = new function () {
+												this.href = "testy.test/testtttt";
+												this.getProviderData = function(callback){
+													callback(null, providerData);
+												};
+											};
+											
+
+											var fetchAndStoreGoogleProfile = this
+													.stub(user,
+															'fetchAndStoreGoogleProfile');
+											
+											fetchAndStoreGoogleProfile
+													.withArgs(account,
+															"accessToken", done)
+													.callsArg(2);
+											
+											user.fetchStormPathProviderData(account, null, done);
+										}));
 
 					});
+
 
 		});

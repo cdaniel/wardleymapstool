@@ -26,15 +26,15 @@ var user = function() {
 	this.fetchStormPathProviderData = function(account, res, next) {
 		account.getProviderData(function(err, providerData) {
 			if (err) {
-				logger.error(err);
+				logger.error('error while getting data for', account.href, err);
 				return;
 			}
 			if (!providerData) {
-				logger.warn("no data for " + account);
+				logger.warn("no data for " + account.href);
 				return;
 			}
 			if (providerData.providerId === 'google') {
-				logger.debug('got google stormpath data for ' + account);
+				logger.debug('got google stormpath data for ' + account.href);
 				account.providerData = providerData;
 				self.fetchAndStoreGoogleProfile(account, account.providerData.accessToken, next);
 			} else {
@@ -98,8 +98,6 @@ var user = function() {
 	};
 
 	this.normalizeLoginInfo = function(account, res, next) {
-		//TODO: mix with traditional login
-		logger.debug('normalizingLoginInfo for ' + account);
 		self.fetchStormPathProviderData(account, res, next);
 	};
 	
