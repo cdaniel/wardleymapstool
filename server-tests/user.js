@@ -14,55 +14,36 @@ limitations under the License.*/
 
 var user = require('../server/user').user;
 var should = require('should');
+var sinon = require('sinon');
 
+describe(
+		'User',
+		function() {
 
-var testUserId = 'long-and-complicated-id' + Date.now();
+			describe(
+					'normalize login info',
+					function() {
 
-describe('User', function() {
-	describe('createUser', function() {
-		
-		it('should quit if profile is empty', function (done) {
-			var profile = false;
-			
-			var callback = function (err, id){
-				should(err).be.equal(null);
-				should(id).not.be.ok;
-				done();
-			};
-			
-			user.createOrUpdateLoginInfo(profile, callback);
+						it(
+								'method fetching stormpath provider data should be called because knowing what is the source of the account is crucial to perform any other logic',
+								sinon
+										.test(function(done) {
+
+											var fetchStormPathProviderData = sinon
+													.stub(user,
+															'fetchStormPathProviderData');
+
+											var args = [ {}, {}, done ];
+
+											fetchStormPathProviderData
+													.withArgs(args[0], args[1],
+															args[2])
+													.callsArg(2);
+
+											user.normalizeLoginInfo(args[0],
+													args[1], args[2]);
+										}));
+
+					});
+
 		});
-		
-		
-		it('should quit if the login provider is unrecognized', function (done) {
-			var profile = {
-					provider : '\'unknown provider\''
-			};
-			
-			var callback = function (err, id){
-				should(err).be.equal(null);
-				should(id).not.be.ok;
-				done();
-			};
-			
-			user.createOrUpdateLoginInfo(profile, callback);
-		});
-		
-		
-		it('should create a user entry if auth granted by google', function (done) {
-			
-			var test_profile = {
-					provider : 'google',
-					id : testUserId
-			};
-			
-			var callback = function (err, id){
-				should(err).be.equal(null);
-				should(id).be.ok;
-				done();
-			};
-			
-			user.createOrUpdateLoginInfo(test_profile, callback);
-		});
-	});
-});

@@ -35,7 +35,8 @@
     "canvas" : "*",
     "jade" : "*",
     "express-stormpath" : "*",
-    "request" : "*"
+    "request" : "*",
+    "sinon" : "*"
   },
   
   "devDependencies": {
