@@ -88,7 +88,7 @@ function createNewMap(req, res){
 }
 
 
-function deleteMap(req, res, mapId) {
+function deleteMap(req, res, mapId, redirect) {
 	
 	var userId = req.user.href;
 	
@@ -123,8 +123,12 @@ function deleteMap(req, res, mapId) {
 			res.statusCode = 500;
 			res.send(JSON.stringify(err));
 		} else {
-			res.writeHead(200, {'content-type':'text/html'});
-			res.end();
+			if(!redirect){
+				res.writeHead(200, {'content-type':'text/html'});
+				res.end();
+			} else {
+				res.redirect(redirect);
+			}
 		}
 	});
 
@@ -257,7 +261,7 @@ function getMap(req, res, mapId) {
 	
 }
 
-function getMaps(req, res) {
+function getMaps(req, next) {
 	var userId = req.user.href;
 	
 	logger.debug("getting maps for user", userId);
@@ -271,11 +275,8 @@ function getMaps(req, res) {
 			$slice : -1
 		}
 	}).toArray(function(err, maps) {
-		res.setHeader('Content-Type', 'application/json');
 		if (err !== null) {
 			logger.error(err);
-			res.statusCode = 500;
-			res.send(JSON.stringify(err));
 		} else {
 			//limit what goes with generic maps
 			var response = [];
@@ -288,7 +289,7 @@ function getMaps(req, res) {
 				singleMap.serverDate = maps[i].history[0].serverDate;
 				response.push(singleMap);
 			}
-			res.send(JSON.stringify(response));
+			next(response);
 		}
 	});
 }

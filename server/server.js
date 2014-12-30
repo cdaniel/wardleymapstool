@@ -56,13 +56,12 @@ var WardleyMapsApp = function() {
 	self.populateCache = function() {
 		if (typeof self.zcache === "undefined") {
 			self.zcache = {};
-			self.cache('index.html');
 			self.cache('index.js');
+			self.cache('index.css');
 			self.cache('mapeditor.html');
 			self.cache('mapeditor.js');
 			self.cache('logout.html');
 			self.cache('background.svg');
-			self.cache('delete.png');
 			self.cache('new-icon.png');
 			self.cache('dom.jsPlumb-1.7.2.js');
 			self.cache('jqBootstrapValidation.js');
@@ -132,6 +131,9 @@ var WardleyMapsApp = function() {
 			if (endsWith(req1.params.filename, ".js")) {
 				res1.setHeader('Content-Type', 'text/javascript');
 			}
+			if (endsWith(req1.params.filename, ".css")) {
+				res1.setHeader('Content-Type', 'text/css');
+			}
 			if (endsWith(req1.params.filename, ".html")) {
 				res1.setHeader('Content-Type', 'text/html');
 			}
@@ -170,9 +172,12 @@ var WardleyMapsApp = function() {
 			maps.deleteMap(req, res, req.params.mapid);
 		};
 		
-		// 5. lists user maps
-		self.routes.get['/api/maps'] = function(req, res) {
-			maps.getMaps(req, res);
+		// 4a. delete a map
+		// workaround for the lack of get from the link
+		// we operate with this as with a regular delete, and we perform
+		// redirection to home.
+		self.routes.get['/api/map/delete/:mapid'] = function(req, res) {
+			maps.deleteMap(req, res, req.params.mapid, "/");
 		};
 		
 		// 5. map editor
@@ -193,10 +198,12 @@ var WardleyMapsApp = function() {
 			exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
 		};
 		
+
 		// main entry point
 		self.routes.get['/'] = function(req, res) {
-			res.setHeader('Content-Type', 'text/html');
-			res.send(self.cache_get('index.html'));
+			maps.getMaps(req, function(response) {
+				res.render('index', {response : response});
+			});
 		};
 	};
 
@@ -241,6 +248,9 @@ var WardleyMapsApp = function() {
 									expandProviderData : true,
 									expandCustomData : true
 								}));
+		
+		self.app.set('views', 'client')
+		self.app.set('view engine', 'jade')
 		
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {

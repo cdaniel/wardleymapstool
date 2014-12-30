@@ -1,0 +1,126 @@
+//-Copyright 2014 Krzysztof Daniel
+//-
+//-Licensed under the Apache License, Version 2.0 (the "License");
+//-you may not use this file except in compliance with the License.
+//-You may obtain a copy of the License at
+//-
+//-    http://www.apache.org/licenses/LICENSE-2.0
+//-
+//-Unless required by applicable law or agreed to in writing, software
+//-distributed under the License is distributed on an "AS IS" BASIS,
+//-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//-See the License for the specific language governing permissions and
+//-limitations under the License.
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title Wardley Maps Tool
+        script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+        script(src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js')
+        script(src='http://malsup.github.com/jquery.form.js')
+        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
+        script(src='jqBootstrapValidation.js')
+        link(rel='stylesheet', href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css')
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css')
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
+        link(rel='stylesheet', href='index.css')
+    body
+        //- actual content
+        #content
+            .container-fluid
+                nav.navbar.navbar-default(role="navigation")
+                    .navbar-header
+                        button.navbar-toggle(type="button" data-target="#navbarCollapse" data-toggle="collapse")
+                            span.sr-only Toggle navigation
+                            span.icon-bar
+                            span.icon-bar
+                            span.icon-bar
+                        a.navbar-brand(href="/") Wardley Maps Tool
+                    #navbarCollapse.collapse.navbar-collapse
+                        ul.nav.navbar-nav
+                            li.active
+                                a(href="/") Your maps
+                            li
+                                a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
+                                                        data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
+                        ul.nav.navbar-nav.navbar-right
+                            li
+                                a(href="/logout") Logout
+                .panel.panel-default
+                    .panel-body
+                        p.text-warning
+                            | Remember to <b>Save</b> the map from time to time, especially before exporting it.
+                #selectors.row
+                    //- new map button
+                    .col-xs-12.col-sm-6.col-md-3.col-lg-2
+                        .thumbnail
+                            a(href="#" onclick="showAddMapDialog()")
+                                img.img-thumbnail(src='/new-icon.png' title='Click to create a new map.' width="200px" height="200px" opacity="0.5")
+                        .caption
+                            h3 New map...
+                    //- this part actually renders maps
+                    each map in response
+                        .col-xs-12.col-sm-6.col-md-3.col-lg-2(id=map._id)
+                            .thumbnail
+                                a(href="/map/" + map._id)
+                                    img.img-thumbnail(src='api/map/' + map._id + '/thumbnail.png' title=map.description)
+                            .caption
+                                div.col-xs-9
+                                    h3.no_top_margin= map.name
+                                    p= map.description
+                                .col-xs-1
+                                    .dropdown
+                                        button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown" aria-expanded="true" id="ddm"+map._id)
+                                            span.glyphicon.glyphicon-cog &nbsp;
+                                            span.caret
+                                        ul.dropdown-menu.dropdown-menu-right(role="menu" aria-labelledby="ddm"+map._id)
+                                            li(role="presentation")
+                                                a(role="menuitem" tabindex="-1" href="/api/map/delete/"+map._id)
+                                                    span.glyphicon.glyphicon-remove
+                                                    | &nbsp;Delete!
+        //- disclaimer stating it is not affiliated with Simon Wardley
+        div(class="container")
+            div(class="panel panel-default")
+                div(class="panel-body")
+                    p(class="text-info")
+                        | This open source tool is based on the work of
+                        | Simon Wardley, the Wardley mapping technique creator. Simon works
+                        | for LEF and runs training courses for LEF members, and is not
+                        | associated with this tool This tool is a preview, early access,
+                        | highly unstable and quite dangerous. It may kill your cat, 
+                        | destroy the entire galaxy or (this one quite seriously) make 
+                        | you leave your job. Be warned. It may record your every move.
+                        | It is not even alpha.
+        //- new map dialog
+        #basicModal(class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true")
+            div(class="modal-dialog")
+                div(class="modal-content")
+                    div(class="modal-header")
+                        button(type="button" 
+                                class="close" 
+                                data-dismiss="modal" 
+                                aria-hidden="true")    &times;
+                        h4#myModalLabel(class="modal-title") Create a new map...
+                    div(class="modal-body")
+                        form#newMapCreationForm(action="/api/map/" 
+                                                method='post' class="form-horizontal")
+                            .form-group
+                                label(for="name" class="col-sm-3 control-label") Name:
+                                .col-sm-8
+                                    input#name.form-control(type="text" name="name" value="" required)
+                            .form-group
+                                label(for="description" class="col-sm-3 control-label") Description:
+                                .col-sm-8
+                                    textarea#description.form-control(rows="#" type="text" name="description" value="" required)
+                            .form-group
+                                .col-sm-5.col-sm-offset-8
+                                    button.btn.btn-default(type="button" data-dismiss="modal") Cancel
+                                    button.btn.btn-primary(type="submit") Create!
+        //- github forkme
+        a(href="https://github.com/cdaniel/wardleymapstool")
+            img(style="position: absolute; top: 0; right: 0; border: 0;"
+                src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
+                alt="Fork me on GitHub"
+                data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png")
+        script(src='index.js')
