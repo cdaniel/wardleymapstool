@@ -76,25 +76,25 @@ var user = function() {
 
 	this.fetchAndStoreGoogleProfile = function(account, token, next) {
 		logger.debug('requested google profile  for ' + account);
-		request('https://www.googleapis.com/oauth2/v2/userinfo?access_token='
-				+ token, function(err, res1, body) {
-			if (err) {
-				logger.error(err);
-				return;
-			}
-			if (res1.statusCode !== 200) {
-				return logger.error('Invalid access token: ' + body);
-			} else {
-				account.customData.googleProfile = JSON.parse(body);
-				account.save(function(err) {
-					if (err) {
-						logger.error('error while getting user profile' + err);
-					}
-					logger.debug('stored google profile  for ' + account);
-					self.migrateMapsFromOldLogin(account, next);
-				});
-			}
-		});
+		request('https://www.googleapis.com/oauth2/v2/userinfo?access_token=' + token,
+			function(err, res1, body) {
+				if (err) {
+					logger.error(err);
+					return;
+				}
+				if (res1.statusCode !== 200) {
+					return logger.error('Invalid access token: ' + body);
+				} else {
+					account.customData.googleProfile = JSON.parse(body);
+					account.save(function(err) {
+						if (err) {
+							logger.error('error while getting user profile' + err);
+						}
+						logger.debug('stored google profile  for ' + account);
+						self.migrateMapsFromOldLogin(account, next);
+					});
+				}
+			});
 	};
 
 	this.normalizeLoginInfo = function(account, res, next) {
