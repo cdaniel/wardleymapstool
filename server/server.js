@@ -249,8 +249,8 @@ var WardleyMapsApp = function() {
 									expandCustomData : true
 								}));
 		
-		self.app.set('views', 'client')
-		self.app.set('view engine', 'jade')
+		self.app.set('views', 'client');
+		self.app.set('view engine', 'jade');
 		
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {
