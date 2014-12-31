@@ -5,3 +5,9 @@
 .no_top_margin {
 	margin-top: 0px;
 }
+
+.img-thumbnail {
+	min-height: 200px;
+	min-width: 200px;
+	
+}

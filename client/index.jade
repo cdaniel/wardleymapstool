@@ -54,11 +54,11 @@ html
                 #selectors.row
                     //- new map button
                     .col-xs-12.col-sm-6.col-md-3.col-lg-2
-                        .thumbnail
-                            a(href="#" onclick="showAddMapDialog()")
-                                img.img-thumbnail(src='/new-icon.png' title='Click to create a new map.' width="200px" height="200px" opacity="0.5")
+                        .thumbnail.text-center 
+                            a(href="#" onclick="showAddMapDialog()").text-center 
+                                .glyphicon.glyphicon-plus.img-thumbnail(style="font-size:140px;color:silver")
                         .caption
-                            h3 New map...
+                            h3 Create a new map...
                     //- this part actually renders maps
                     each map in response
                         .col-xs-12.col-sm-6.col-md-3.col-lg-2(id=map._id)
