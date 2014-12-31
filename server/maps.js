@@ -15,20 +15,6 @@ limitations under the License.*/
 
 var db = require('./db').database;
 var logger = require('./util/log.js').log.getLogger('maps');
-var qs = require('querystring');
-var fs = require('fs');
-var tv4 = require('tv4').tv4;
-
-fs.readFile('server/api-map.json', 'utf8', function(err, data) {
-	
-	if (err) {
-		console.log('Error: ' + err);
-		return;
-	}
-	data = JSON.parse(data);
-	logger.debug(data);
-	tv4.addSchema(data);
-});
 
 function createNewMap(req, res){
 	

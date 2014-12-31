@@ -27,11 +27,8 @@
   "dependencies": {
     "express": "~3.4.4",
     "mongojs":"*",
-    "qs":"*",
     "node-serialize" :"*",
     "log4js": "*",
-    "querystring":"*",
-    "tv4":"*",
     "canvas" : "*",
     "jade" : "*",
     "express-stormpath" : "*",
