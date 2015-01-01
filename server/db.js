@@ -30,12 +30,6 @@ var db = mongojs(mongodbdata.getConnectionString(), DEFAULT_COLLECTIONS);
 db.collection('users');
 db.collection('maps');
 
-db.users.ensureIndex({
-	"aggregatedID" : 1
-}, {
-	unique : true
-});
-
 exports.database = db;
 
 /**
