@@ -276,11 +276,6 @@ var WardleyMapsApp = function() {
 
 		// Create the express server and routes.
 		self.initializeServer();
-		
-		
-		
-		// migrate the db....
-		maps.migrate();
 	};
 
 	/**
