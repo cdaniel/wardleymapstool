@@ -62,13 +62,8 @@ function createNewMap(req, res){
 		}
 		if(saved) {
 			logger.debug("new map", saved._id, "created for user", userId);
-			res.writeHead(302, {
-				// TODO: this may be a hack
-				// I do not like the fact that the UI index UI is driven from here,
-				// but it is an extremely easy way to change what page is visible in the browser 
-				'Location' : ('/map/'+saved._id)
-			});
-			res.end();
+			//tell the client where is the map
+			res.redirect('/map/'+saved._id);
 		}
 	});
 }
