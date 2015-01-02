@@ -242,19 +242,11 @@ function drawParticipants(){
 	}
 }
 
-function bindWidgets(){
-	$('#saveButton').on("click", function(e){
-		e.preventDefault();
-		saveMap();
-	});
-}
-
 function init(){
 	//turn to inline mode
 	$.fn.editable.defaults.mode = 'inline';
 	
 	$( "#context-node-menu" ).menu();
-	bindWidgets();
 	initializeMapId();
 	loadMap();
 }
