@@ -32,13 +32,13 @@
     "canvas" : "*",
     "jade" : "*",
     "express-stormpath" : "*",
-    "request" : "*",
-    "sinon" : "*"
+    "request" : "*"
   },
   
   "devDependencies": {
 	  "mocha" : "*",
-	  "should" : "*"
+	  "should" : "*",
+	  "sinon" : "*"
   },
   
   "bundleDependencies": [],
