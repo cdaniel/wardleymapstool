@@ -19,6 +19,14 @@ var mapId = "";
  */
 var map = null;
 
+
+var dirtyIndex = 0;
+var lastSavedIndex = 0;
+var saving = false;
+
+function fireDirty(){
+	dirtyIndex ++; 
+}
 /**
  * This global variable holds a recently selected node.
  */
@@ -106,6 +114,8 @@ function saveMap() {
 		    //overwrite whatever we have
 		    map.nodes = items;
 		    map.connections = connections;
+		saving = true;
+		var dirtyIndexCopy = dirtyIndex;
 		$.ajax({
 			url : '/api/map/' + mapId,
 			type : 'post',
@@ -117,9 +127,13 @@ function saveMap() {
 				} else {
 					console.log(result);
 				}
+				saving = false;
+				lastSavedIndex = dirtyIndexCopy;
 			},
 			error : function(request, error) {
 				console.log('An error while getting map list!', error);
+				console.log('error ' + dirtyIndexCopy);
+				saving = false;
 			}
 		});
 	}
@@ -133,6 +147,7 @@ function drawMap(){
 	$('#name').editable({
 		success: function(data, config){
 			map.name = config;
+			fireDirty();
 		}
 	});
 	$('#description').val(map.description);
@@ -142,6 +157,7 @@ function drawMap(){
 	$('#description').editable({
 		success: function(data, config){
 			map.description = config;
+			fireDirty();
 		}
 	});
 	
@@ -310,6 +326,7 @@ function Node(parentNode, id) {
 		 value : self.name,
 		 success: function(response, newValue) {
 			 self.name = newValue; //update backbone model
+			 fireDirty();
 		},
 		unsavedclass : null,
 		mode : 'popup'
@@ -318,7 +335,10 @@ function Node(parentNode, id) {
 	
 	jsPlumb.draggable(self.internalNode, {
 		containment : 'parent',
-		distance : 5
+		distance : 5,
+		drag : function(){
+			fireDirty();
+		}
 	});
 	
 	// accept incoming connections
@@ -472,6 +492,7 @@ function Node(parentNode, id) {
 		jsPlumb.deleteEndpoint(self.actionEndpointIn);
 		jsPlumb.detachAllConnections(self.internalNode);
 		self.internalNode.remove();
+		fireDirty();
 		// TODO: remove from a map, if it will be stored there
 		delete self;
 	};
@@ -508,6 +529,7 @@ jsPlumb.ready(function() {
 				'left' : e.pageX - e.target.offsetLeft
 			}, true);
 			n.focus();
+			fireDirty();
 		}
 	});
 });
@@ -568,8 +590,8 @@ jsPlumb.bind("beforeDrop", function(connection) {
 		jsPlumb.deleteEndpoint(connection.dropEndpoint);
 	}
 	jsPlumb.repaintEverything();
-	// console.log('after delete endpoint');
 
+	fireDirty();
 	return false;
 });
 
@@ -610,6 +632,7 @@ jsPlumb
 									deleteEndpointsOnDetach : false
 								});
 						n.focus();
+						fireDirty();
 					}
 				});
 
@@ -635,9 +658,14 @@ $("#context-node-menu > li").click(function(){
 //=======================================
 //MAP DRAWING UTILITIES - END
 //=======================================
+function saveLoop(){
+	setTimeout(function(){
+		if(lastSavedIndex != dirtyIndex && !saving){
+			saveMap();
+		}
+		saveLoop();
+	}, 1000);
+}
 
 $(document).ready(init);
-
-window.onbeforeunload = function (e) {
-	  saveMap();
-};
+saveLoop();
