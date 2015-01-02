@@ -320,9 +320,6 @@ function Node(parentNode, id) {
 	});
 	
 	
-/*	self.chart = $('<canvas>').addClass('competitorChart').attr('width','10px').attr('height', '10px');
-	self.internalNode.append(self.chart);*/
-	
 	jsPlumb.draggable(self.internalNode, {
 		containment : 'parent',
 		distance : 5
