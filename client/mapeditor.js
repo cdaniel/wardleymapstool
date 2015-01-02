@@ -247,10 +247,6 @@ function init(){
 //=======================================
 // MAP DRAWING UTILITIES - START
 //=======================================
-/*
- * remove interactivity
-*/
-Chart.defaults.global.showTooltips = false;
 
 // unlimited connections
 jsPlumb.Defaults.MaxConnections = -1;
