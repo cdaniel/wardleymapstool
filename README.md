@@ -3,7 +3,7 @@ Wardley Maps Tool
 
 An unofficial tool to create, manage and analyze Wardley Maps.
 
-All the code is licensed under ASL 2.0, even if not explicitly stated.
+All the code is licensed under ASL 2.0, even if not explicitly stated, but unless otherwise stated.
 
 Running your own instance
 -------------------------
@@ -11,15 +11,23 @@ There is a common bias that novel & business critical tool must have big brands 
 
 How to contribute:
 ------------------
-There is a plenty things that can be improved, and every help is deeply appreciated. Big things include:
+There is no big guide here, just checkout the code, find what you would like to improve, and send a patch back.
+There is a plenty things that can be done, and every help is deeply appreciated. Some ideas include:
+- [ ] creating ready-to-deploy packages (deb, rpm, heroku, openshift, cloud foundry and others)
 - [ ] user manual
 - [ ] improving tests
-- [ ] creating ready-to-deploy packages (deb, rpm, heroku, openshift, cloud foundry and others)
 - [ ] other than g+ login mechanisms
 - [ ] notification system
 - [ ] multi-user edit
 - [ ] ...
 Every contribution will be recognized.
+
+Coming soon:
+------------
+I wish I could promise you a lot of exciting features, but things I will be working next include:
+1. mapeditor.js cleanup - that module is a spaghetti code mess. I need to find out a clean way to marry jsPlumb with the model that can be send back and forth to the server. Right now I query the jsPlumb instance before every save to gather list of nodes and connections.
+2. Once the editor is somewhat cleaned, it is necessary to reconcile the database model and the client model. Ideally they should be using either the same schema, or some API should be described (with tests).
+3. Login mechanisms need to be connected. Right now a user that registered using G+ is different from the user that registered in a traditional way using the same email address that was provided in G+.
 
 UI Sketches:
 -----------------
