@@ -1,4 +1,4 @@
-/* Copyright 2014 Krzysztof Daniel
+/* Copyright 2014-2015 Krzysztof Daniel
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,12 +12,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-var mapId = "";
 
-/**
- * This object holds a real map (just data) that is totally UI abstract.
- */
-var map = null;
+// those are initialized server side
+//var mapURL
+// var map - real map data, too.
 
 
 var dirtyIndex = 0;
@@ -31,58 +29,6 @@ function fireDirty(){
  * This global variable holds a recently selected node.
  */
 var selectedNode = null;
-
-function calculateDownloadURL(size){
-	return '/api/map/' + mapId + '/export/' + size + '/' + mapId + '.png';
-}
-
-function calculatePartialUpdateURL(){
-	return '/api/map/partial/' + mapId;
-}
-/**
- * The map editor link usually has a format of:
- * http://127.0.0.1:8080/map/53e663580f1a83730329e6e5.
- * 
- * Do you see the long sequence of letters and digits? This is mapId,
- * used to find and identify a map in the database. Will also serve
- * as a sharing link in the future.
- */
-function initializeMapId(){
-	var pathname = $(location).attr('pathname');
-	var segments = pathname.split('/');
-	/* last segment of the url */
-	mapId = segments[segments.length - 1];
-	
-	// populate exports link in the editor
-	$('#exportsmall').attr("href", calculateDownloadURL(/*default size, the smallest one*/1));
-	$('#exportsmall').attr("download", mapId + '.png');
-	
-	$('#exportmedium').attr("href", calculateDownloadURL(2));
-	$('#exportmedium').attr("download", mapId + '.png');
-	
-	$('#exportlarge').attr("href", calculateDownloadURL(3));
-	$('#exportlarge').attr("download", mapId + '.png');
-}
-
-function loadMap() {
-	$.ajax({
-		url : '/api/map/' + mapId,
-		type : 'get',
-		async : 'true',
-		success : function(result) {
-			if (result.status) {
-				console.log('something went wrong');
-			} else {
-				console.log(result);
-				map = result;
-				drawMap();
-			}
-		},
-		error : function(request, error) {
-			console.log('An error while getting map list!', error);
-		}
-	});
-}
 
 function saveMap() {
 	if (map != null) {
@@ -117,7 +63,7 @@ function saveMap() {
 		saving = true;
 		var dirtyIndexCopy = dirtyIndex;
 		$.ajax({
-			url : '/api/map/' + mapId,
+			url : mapURL,
 			type : 'post',
 			async : 'true',
 			data : map,
@@ -140,27 +86,6 @@ function saveMap() {
 }
 
 function drawMap(){
-	$('#name').val(map.name);
-	$('#name').text(map.name);
-	$('#name').attr('data-pk', 'name');
-	$('#name').attr('data-url', calculatePartialUpdateURL());
-	$('#name').editable({
-		success: function(data, config){
-			map.name = config;
-			fireDirty();
-		}
-	});
-	$('#description').val(map.description);
-	$('#description').text(map.description);
-	$('#description').attr('data-pk', 'description');
-	$('#description').attr('data-url', calculatePartialUpdateURL());
-	$('#description').editable({
-		success: function(data, config){
-			map.description = config;
-			fireDirty();
-		}
-	});
-	
 	var mapContainer = $('#map-container');
 	var width = mapContainer.width();
 	var height = mapContainer.height();
@@ -219,8 +144,26 @@ function init(){
 	$.fn.editable.defaults.mode = 'inline';
 	
 	$( "#context-node-menu" ).menu();
-	initializeMapId();
-	loadMap();
+	
+	//initialize widgets
+	$('#name').editable({
+		success: function(data, config){
+			map.name = config;
+			// no need to fireDirty as this widget automagically updates the map
+			// when this field is changed, but only this field is saved
+			//fireDirty();
+		}
+	});
+	$('#description').editable({
+		success: function(data, config){
+			map.description = config;
+			// no need to fireDirty as this widget automagically updates the map
+			// when this field is changed, but only this field is saved
+			//fireDirty();
+		}
+	});
+	
+	drawMap();
 }
 
 

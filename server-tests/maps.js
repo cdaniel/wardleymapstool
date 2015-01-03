@@ -163,6 +163,126 @@ describe(
 						
 						
 					});
+			
+			
+			describe(
+					'get map',
+					function() {
 
+						it(
+								'getMap - simple success',
+								sinon
+										.test(function(done) {
+											var mapId = "313233343536373839616263";
+											// stub empty request
+											var req = {
+												user : {
+													href : "user_abcdef"
+												}
+											};
+											
+											var callback = function(err, maps){
+												done();
+											}
+
+											var find = this.stub(db.maps, 'find', function(query, projection){
+												
+												should(query).have.property('deleted', false);
+												should(query).have.property('userIdGoogle', req.user.href);
+												should(query._id == mapId).be.true;
+												
+												should(projection).have.property('history');
+												var historyQuery = projection.history;
+												should(historyQuery).have.property('$slice', -1);
+												
+												return {
+													toArray : function(clbck){
+														clbck(null,[{}]);
+													}
+												};
+											});
+											
+											
+											maps.getMap(req,mapId,callback);
+										}));
+						
+						it(
+								'getMap - no map found',
+								sinon
+										.test(function(done) {
+											var mapId = "313233343536373839616263";
+											// stub empty request
+											var req = {
+												user : {
+													href : "user_abcdef"
+												}
+											};
+											
+											var callback = function(maps){
+												should.fail('no maps, it should not be called');
+											};
+
+											var find = this.stub(db.maps, 'find', function(query, projection){
+												
+												should(query).have.property('deleted', false);
+												should(query).have.property('userIdGoogle', req.user.href);
+												should(query._id == mapId).be.true;
+												
+												should(projection).have.property('history');
+												var historyQuery = projection.history;
+												should(historyQuery).have.property('$slice', -1);
+												
+												return {
+													toArray : function(clbck){
+														clbck(null,[]);
+														done();
+													}
+												};
+											});
+											
+											
+											maps.getMap(req,mapId,callback);
+										}));
+						
+						it(
+								'getMap - error',
+								sinon
+										.test(function(done) {
+											var mapId = "313233343536373839616263";
+											// stub empty request
+											var req = {
+												user : {
+													href : "user_abcdef"
+												}
+											};
+											
+											var callback = function(maps){
+												should.fail('error, it should not be called');
+											};
+
+											var find = this.stub(db.maps, 'find', function(query, projection){
+												
+												should(query).have.property('deleted', false);
+												should(query).have.property('userIdGoogle', req.user.href);
+												should(query._id == mapId).be.true;
+												
+												should(projection).have.property('history');
+												var historyQuery = projection.history;
+												should(historyQuery).have.property('$slice', -1);
+												
+												return {
+													toArray : function(clbck){
+														clbck('error', null);
+														done();
+													}
+												};
+											});
+											
+											
+											maps.getMap(req,mapId,callback);
+										}));
+						
+						
+					});
 
 		});

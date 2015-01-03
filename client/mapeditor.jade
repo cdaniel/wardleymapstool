@@ -28,6 +28,17 @@ html
         link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css')
         link(rel='stylesheet', href='/mapeditor.css')
+        script.
+            var mapURL = '/api/map/#{map._id}';
+            var partialUpdateURL = '/api/map/partial/#{map._id}';
+            var map = {
+                name : "#{map.history[0].name}",
+                description : "#{map.history[0].description}",
+                userDate: "#{map.history[0].userDate}",
+                serverDate: "#{map.history[0].serverDate}",
+                nodes : !{JSON.stringify(map.history[0].nodes)},
+                connections: !{JSON.stringify(map.history[0].connections)}
+            };
     body
         .container-fluid
             nav.navbar.navbar-default(role="navigation")
@@ -41,21 +52,21 @@ html
                 #navbarCollapse.collapse.navbar-collapse
                     ul.nav.navbar-nav
                         li
-                            a#name(href="#" data-type="text" data-title="Map name" value="") loading...
+                            a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
                         li.dropdown
                             a.dropdown-toggle(data-toggle="dropdown" href="#") Export <b class="caret"></b>
                             ul.dropdown-menu(role="menu")
                                 li
-                                    a#exportsmall Small
+                                    a#exportsmall(download=map._id+".png" href="/api/map/" + map._id + "export/1/" + map._id + ".png") Small
                                 li
-                                    a#exportmedium Medium
+                                    a#exportmedium(download=map._id+".png" href="/api/map/" + map._id + "export/2/" + map._id + ".png") Medium
                                 li
-                                    a#exportsmall Large
+                                    a#exportsmall(download=map._id+".png" href="/api/map/" + map._id + "export/3/" + map._id + ".png") Large
                         li
                             a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
                                                         data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
             p Your goal: 
-                a#description(href="#" data-type="text" data-title="Your goal") loading...
+                a#description(href="#" data-type="text" data-title="Your goal" value=map.history[0].description data-pk="description" data-url='/api/map/partial/#{map._id}')=map.history[0].description
             //- canvas
             #map-container
                 // node menu

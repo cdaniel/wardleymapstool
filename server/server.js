@@ -161,11 +161,6 @@ var WardleyMapsApp = function() {
 			maps.updateMap(req, res, req.params.mapid);
 		};
 		
-		// 3. get a map
-		self.routes.get['/api/map/:mapid'] = function(req, res) {
-			maps.getLegacyMap(req, res, req.params.mapid);
-		};
-		
 		// 4. delete a map
 		self.routes.del['/api/map/:mapid'] = function(req, res) {
 			maps.deleteMap(req, res, req.params.mapid);
