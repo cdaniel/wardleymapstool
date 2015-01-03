@@ -25,9 +25,10 @@ Every contribution will be recognized.
 Coming soon:
 ------------
 I wish I could promise you a lot of exciting features, but things I will be working next include:
-1. mapeditor.js cleanup - that module is a spaghetti code mess. I need to find out a clean way to marry jsPlumb with the model that can be send back and forth to the server. Right now I query the jsPlumb instance before every save to gather list of nodes and connections.
-2. Once the editor is somewhat cleaned, it is necessary to reconcile the database model and the client model. Ideally they should be using either the same schema, or some API should be described (with tests).
-3. Login mechanisms need to be connected. Right now a user that registered using G+ is different from the user that registered in a traditional way using the same email address that was provided in G+.
+- mapeditor.js cleanup - that module is a spaghetti code mess. I need to find out a clean way to marry jsPlumb with the model that can be send back and forth to the server. Right now I query the jsPlumb instance before every save to gather list of nodes and connections.
+-  Once the editor is somewhat cleaned, it is necessary to reconcile the database model and the client model. Ideally they should be using either the same schema, or some API should be described (with tests).
+- Login mechanisms need to be connected. Right now a user that registered using G+ is different from the user that registered in a traditional way using the same email address that was provided in G+.
+- Did I mentioned Selenium End2End tests?
 
 UI Sketches:
 -----------------
@@ -36,4 +37,4 @@ which is open source and can be downloaded for all platforms from [its homepage]
 
 Support, questions and similar:
 -----------------
-Via twitter [@wardleymaps](https://twitter.com/wardleymaps).
+Via twitter [@wardleymaps](https://twitter.com/wardleymaps). Don't hesistate to ask, I will do what I can to help you.
