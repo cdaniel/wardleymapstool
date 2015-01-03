@@ -58,8 +58,8 @@ var WardleyMapsApp = function() {
 			self.zcache = {};
 			self.cache('index.js');
 			self.cache('index.css');
-			self.cache('mapeditor.html');
 			self.cache('mapeditor.js');
+			self.cache('mapeditor.css');
 			self.cache('logout.html');
 			self.cache('background.svg');
 			self.cache('dom.jsPlumb-1.7.2.js');
@@ -163,7 +163,7 @@ var WardleyMapsApp = function() {
 		
 		// 3. get a map
 		self.routes.get['/api/map/:mapid'] = function(req, res) {
-			maps.getMap(req, res, req.params.mapid);
+			maps.getLegacyMap(req, res, req.params.mapid);
 		};
 		
 		// 4. delete a map
@@ -181,8 +181,11 @@ var WardleyMapsApp = function() {
 		
 		// 5. map editor
 		self.routes.get['/map/:mapid'] = function(req, res) {
-			res.setHeader('Content-Type', 'text/html');
-			res.send(self.cache_get('mapeditor.html'));
+			maps.getMap(req, req.params.mapid, function(map) {
+				res.render('mapeditor', {
+					map : map
+				});
+			});
 		};
 		
 		// 6. export

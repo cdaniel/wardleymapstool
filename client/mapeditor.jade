@@ -1,0 +1,66 @@
+//-Copyright 2015 Krzysztof Daniel
+//-
+//-Licensed under the Apache License, Version 2.0 (the "License");
+//-you may not use this file except in compliance with the License.
+//-You may obtain a copy of the License at
+//-
+//-    http://www.apache.org/licenses/LICENSE-2.0
+//-
+//-Unless required by applicable law or agreed to in writing, software
+//-distributed under the License is distributed on an "AS IS" BASIS,
+//-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//-See the License for the specific language governing permissions and
+//-limitations under the License.
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title Wardley Maps Tool
+        script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+        script(src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js')
+        script(src='http://malsup.github.com/jquery.form.js')
+        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js')
+        script(src='/jqBootstrapValidation.js')
+        script(src='/dom.jsPlumb-1.7.2.js')
+        link(rel='stylesheet', href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css')
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css')
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
+        link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css')
+        link(rel='stylesheet', href='/mapeditor.css')
+    body
+        .container-fluid
+            nav.navbar.navbar-default(role="navigation")
+                .navbar-header
+                    button.navbar-toggle(type="button" data-target="#navbarCollapse" data-toggle="collapse")
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    a.navbar-brand(href="/") Wardley Maps Tool
+                #navbarCollapse.collapse.navbar-collapse
+                    ul.nav.navbar-nav
+                        li
+                            a#name(href="#" data-type="text" data-title="Map name" value="") loading...
+                        li.dropdown
+                            a.dropdown-toggle(data-toggle="dropdown" href="#") Export <b class="caret"></b>
+                            ul.dropdown-menu(role="menu")
+                                li
+                                    a#exportsmall Small
+                                li
+                                    a#exportmedium Medium
+                                li
+                                    a#exportsmall Large
+                        li
+                            a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
+                                                        data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
+            p Your goal: 
+                a#description(href="#" data-type="text" data-title="Your goal") loading...
+            //- canvas
+            #map-container
+                // node menu
+                ul#context-node-menu.context-node-menu
+                    li(data-action="delete") Delete
+                #value Value
+                #evolution Evolution
+        script(src='/mapeditor.js')

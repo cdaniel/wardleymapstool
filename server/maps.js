@@ -213,7 +213,7 @@ function partialMapUpdate(req, res, mapId) {
 	});
 }
 
-function getMap(req, res, mapId) {
+function getLegacyMap(req, res, mapId) {
 
 	var userId = req.user.href;
 	
@@ -237,6 +237,36 @@ function getMap(req, res, mapId) {
 			res.send(JSON.stringify(err));
 		} else {
 			res.send(JSON.stringify(maps[0].history[0]));
+		}
+	});
+	
+}
+
+function getMap(req, mapId, callback) {
+
+	var userId = req.user.href;
+	
+	mapId = require('./db').toDatabaseId(mapId);
+	logger.debug("getting map", mapId, "for user", userId);
+
+	db.maps.find({
+		"userIdGoogle" : userId,
+		"_id" : mapId,
+		deleted : false
+	/* don't return deleted maps */
+	}, {
+		history : {
+			$slice : -1
+		}
+	}).toArray(function(err, maps) {
+		if (err !== null) {
+			res.setHeader('Content-Type', 'application/json');
+			logger.error(err);
+			res.statusCode = 500;
+			res.send(JSON.stringify(err));
+			res.end();
+		} else {
+			callback(maps[0]);
 		}
 	});
 	
@@ -280,6 +310,7 @@ exports.deleteMap = deleteMap;
 exports.updateMap = updateMap;
 exports.partialMapUpdate = partialMapUpdate;
 /* get single map */
+exports.getLegacyMap = getLegacyMap;
 exports.getMap = getMap;
 /* get all the maps of the user */
 exports.getMaps = getMaps;
