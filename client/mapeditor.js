@@ -213,34 +213,6 @@ function drawMap(){
 	jsPlumb.setSuspendDrawing(false, true);
 }
 
-/**
- * unused right now.
- */
-function drawParticipants(){
-	var table = $('#listOfParticipants');
-	table.empty();
-	
-	var row = "";
-	for ( var pIndex in map.participants) {
-		var aParticipant = map.participants[pIndex];
-		var row = $('<tr>');
-
-		var cell = $('<td>');
-		cell.text(aParticipant.name);
-		cell.css('color', aParticipant.color);
-		row.append(cell);
-
-		
-		cell = $('<td>');
-		var link = $('<a>').attr('href', '#');
-		/** deleting participants binding should be here*/
-		link.text('Delete');
-		cell.append(link);
-		row.append(cell);
-
-		table.append(row);
-	}
-}
 
 function init(){
 	//turn to inline mode
