@@ -41,7 +41,7 @@ var WardleyMapsApp = function() {
 	 */
 	self.setupVariables = function() {
 		// Set the environment variables we need.
-		self.ipaddress = "127.0.0.1";
+		self.ipaddress = "0.0.0.0";
 		self.port =  8080;
 		self.localmode = true;
 	};
