@@ -12,142 +12,106 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-
-// those are initialized server side
+//-this is initialized server side
 //var mapURL
-// var map - real map data, too.
-
+//
+// real map data, too.
+//var map;
+"use strict";
 
 var dirtyIndex = 0;
 var lastSavedIndex = 0;
 var saving = false;
 
-function fireDirty(){
-	dirtyIndex ++; 
+function fireDirty() {
+	dirtyIndex++;
 }
+
+var NODE_SIZE = 10;
 /**
  * This global variable holds a recently selected node.
  */
 var selectedNode = null;
 
 function saveMap() {
-	if (map != null) {
-		 var items = [];
-		 
-		 //this is very ugly. I could see something like a listener on a jsPlumb updating the model directly
-		 //during changes.
-		    $(".item").each(function (idx, elem) {
-		        var $elem = $(elem);
-		        var endpoints = jsPlumb.getEndpoints($elem.attr('id'));
-		            items.push({
-		                componentId: $elem.attr('id'),
-		                /* position needs to be represented as 0-1 float to make sure we can fit it on every screen*/
-		                positionX: parseInt($elem.css("left"), 10)/parseInt($('#map-container').width(), 10),
-		                positionY: parseInt($elem.css("top"), 10)/parseInt($('#map-container').height(), 10),
-		                name: $elem.data('node').name
-		            });
-		        });
-		    var connections = [];
-		    
-		    $.each(jsPlumb.getAllConnections(), function (idx, connection) {
-		    	connections.push({
-		    		connectionId: connection.id,
-		    		pageSourceId: connection.sourceId,
-		    		pageTargetId: connection.targetId,
-		    		scope: connection.scope
-		        });
-		    });
-		    //overwrite whatever we have
-		    map.nodes = items;
-		    map.connections = connections;
-		saving = true;
-		var dirtyIndexCopy = dirtyIndex;
-		$.ajax({
-			url : mapURL,
-			type : 'post',
-			async : 'true',
-			data : map,
-			success : function(result) {
-				if (result.status) {
-					console.log('something went wrong');
-				} else {
-					console.log(result);
-				}
-				saving = false;
-				lastSavedIndex = dirtyIndexCopy;
-			},
-			error : function(request, error) {
-				console.log('An error while getting map list!', error);
-				console.log('error ' + dirtyIndexCopy);
-				saving = false;
+	saving = true;
+	var dirtyIndexCopy = dirtyIndex;
+	$.ajax({
+		url : mapURL,
+		type : 'post',
+		async : 'true',
+		data : map,
+		success : function(result) {
+			if (result.status) {
+				console.log('something went wrong');
+			} else {
+				console.log(result);
 			}
-		});
-	}
+			saving = false;
+			lastSavedIndex = dirtyIndexCopy;
+		},
+		error : function(request, error) {
+			console.log('An error while getting map list!', error);
+			console.log('error ' + dirtyIndexCopy);
+			saving = false;
+		}
+	});
 }
 
-function drawMap(){
+function drawMap() {
+	
 	var mapContainer = $('#map-container');
 	var width = mapContainer.width();
 	var height = mapContainer.height();
-	
-	
+
 	jsPlumb.setSuspendDrawing(true);
-	
-	
-	for(var index in map.nodes){
-		var node = new Node(mapContainer, map.nodes[index].componentId);
-		var top = parseInt(map.nodes[index].positionY * height,10)+'px';
-		var left = parseInt(map.nodes[index].positionX * width,10)+'px';
-		
+
+	for (var index = 0; index < map.nodes.length; index++) {
+		var node = new HTMLMapNode(mapContainer, map.nodes[index]);
+		var top = parseInt(map.nodes[index].positionY * height, 10) + 'px';
+		var left = parseInt(map.nodes[index].positionX * width, 10) + 'px';
 		node.move({
 			'top' : top,
 			'left' : left
-		},false);
-		
-		node.setText(map.nodes[index].name);
-		
-	}
+		}, false);
+	};
 	if (map.connections) {
-		$
-				.each(
-						map.connections,
-						function(index, elem) {
-							var scope = elem.scope;
-							//backward compatibility, no scope defined
-							if(scope == undefined){
-								scope = jsPlumb.getDefaultScope();
-							}
-							var src = jsPlumb.selectEndpoints({
-								source : elem.pageSourceId,
-								scope : scope
-							}).get(0);
-							var trg = jsPlumb.selectEndpoints({
-								target : elem.pageTargetId,
-								scope : scope
-							}).get(0);
-							var connection = jsPlumb.connect({
-								source : src,
-								target : trg,
-								deleteEndpointsOnDetach:false
-							});	
-							// this was used to prepare hover menus
-							// on connections.
-							/*prepareConnectionMenu(connection);*/
-						});
-	}
+		$.each(map.connections, function(index, elem) {
+			var scope = elem.scope;
+			//backward compatibility, no scope defined
+			if (scope == undefined) {
+				scope = jsPlumb.getDefaultScope();
+			}
+			var src = jsPlumb.selectEndpoints({
+				source : elem.pageSourceId,
+				scope : scope
+			}).get(0);
+			var trg = jsPlumb.selectEndpoints({
+				target : elem.pageTargetId,
+				scope : scope
+			}).get(0);
+			var connection = jsPlumb.connect({
+				source : src,
+				target : trg,
+				deleteEndpointsOnDetach : false
+			});
+			// this was used to prepare hover menus
+			// on connections.
+			/*prepareConnectionMenu(connection);*/
+		});
+	};
 	jsPlumb.setSuspendDrawing(false, true);
 }
 
-
-function init(){
+function init() {
 	//turn to inline mode
 	$.fn.editable.defaults.mode = 'inline';
-	
-	$( "#context-node-menu" ).menu();
-	
+
+	$("#context-node-menu").menu();
+
 	//initialize widgets
 	$('#name').editable({
-		success: function(data, config){
+		success : function(data, config) {
 			map.name = config;
 			// no need to fireDirty as this widget automagically updates the map
 			// when this field is changed, but only this field is saved
@@ -155,17 +119,16 @@ function init(){
 		}
 	});
 	$('#description').editable({
-		success: function(data, config){
+		success : function(data, config) {
 			map.description = config;
 			// no need to fireDirty as this widget automagically updates the map
 			// when this field is changed, but only this field is saved
 			//fireDirty();
 		}
 	});
-	
+
 	drawMap();
 }
-
 
 //=======================================
 // MAP DRAWING UTILITIES - START
@@ -184,70 +147,74 @@ var endpointOptions = {
 	endpoint : [ "Dot", {
 		radius : 1
 	} ],
-	deleteEndpointsOnDetach:false, 
-	uniqueEndpoints: true
+	deleteEndpointsOnDetach : false,
+	uniqueEndpoints : true
 };
 
 var actionEndpointOptions = {
-		connector : "Straight",
-		connectorStyle : {
-			lineWidth : 2,
-			strokeStyle : 'green'
-		},
-		endpoint : [ "Dot", {
-			radius : 1
-		} ],
-		connectorOverlays: [ [ "Arrow", { location:1.0 } ] ],
-		deleteEndpointsOnDetach:false,
-		uniqueEndpoints: true
-	};
+	connector : "Straight",
+	connectorStyle : {
+		lineWidth : 2,
+		strokeStyle : 'green'
+	},
+	endpoint : [ "Dot", {
+		radius : 1
+	} ],
+	connectorOverlays : [ [ "Arrow", {
+		location : 1.0
+	} ] ],
+	deleteEndpointsOnDetach : false,
+	uniqueEndpoints : true
+};
 
-function Node(parentNode, id) {
+function HTMLMapNode(parentNode, nodeData) {
 	var self = this;
-	
-	// in case id was not supplied
-	if(typeof id === 'undefined'){
-		id = Date.now();
+
+	// in case nodeData was not supplied
+	if (!nodeData) {
+		nodeData = {};
+		nodeData.componentId = Date.now();
+		nodeData.name = "";
+		nodeData.positionX = 0.5;
+		nodeData.positionY = 0.5;
+		map.nodes.push(nodeData);
 	}
-	self.id = id;
-	
-	/**
-	 * just initialize
-	 */
-	self.name = "";
-	
+	self.nodeData = nodeData;
+
 	// create and append item to the canvas
-	self.internalNode = $('<div>').attr('id', self.id).addClass('item');
-	
+	self.internalNode = $('<div>').attr('id', self.nodeData.componentId)
+			.addClass('item');
+
 	// store the object for future use
-	$(self.internalNode).data('node',self);
+	$(self.internalNode).data('node', self);
 	parentNode.append(self.internalNode);
-	
+
 	//a placeholder for the text
-	self.caption = $('<a>').addClass("itemCaption").attr('id', self.id + 'itemCaption').attr('href','#');
+	self.caption = $('<a>').addClass("itemCaption").attr('id',
+			self.nodeData.componentId + 'itemCaption').attr('href', '#');
 	self.internalNode.append(self.caption);
 	self.caption.attr('data-type', 'text');
 	self.caption.attr('data-title', 'Component Name');
-	self.caption.text(self.name);
+	self.caption.text(self.nodeData.name);
 	self.caption.editable({
-		 value : self.name,
-		 success: function(response, newValue) {
-			 self.name = newValue; //update backbone model
-			 fireDirty();
+		value : self.nodeData.name,
+		success : function(response, newValue) {
+			self.nodeData.name = newValue; //update backbone model
+			fireDirty();
 		},
 		unsavedclass : null,
 		mode : 'popup'
 	});
-	
-	
+
 	jsPlumb.draggable(self.internalNode, {
 		containment : 'parent',
 		distance : 5,
-		drag : function(){
+		drag : function() {
+			self.updatePositionData();
 			fireDirty();
 		}
 	});
-	
+
 	// accept incoming connections
 	jsPlumb.makeTarget(self.internalNode, {
 		scope : "Actions " + jsPlumb.getDefaultScope(),
@@ -260,12 +227,12 @@ function Node(parentNode, id) {
 		scope : jsPlumb.getDefaultScope(),
 		dropOptions : {
 			scope : jsPlumb.getDefaultScope(),
-			tolerance:'touch'
+			tolerance : 'touch'
 		},
 		deleteEndpointsOnDetach : false,
-		uuid : self.id + jsPlumb.getDefaultScope() +"i"
+		uuid : self.nodeData.componentId + jsPlumb.getDefaultScope() + "i"
 	});
-	
+
 	self.endpointOut = jsPlumb.addEndpoint(self.internalNode, endpointOptions,
 			{
 				anchor : "BottomCenter",
@@ -275,7 +242,7 @@ function Node(parentNode, id) {
 				dragOptions : {
 					scope : "Actions"
 				},
-				uuid : self.id + jsPlumb.getDefaultScope() +"o"
+				uuid : self.nodeData.componentId + jsPlumb.getDefaultScope() + "o"
 			});
 
 	self.actionEndpointIn = jsPlumb.addEndpoint(self.internalNode,
@@ -285,24 +252,23 @@ function Node(parentNode, id) {
 				scope : "Actions",
 				dropOptions : {
 					scope : "Actions",
-					tolerance:'touch'
+					tolerance : 'touch'
 				},
 				deleteEndpointsOnDetach : false,
-				uuid : self.id + "Actions" +"i"
+				uuid : self.nodeData.componentId + "Actions" + "i"
 			});
 
-	self.actionEndpointOut = jsPlumb.addEndpoint(self.internalNode, actionEndpointOptions,{
-		anchor : "Right",
-		isSource : true,
-		scope : "Actions",
-		deleteEndpointsOnDetach : false,
-		uuid : self.id + "Actions" +"o",
-		dragOptions : {
-			scope : "Actions"
-		}
-	});
-	
-	
+	self.actionEndpointOut = jsPlumb.addEndpoint(self.internalNode,
+			actionEndpointOptions, {
+				anchor : "Right",
+				isSource : true,
+				scope : "Actions",
+				deleteEndpointsOnDetach : false,
+				uuid : self.nodeData.componentId + "Actions" + "o",
+				dragOptions : {
+					scope : "Actions"
+				}
+			});
 
 	self.focus = function() {
 		if (selectedNode != null) {
@@ -317,6 +283,13 @@ function Node(parentNode, id) {
 			endpoints[i].setPaintStyle(ps);
 		}
 		self.internalNode.addClass('itemSelected');
+	};
+
+	self.updatePositionData = function() {
+		self.nodeData.positionX = parseInt(self.internalNode.css("left"), 10)
+				/ parseInt($('#map-container').width(), 10);
+		self.nodeData.positionY = parseInt(self.internalNode.css("top"), 10)
+				/ parseInt($('#map-container').height(), 10);
 	};
 
 	self.blur = function() {
@@ -335,64 +308,63 @@ function Node(parentNode, id) {
 		selectedNode = null;
 		self.internalNode.removeClass('itemSelected');
 	};
-	
 
 	self.internalNode.on("contextmenu", function(event) {
 		// Avoid the real one
-	    event.preventDefault();
-	    
-	    $("#context-node-menu").data("node", self);
-	    
-	    // Show contextmenu
-	    if(!$('#context-node-menu').is(':visible')){
-	    	$("#context-node-menu").show(100);
-	    }
-	    
-	    // In the right position (the mouse)
-	    $("#context-node-menu").css({
-	    	top: event.currentTarget.offsetTop,
-	        left: event.pageX
-	    });
+		event.preventDefault();
+
+		$("#context-node-menu").data("node", self);
+
+		// Show contextmenu
+		if (!$('#context-node-menu').is(':visible')) {
+			$("#context-node-menu").show(100);
+		}
+
+		// In the right position (the mouse)
+		$("#context-node-menu").css({
+			top : event.currentTarget.offsetTop,
+			left : event.pageX
+		});
 	});
-	
 
 	self.internalNode.on("click", function(event) {
 		// Hide contextmenu if still visible.
-	    if($('#context-node-menu').is(':visible')){
-	    	$("#context-node-menu").hide(100);
-	    }
-	    
-	    if(selectedNode == self) {
-	    	self.blur();
-	    } else {
-	    	self.focus();
-	    }
-	    
+		if ($('#context-node-menu').is(':visible')) {
+			$("#context-node-menu").hide(100);
+		}
+
+		if (selectedNode == self) {
+			self.blur();
+		} else {
+			self.focus();
+		}
+
 	});
-	
+
 	/**
 	 * accepts {top,left}
 	 */
-	self.move = function(newposition,repaint){
+	self.move = function(newposition, repaint) {
 		self.internalNode.css(newposition);
-		if("" + repaint === 'true'){
+		self.updatePositionData();
+		if (repaint) {
 			jsPlumb.repaintEverything();
 		}
 	};
-	
-	self.setText = function(text){
-		self.name = text;
+
+	self.setText = function(text) {
+		self.nodeData.name = text;
 		self.caption.editable('setValue', text);
 	};
-	
-	self.getText = function(){
-		return self.name;
+
+	self.getText = function() {
+		return self.nodeData.name;
 	};
-	
-	self.remove = function(){
-		
+
+	self.remove = function() {
+
 		self.blur();
-		
+
 		jsPlumb.deleteEndpoint(self.endpointOut);
 		jsPlumb.deleteEndpoint(self.actionEndpointOut);
 		jsPlumb.deleteEndpoint(self.endpointIn);
@@ -400,10 +372,19 @@ function Node(parentNode, id) {
 		jsPlumb.detachAllConnections(self.internalNode);
 		self.internalNode.remove();
 		fireDirty();
-		// TODO: remove from a map, if it will be stored there
-		delete self;
+
+		for (var i = 0; i < map.nodes.length; i++) {
+			if (self.nodeData === map.nodes[i]) {
+				map.nodes = map.nodes.splice(i, 1);
+				console.log('deleted node ', i);
+				break;
+			}
+		}
+		;
+		delete self.nodeData;
+		self = null;
 	};
-	
+
 	self.setUserNeed = function(userneed) {
 		if ("" + userneed === 'true') {
 			self.internalNode.addClass("mapUserNeed");
@@ -419,18 +400,18 @@ jsPlumb.ready(function() {
 	var mapContainer = $('#map-container');
 	// create new component/node on click
 	mapContainer.click(function(e) {
-		
+
 		// click on the map, awful comparison but works		
-		if($(e.target)[0]== $('#map-container')[0]){
-			
+		if ($(e.target)[0] == $('#map-container')[0]) {
+
 			// if the node context menu is visible, hide it
-			if($('#context-node-menu').is(':visible')){
+			if ($('#context-node-menu').is(':visible')) {
 				$("#context-node-menu").hide(100);
 				return;
 			}
-			
+
 			// create new node otherwise
-			var n = new Node(mapContainer);
+			var n = new HTMLMapNode(mapContainer);
 			n.move({
 				'top' : e.pageY - e.target.offsetTop,
 				'left' : e.pageX - e.target.offsetLeft
@@ -439,25 +420,26 @@ jsPlumb.ready(function() {
 			fireDirty();
 		}
 	});
+	init();
 });
-
 
 jsPlumb.bind("contextmenu", function(component, event) {
 	// Avoid the real one
-    event.preventDefault();
-    
-    $("#context-node-menu").data("node", $(component.getElement()).data('node'));
-    
-    // Show contextmenu
-    if(!$('#context-node-menu').is(':visible')){
-    	$("#context-node-menu").show(100);
-    }
-    
-    // In the right position (the mouse)
-    $("#context-node-menu").css({
-    	top: event.currentTarget.offsetTop,
-        left: event.pageX
-    });
+	event.preventDefault();
+
+	$("#context-node-menu")
+			.data("node", $(component.getElement()).data('node'));
+
+	// Show contextmenu
+	if (!$('#context-node-menu').is(':visible')) {
+		$("#context-node-menu").show(100);
+	}
+
+	// In the right position (the mouse)
+	$("#context-node-menu").css({
+		top : event.currentTarget.offsetTop,
+		left : event.pageX
+	});
 });
 // programatically created connections have menu created during creation,
 // but drag and drop must be intercepted.
@@ -482,6 +464,14 @@ jsPlumb.bind("beforeDrop", function(connection) {
 		uuids : [ outcomingEndpointId, acceptingEndpointId, ],
 		deleteEndpointsOnDetach : false
 	});
+	
+	var connectionData = {
+			connectionId : c.id,
+			pageSourceId : c.sourceId,
+			pageTargetId : c.targetId,
+			scope : c.scope
+	};
+	map.connections.push(connectionData);
 
 	// this is a giant hack that cost me 2 weeks of investigation.
 	// makeTarget creates endpoints, and we need to remove them,
@@ -502,77 +492,68 @@ jsPlumb.bind("beforeDrop", function(connection) {
 	return false;
 });
 
-jsPlumb
-		.bind(
-				"connectionDragStop",
-				function(info, e) {
-					// console.log('dragstop', info.sourceId, info.targetId);
+jsPlumb.bind("connectionDragStop", function(info, e) {
+	var sourceId = info.sourceId;
+	var targetId = info.targetId;
+	var mapContainer = $('#map-container');
 
-					var sourceId = info.sourceId;
-					var targetId = info.targetId;
-					var mapContainer = $('#map-container');
+	if (info.targetId.indexOf('jsPlumb') === 0) {
+		var n = new HTMLMapNode(mapContainer, null);
+		n.move({
+			'top' : e.clientY - mapContainer.offset().top - NODE_SIZE,
+			'left' : e.clientX - mapContainer.offset().left - NODE_SIZE
+		}, true);
+		targetId = "" + n.nodeData.componentId;
 
-					if (info.targetId.indexOf('jsPlumb') === 0) {
-						// console.log('wrong target, creating node',
-						// info.targetId);
-						var n = new Node(mapContainer);
-						n
-								.move(
-										{
-											'top' : e.clientY
-													- mapContainer.offset().top
-													- 10 /* node size */,
-											'left' : e.clientX
-													- mapContainer.offset().left
-													- 10/* node size */
-										}, true);
-						targetId = "" + n.id;
+		var outcomingEndpointId = info.sourceId + info.scope + "o";
+		var acceptingEndpointId = targetId + info.scope + "i";
+		var c = jsPlumb.connect({
+			uuids : [ outcomingEndpointId, acceptingEndpointId, ],
+			deleteEndpointsOnDetach : false
+		});
+		var connectionData = {
+				connectionId : c.id,
+				pageSourceId : c.sourceId,
+				pageTargetId : c.targetId,
+				scope : c.scope
+		};
+		
+		map.connections.push(connectionData);
+		n.focus();
+		fireDirty();
+	}
+});
 
-						var outcomingEndpointId = info.sourceId + info.scope
-								+ "o";
-						var acceptingEndpointId = targetId + info.scope + "i";
+$("#context-node-menu > li").click(function() {
 
-						var c = jsPlumb
-								.connect({
-									uuids : [ outcomingEndpointId,
-											acceptingEndpointId, ],
-									deleteEndpointsOnDetach : false
-								});
-						n.focus();
-						fireDirty();
-					}
-				});
-
-
-$("#context-node-menu > li").click(function(){
-    
 	$("#context-node-menu").hide(100);
 
 	var node = $(this).parent().data('node');
-	
-    if(typeof node === 'undefined'){
-    	console.log('no node!');
-    	return;
-    }
-    
-    // This is the triggered action name
-    switch($(this).attr("data-action")) {
-        // A case for each action. Your actions here
-        case "delete": node.remove(); break;
-    }
-  
-  });
+
+	if (typeof node === 'undefined') {
+		console.log('no node!');
+		return;
+	}
+
+	// This is the triggered action name
+	switch ($(this).attr("data-action")) {
+	// A case for each action. Your actions here
+	case "delete":
+		node.remove();
+		break;
+	}
+
+});
 //=======================================
 //MAP DRAWING UTILITIES - END
 //=======================================
-function saveLoop(){
-	setTimeout(function(){
-		if(lastSavedIndex != dirtyIndex && !saving){
+function saveLoop() {
+	setTimeout(function() {
+		if (lastSavedIndex != dirtyIndex && !saving) {
 			saveMap();
 		}
 		saveLoop();
 	}, 1000);
 }
 
-$(document).ready(init);
 saveLoop();

@@ -247,7 +247,7 @@ var thumbnail_draw = function(res, filename, map){
 			
 		}
 		if(start == undefined || end == undefined){
-			logger.error('found connection' + connection + ' without nodes');
+			logger.error('found connection ' + source + ' ' + target  + ' without nodes');
 		} else {
 			ctx.moveTo(start.x, start.y);
 			ctx.lineTo(end.x,end.y);
