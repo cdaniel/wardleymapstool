@@ -40,7 +40,9 @@ function createNewMap(req, res){
 			name : name,
 			description : description,
 			userDate : date,
-			serverDate : new Date()
+			serverDate : new Date(),
+			nodes : [],
+			connections : []
 	};
 	
 	var meta = {
@@ -235,6 +237,12 @@ function getMap(req, mapId, callback) {
 		} else if(maps.length === 0) {
 			logger.warn('no map ' + mapId + ' for user ' + userId + ' found!');
 		} else {
+			if(!maps[0].history[0].nodes){
+				maps[0].history[0].nodes = [];
+			}
+			if(!maps[0].history[0].connections){
+				maps[0].history[0].connections = [];
+			}
 			callback(maps[0]);
 		}
 	});
