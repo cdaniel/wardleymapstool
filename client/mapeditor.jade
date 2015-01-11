@@ -68,10 +68,9 @@ html
             p Your goal: 
                 a#description(href="#" data-type="text" data-title="Your goal" value=map.history[0].description data-pk="description" data-url='/api/map/partial/#{map._id}')=map.history[0].description
             //- canvas
-            #map-container
-                // node menu
-                ul#context-node-menu.context-node-menu
-                    li(data-action="delete") Delete
+            #map-container.col-lg-10
                 #value Value
                 #evolution Evolution
+            #menu.col-lg-2
+                button#deleteButton.btn.btn-danger.disabled(onclick="deleteSelection()") Delete
         script(src='/mapeditor.js')

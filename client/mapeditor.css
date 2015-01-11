@@ -1,6 +1,5 @@
 #map-container {
     border: 1px solid gray;
-    width: 100%;
     min-height: 800px;
     overflow: auto;
     height: auto;
@@ -51,27 +50,6 @@
 .mapUserNeed {
     border-width: 4px;
     border-style: double;
-}
-
-.context-node-menu {
-    display: none;
-    z-index: 1000;
-    position: absolute;
-    overflow: hidden;
-    border: 1px solid #CCC;
-    white-space: nowrap;
-    color: #333;
-    border-radius: 5px;
-    list-style: none;
-    background-color: white;
-}
-
-.context-node-menu li {
-    padding: 5px;
-}
-
-.context-node-menu li:hover {
-    background-color: #DDD;
 }
 
 #value {

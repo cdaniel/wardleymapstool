@@ -33,6 +33,21 @@ var NODE_SIZE = 10;
  */
 var selectedNode = null;
 
+function updateSelectionMenus(){
+	if(selectedNode){
+		$('#deleteButton').removeClass('disabled');
+	} else {
+		$('#deleteButton').addClass('disabled');
+	}
+}
+
+function deleteSelection(){
+	if(selectedNode){
+		selectedNode.remove();
+		updateSelectionMenus();
+	}
+}
+
 function saveMap() {
 	saving = true;
 	var dirtyIndexCopy = dirtyIndex;
@@ -107,8 +122,6 @@ function init() {
 	//turn to inline mode
 	$.fn.editable.defaults.mode = 'inline';
 
-	$("#context-node-menu").menu();
-
 	//initialize widgets
 	$('#name').editable({
 		success : function(data, config) {
@@ -173,13 +186,14 @@ function HTMLMapNode(parentNode, nodeData) {
 	// in case nodeData was not supplied
 	if (!nodeData) {
 		nodeData = {};
-		nodeData.componentId = Date.now();
+		nodeData.componentId = "" + Date.now();
 		nodeData.name = "";
 		nodeData.positionX = 0.5;
 		nodeData.positionY = 0.5;
 		map.nodes.push(nodeData);
 	}
 	self.nodeData = nodeData;
+	nodeData.componentId = "" + nodeData.componentId; 
 
 	// create and append item to the canvas
 	self.internalNode = $('<div>').attr('id', self.nodeData.componentId)
@@ -309,34 +323,13 @@ function HTMLMapNode(parentNode, nodeData) {
 		self.internalNode.removeClass('itemSelected');
 	};
 
-	self.internalNode.on("contextmenu", function(event) {
-		// Avoid the real one
-		event.preventDefault();
-
-		$("#context-node-menu").data("node", self);
-
-		// Show contextmenu
-		if (!$('#context-node-menu').is(':visible')) {
-			$("#context-node-menu").show(100);
-		}
-
-		// In the right position (the mouse)
-		$("#context-node-menu").css({
-			top : event.currentTarget.offsetTop,
-			left : event.pageX
-		});
-	});
-
 	self.internalNode.on("click", function(event) {
-		// Hide contextmenu if still visible.
-		if ($('#context-node-menu').is(':visible')) {
-			$("#context-node-menu").hide(100);
-		}
-
 		if (selectedNode == self) {
 			self.blur();
+			updateSelectionMenus();
 		} else {
 			self.focus();
+			updateSelectionMenus();
 		}
 
 	});
@@ -371,22 +364,25 @@ function HTMLMapNode(parentNode, nodeData) {
 		jsPlumb.deleteEndpoint(self.actionEndpointIn);
 		jsPlumb.detachAllConnections(self.internalNode);
 		self.internalNode.remove();
-		fireDirty();
-
 		for (var i = 0; i < map.nodes.length; i++) {
-			if (self.nodeData === map.nodes[i]) {
-				map.nodes = map.nodes.splice(i, 1);
-				console.log('deleted node ', i);
+			if (self.nodeData.componentId === map.nodes[i].componentId) {
+				map.nodes.splice(i, 1); 
 				break;
 			}
-		}
-		;
+		};
+		for (var j = map.connections.length - 1; j > -1 ; j--) {
+			console.log(self.nodeData.componentId, map.connections[j].pageSourceId, map.connections[j].pageTargetId);
+			if (self.nodeData.componentId === map.connections[j].pageSourceId
+					|| self.nodeData.componentId === map.connections[j].pageTargetId) {
+				map.connections.splice(j, 1); 
+			}
+		};
 		delete self.nodeData;
-		self = null;
+		fireDirty();
 	};
 
 	self.setUserNeed = function(userneed) {
-		if ("" + userneed === 'true') {
+		if (userneed) {
 			self.internalNode.addClass("mapUserNeed");
 		} else {
 			self.internalNode.removeClass("mapUserNeed");
@@ -404,12 +400,6 @@ jsPlumb.ready(function() {
 		// click on the map, awful comparison but works		
 		if ($(e.target)[0] == $('#map-container')[0]) {
 
-			// if the node context menu is visible, hide it
-			if ($('#context-node-menu').is(':visible')) {
-				$("#context-node-menu").hide(100);
-				return;
-			}
-
 			// create new node otherwise
 			var n = new HTMLMapNode(mapContainer);
 			n.move({
@@ -423,24 +413,6 @@ jsPlumb.ready(function() {
 	init();
 });
 
-jsPlumb.bind("contextmenu", function(component, event) {
-	// Avoid the real one
-	event.preventDefault();
-
-	$("#context-node-menu")
-			.data("node", $(component.getElement()).data('node'));
-
-	// Show contextmenu
-	if (!$('#context-node-menu').is(':visible')) {
-		$("#context-node-menu").show(100);
-	}
-
-	// In the right position (the mouse)
-	$("#context-node-menu").css({
-		top : event.currentTarget.offsetTop,
-		left : event.pageX
-	});
-});
 // programatically created connections have menu created during creation,
 // but drag and drop must be intercepted.
 //
@@ -524,26 +496,6 @@ jsPlumb.bind("connectionDragStop", function(info, e) {
 	}
 });
 
-$("#context-node-menu > li").click(function() {
-
-	$("#context-node-menu").hide(100);
-
-	var node = $(this).parent().data('node');
-
-	if (typeof node === 'undefined') {
-		console.log('no node!');
-		return;
-	}
-
-	// This is the triggered action name
-	switch ($(this).attr("data-action")) {
-	// A case for each action. Your actions here
-	case "delete":
-		node.remove();
-		break;
-	}
-
-});
 //=======================================
 //MAP DRAWING UTILITIES - END
 //=======================================
