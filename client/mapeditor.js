@@ -32,9 +32,10 @@ var NODE_SIZE = 10;
  * This global variable holds a recently selected node.
  */
 var selectedNode = null;
+var selectedConnection = null;
 
 function updateSelectionMenus(){
-	if(selectedNode){
+	if(selectedNode || selectedConnection){
 		$('#deleteButton').removeClass('disabled');
 	} else {
 		$('#deleteButton').addClass('disabled');
@@ -44,7 +45,52 @@ function updateSelectionMenus(){
 function deleteSelection(){
 	if(selectedNode){
 		selectedNode.remove();
-		updateSelectionMenus();
+	}
+	if(selectedConnection){
+		jsPlumb.detach(selectedConnection);
+		for (var i = 0; i < map.connections.length; i++) {
+			if(map.connections[i].connectionId === selectedConnection.id){
+				map.connections.splice(i,1);
+				fireDirty();
+				break;
+			}
+		}
+		selectedConnection = null;
+	}
+	updateSelectionMenus();
+}
+
+function addConnectionListener(c) {
+	console.log('adding listener to ' + c.id);
+	if (c) {
+		c.bind("click", function(conn) {
+			if (selectedConnection == conn) {
+				toggleConnectionSelectedStyle(selectedConnection, false);
+				selectedConnection = null;
+			} else {
+				if (selectedNode) {
+					selectedNode.blur();
+				}
+				selectedNode = null;
+				toggleConnectionSelectedStyle(selectedConnection, false);
+				selectedConnection = conn;
+				toggleConnectionSelectedStyle(selectedConnection, true);
+			}
+			updateSelectionMenus();
+		});
+	}
+}
+
+function toggleConnectionSelectedStyle(c, enable) {
+	if (c) {
+		var ps = c.getPaintStyle();
+		ps = jQuery.extend({}, ps);
+		if (enable) {
+			ps.lineWidth = 6;
+		} else {
+			ps.lineWidth = 2;
+		}
+		c.setPaintStyle(ps);
 	}
 }
 
@@ -110,9 +156,10 @@ function drawMap() {
 				target : trg,
 				deleteEndpointsOnDetach : false
 			});
-			// this was used to prepare hover menus
-			// on connections.
-			/*prepareConnectionMenu(connection);*/
+			// workaround, id is internal and can't be edited,
+			// so we must change the model each time we load it.
+			elem.connectionId = connection.id;
+			addConnectionListener(connection);
 		});
 	};
 	jsPlumb.setSuspendDrawing(false, true);
@@ -155,7 +202,9 @@ var endpointOptions = {
 	connector : "Straight",
 	connectorStyle : {
 		lineWidth : 2,
-		strokeStyle : 'silver'
+		strokeStyle : 'silver',
+		outlineWidth: 10,
+		outlineColor : 'rgba(0,0,255,0.2)'
 	},
 	endpoint : [ "Dot", {
 		radius : 1
@@ -168,7 +217,9 @@ var actionEndpointOptions = {
 	connector : "Straight",
 	connectorStyle : {
 		lineWidth : 2,
-		strokeStyle : 'green'
+		strokeStyle : 'green',
+		outlineWidth: 10,
+		outlineColor : 'rgba(0,0,255,0.2)'
 	},
 	endpoint : [ "Dot", {
 		radius : 1
@@ -285,6 +336,10 @@ function HTMLMapNode(parentNode, nodeData) {
 			});
 
 	self.focus = function() {
+		if(selectedConnection){
+			toggleConnectionSelectedStyle(selectedConnection, false);
+			selectedConnection = null;
+		}
 		if (selectedNode != null) {
 			selectedNode.blur();
 		}
@@ -443,6 +498,9 @@ jsPlumb.bind("beforeDrop", function(connection) {
 			pageTargetId : c.targetId,
 			scope : c.scope
 	};
+	
+	addConnectionListener(c);
+	
 	map.connections.push(connectionData);
 
 	// this is a giant hack that cost me 2 weeks of investigation.
@@ -489,6 +547,7 @@ jsPlumb.bind("connectionDragStop", function(info, e) {
 				pageTargetId : c.targetId,
 				scope : c.scope
 		};
+		addConnectionListener(c);
 		
 		map.connections.push(connectionData);
 		n.focus();
