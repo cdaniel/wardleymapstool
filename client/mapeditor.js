@@ -40,6 +40,48 @@ function updateSelectionMenus(){
 	} else {
 		$('#deleteButton').addClass('disabled');
 	}
+	if(selectedConnection != null && selectedConnection.scope == 'Actions'){
+		var connectionData = null;
+		for (var i = 0; i < map.connections.length; i++) {
+			if(map.connections[i].connectionId === selectedConnection.id){
+				connectionData = map.connections[i];
+				break;
+			}
+		}
+		$('#actionMenu').show();
+		$('#actionlabel').editable('destroy');
+		$('#actionlabel').editable({
+			type : 'text',
+			name : 'actionlabel',
+			title : 'Enter connection label',
+			success : function(data, value) {
+				connectionData.label = value;
+				selectedConnection.setLabel({label:value,cssClass:'connectionlabel'});
+				fireDirty();
+			},
+			validate : function(value){
+				if(value.length > 19){
+					return "The label should be shorten than 20 characters";
+				}
+			}
+		});
+		$('#actionlabel').editable('setValue',connectionData.label);
+
+		$('#actionnote').editable('destroy');
+		$('#actionnote').editable({
+			type : 'textarea',
+			name : 'actionnote',
+			title : 'Enter connection note',
+			value: connectionData.note,
+			success : function(data, value) {
+				connectionData.note = value;
+				fireDirty();
+			}
+		});
+		$('#actionnote').editable('setValue',connectionData.note);
+	} else {
+		$('#actionMenu').hide();
+	}
 }
 
 function deleteSelection(){
@@ -61,10 +103,9 @@ function deleteSelection(){
 }
 
 function addConnectionListener(c) {
-	console.log('adding listener to ' + c.id);
 	if (c) {
 		c.bind("click", function(conn) {
-			if (selectedConnection == conn) {
+			if (selectedConnection == c) {
 				toggleConnectionSelectedStyle(selectedConnection, false);
 				selectedConnection = null;
 			} else {
@@ -73,7 +114,7 @@ function addConnectionListener(c) {
 				}
 				selectedNode = null;
 				toggleConnectionSelectedStyle(selectedConnection, false);
-				selectedConnection = conn;
+				selectedConnection = c;
 				toggleConnectionSelectedStyle(selectedConnection, true);
 			}
 			updateSelectionMenus();
@@ -156,6 +197,9 @@ function drawMap() {
 				target : trg,
 				deleteEndpointsOnDetach : false
 			});
+			if(elem.label != null){
+				connection.setLabel({label:elem.label,cssClass:'connectionlabel'});
+			}
 			// workaround, id is internal and can't be edited,
 			// so we must change the model each time we load it.
 			elem.connectionId = connection.id;
@@ -190,7 +234,7 @@ function init() {
 	drawMap();
 }
 
-//=======================================
+// =======================================
 // MAP DRAWING UTILITIES - START
 //=======================================
 
@@ -426,7 +470,6 @@ function HTMLMapNode(parentNode, nodeData) {
 			}
 		};
 		for (var j = map.connections.length - 1; j > -1 ; j--) {
-			console.log(self.nodeData.componentId, map.connections[j].pageSourceId, map.connections[j].pageTargetId);
 			if (self.nodeData.componentId === map.connections[j].pageSourceId
 					|| self.nodeData.componentId === map.connections[j].pageTargetId) {
 				map.connections.splice(j, 1); 
@@ -445,9 +488,9 @@ function HTMLMapNode(parentNode, nodeData) {
 	};
 }
 
-jsPlumb.setContainer($('#map-container'));
 // initialize graph drawing
 jsPlumb.ready(function() {
+	jsPlumb.setContainer($('#map-container'));
 	var mapContainer = $('#map-container');
 	// create new component/node on click
 	mapContainer.click(function(e) {
@@ -462,97 +505,97 @@ jsPlumb.ready(function() {
 				'left' : e.pageX - e.target.offsetLeft
 			}, true);
 			n.focus();
+			updateSelectionMenus();
 			fireDirty();
 		}
 	});
-	init();
-});
+	// programatically created connections have menu created during creation,
+	// but drag and drop must be intercepted.
+	//
+	// also, we don't allow self-connect
+	//
+	// even more, we don't create any connections via drag and drop. We cancel
+	// the drag and drop and recreate connections using connect, because
+	// we need to care about using proper endpoints.
+	jsPlumb.bind("beforeDrop", function(connection) {
+		// console.log('before drop');
 
-// programatically created connections have menu created during creation,
-// but drag and drop must be intercepted.
-//
-// also, we don't allow self-connect
-//
-// even more, we don't create any connections via drag and drop. We cancel
-// the drag and drop and recreate connections using connect, because
-// we need to care about using proper endpoints.
-jsPlumb.bind("beforeDrop", function(connection) {
-	// console.log('before drop');
+		if (connection.sourceId == connection.targetId) {
+			return false;
+		}
+		/* prepareConnectionMenu(connection.connection); */
 
-	if (connection.sourceId == connection.targetId) {
-		return false;
-	}
-	/* prepareConnectionMenu(connection.connection); */
+		var outcomingEndpointId = connection.sourceId + connection.scope + "o";
+		var acceptingEndpointId = connection.targetId + connection.scope + "i";
 
-	var outcomingEndpointId = connection.sourceId + connection.scope + "o";
-	var acceptingEndpointId = connection.targetId + connection.scope + "i";
-
-	var c = jsPlumb.connect({
-		uuids : [ outcomingEndpointId, acceptingEndpointId, ],
-		deleteEndpointsOnDetach : false
-	});
-	
-	var connectionData = {
-			connectionId : c.id,
-			pageSourceId : c.sourceId,
-			pageTargetId : c.targetId,
-			scope : c.scope
-	};
-	
-	addConnectionListener(c);
-	
-	map.connections.push(connectionData);
-
-	// this is a giant hack that cost me 2 weeks of investigation.
-	// makeTarget creates endpoints, and we need to remove them,
-	// because connect creates their own.
-	// but we should not delete the endpoint if the user happens
-	// to drop exactly on 1 pixel proper endpoint.
-	// since our universal endpoint has two scopes, and proper
-	// endpoints have one scope, we use it to determine whether to delete
-	// the endpoint or not.
-	// console.log(connection.dropEndpoint.scope, connection.scope);
-	if (connection.dropEndpoint.scope !== connection.scope) {
-		// console.log(connection.dropEndpoint);
-		jsPlumb.deleteEndpoint(connection.dropEndpoint);
-	}
-	jsPlumb.repaintEverything();
-
-	fireDirty();
-	return false;
-});
-
-jsPlumb.bind("connectionDragStop", function(info, e) {
-	var sourceId = info.sourceId;
-	var targetId = info.targetId;
-	var mapContainer = $('#map-container');
-
-	if (info.targetId.indexOf('jsPlumb') === 0) {
-		var n = new HTMLMapNode(mapContainer, null);
-		n.move({
-			'top' : e.clientY - mapContainer.offset().top - NODE_SIZE,
-			'left' : e.clientX - mapContainer.offset().left - NODE_SIZE
-		}, true);
-		targetId = "" + n.nodeData.componentId;
-
-		var outcomingEndpointId = info.sourceId + info.scope + "o";
-		var acceptingEndpointId = targetId + info.scope + "i";
 		var c = jsPlumb.connect({
 			uuids : [ outcomingEndpointId, acceptingEndpointId, ],
 			deleteEndpointsOnDetach : false
 		});
+
 		var connectionData = {
+			connectionId : c.id,
+			pageSourceId : c.sourceId,
+			pageTargetId : c.targetId,
+			scope : c.scope
+		};
+
+		addConnectionListener(c);
+
+		map.connections.push(connectionData);
+
+		// this is a giant hack that cost me 2 weeks of investigation.
+		// makeTarget creates endpoints, and we need to remove them,
+		// because connect creates their own.
+		// but we should not delete the endpoint if the user happens
+		// to drop exactly on 1 pixel proper endpoint.
+		// since our universal endpoint has two scopes, and proper
+		// endpoints have one scope, we use it to determine whether to delete
+		// the endpoint or not.
+		// console.log(connection.dropEndpoint.scope, connection.scope);
+		if (connection.dropEndpoint.scope !== connection.scope) {
+			// console.log(connection.dropEndpoint);
+			jsPlumb.deleteEndpoint(connection.dropEndpoint);
+		}
+		jsPlumb.repaintEverything();
+
+		fireDirty();
+		return false;
+	});
+
+	jsPlumb.bind("connectionDragStop", function(info, e) {
+		var sourceId = info.sourceId;
+		var targetId = info.targetId;
+		var mapContainer = $('#map-container');
+
+		if (info.targetId.indexOf('jsPlumb') === 0) {
+			var n = new HTMLMapNode(mapContainer, null);
+			n.move({
+				'top' : e.clientY - mapContainer.offset().top - NODE_SIZE,
+				'left' : e.clientX - mapContainer.offset().left - NODE_SIZE
+			}, true);
+			targetId = "" + n.nodeData.componentId;
+
+			var outcomingEndpointId = info.sourceId + info.scope + "o";
+			var acceptingEndpointId = targetId + info.scope + "i";
+			var c = jsPlumb.connect({
+				uuids : [ outcomingEndpointId, acceptingEndpointId, ],
+				deleteEndpointsOnDetach : false
+			});
+			var connectionData = {
 				connectionId : c.id,
 				pageSourceId : c.sourceId,
 				pageTargetId : c.targetId,
 				scope : c.scope
-		};
-		addConnectionListener(c);
-		
-		map.connections.push(connectionData);
-		n.focus();
-		fireDirty();
-	}
+			};
+			addConnectionListener(c);
+
+			map.connections.push(connectionData);
+			n.focus();
+			fireDirty();
+		}
+	});
+	init();
 });
 
 //=======================================

@@ -67,7 +67,8 @@ var draw = function(res, filename, map, x, y){
 	var canvas = new Canvas(x,y);
 	var stream = canvas.pngStream();
 	var ctx = canvas.getContext('2d');
-
+	ctx.antialias = 'subpixel';
+	
 	// background
 	ctx.fillStyle = "#FFFFFF";
 	ctx.fillRect(0,0,x,y);
@@ -116,6 +117,7 @@ var draw = function(res, filename, map, x, y){
 	}
 	ctx.stroke();
 	
+	var recordedConnectionLabels = [];
 	//draw connections
 	for(var index in map.connections){
 		var connection = map.connections[index];
@@ -146,6 +148,12 @@ var draw = function(res, filename, map, x, y){
 			var deltaX = 10 * (start.x - end.x) / lineLength;
 			var deltaY = 10 * (start.y - end.y) / lineLength;
 			drawLineArrow(ctx, start.x, start.y, end.x + deltaX, end.y + deltaY);
+			// record a label
+			if(connection.label){
+				var labelX = ( start.x + end.x ) / 2 ;
+				var labelY = ( start.y + end.y ) / 2 ;
+				recordedConnectionLabels.push({label:connection.label,x:labelX, y:labelY});
+			}
 		}
 	}
 	
@@ -185,6 +193,21 @@ var draw = function(res, filename, map, x, y){
 			ctx.fillText(words[wordIndex],
 					calculatedNodes[index].x + 11, calculatedNodes[index].y - 10 + wordIndex * 11);
 		}
+		// draw action label
+		for(var labelIndex = 0; labelIndex < recordedConnectionLabels.length; labelIndex++) {
+			var label = recordedConnectionLabels[labelIndex];
+			var maxLength = 20;
+			if(label.label.length > maxLength){
+				label.label = label.label.substr(0, maxLength - 3) + '...';
+			}
+			label.x = label.x - ctx.measureText(label.label).width / 2;
+			ctx.fillText(label.label,label.x, label.y);
+			//intentionally copied over to make the shadow blur more visible
+//			ctx.fillText(label.label,label.x, label.y);
+//			ctx.fillText(label.label,label.x, label.y);
+//			ctx.fillText(label.label,label.x, label.y);
+		};
+		recordedConnectionLabels = [];
 		ctx.stroke();
 	}
 	
