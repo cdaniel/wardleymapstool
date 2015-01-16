@@ -33,7 +33,7 @@ html
             var partialUpdateURL = '/api/map/partial/#{map._id}';
             var map = {
                 name : "#{map.history[0].name}",
-                description : "#{map.history[0].description}",
+                description : !{JSON.stringify(map.history[0].description)},
                 userDate: "#{map.history[0].userDate}",
                 serverDate: "#{map.history[0].serverDate}",
                 nodes : !{JSON.stringify(map.history[0].nodes)},
