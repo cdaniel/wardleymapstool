@@ -247,8 +247,8 @@ var endpointOptions = {
 	connectorStyle : {
 		lineWidth : 2,
 		strokeStyle : 'silver',
-		outlineWidth: 10,
-		outlineColor : 'rgba(0,0,255,0.2)'
+		outlineColor:"transparent",
+		outlineWidth:10
 	},
 	endpoint : [ "Dot", {
 		radius : 1
