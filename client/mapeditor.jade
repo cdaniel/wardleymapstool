@@ -72,10 +72,7 @@ html
                 #value Value
                 #evolution Evolution
             #menu.col-lg-2
-                #actionMenu(style="display:none")
-                    p Label:
-                        a#actionlabel(href="#" data-type="text" data-title="Action label") 
-                    p Note:
-                        a#actionnote(href="#" data-type="textarea" data-title="Action Note")
+                include ./mapeditor_includes/actionmenu.jade
+                include ./mapeditor_includes/nodemenu.jade
                 button#deleteButton.btn.btn-danger.disabled(onclick="deleteSelection()") Delete
         script(src='/mapeditor.js')

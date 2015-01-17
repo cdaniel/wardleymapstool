@@ -163,7 +163,12 @@ var draw = function(res, filename, map, x, y){
 		ctx.beginPath();
 		ctx.arc(calculatedNodes[index].x, calculatedNodes[index].y, 10, 0,
 				2 * Math.PI);
-		
+		if(map.nodes[index].userneed == 'true') {
+			ctx.arc(calculatedNodes[index].x, calculatedNodes[index].y, 9, 0,
+					2 * Math.PI);
+			ctx.arc(calculatedNodes[index].x, calculatedNodes[index].y, 8, 0,
+					2 * Math.PI);
+		}
 		//background
 		ctx.fillStyle = 'silver';
 		ctx.fill();

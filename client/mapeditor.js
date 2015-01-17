@@ -82,6 +82,26 @@ function updateSelectionMenus(){
 	} else {
 		$('#actionMenu').hide();
 	}
+	if(selectedNode){
+		$('#node_name').text(selectedNode.getText());
+		$('#node_userneed').editable('destroy');
+		$('#node_userneed').editable({
+		    source: {'1': 'This is a user need'},
+		    emptytext: 'This is not a user need.',
+		    success : function(data, value) {
+		    	selectedNode.setUserNeed(value == 1);
+				fireDirty();
+			}
+		});
+		if(selectedNode.isUserNeed()){
+			$('#node_userneed').editable('setValue',1);
+		} else {
+			$('#node_userneed').editable('setValue',-1);
+		}
+		$('#nodeMenu').show();
+	} else {
+		$('#nodeMenu').hide();
+	}
 }
 
 function deleteSelection(){
@@ -310,6 +330,7 @@ function HTMLMapNode(parentNode, nodeData) {
 		success : function(response, newValue) {
 			self.nodeData.name = newValue; //update backbone model
 			fireDirty();
+			updateSelectionMenus(); // update selection if necessary
 		},
 		unsavedclass : null,
 		mode : 'popup'
@@ -480,12 +501,20 @@ function HTMLMapNode(parentNode, nodeData) {
 	};
 
 	self.setUserNeed = function(userneed) {
-		if (userneed) {
+		if ("" + userneed == "true") {
 			self.internalNode.addClass("mapUserNeed");
+			self.nodeData.userneed = true;
 		} else {
 			self.internalNode.removeClass("mapUserNeed");
+			self.nodeData.userneed = false;
 		}
 	};
+	
+	self.isUserNeed = function() {
+		return "" + self.nodeData.userneed == "true";
+	}
+	
+	self.setUserNeed(self.nodeData.userneed);
 }
 
 // initialize graph drawing
