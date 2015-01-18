@@ -170,7 +170,12 @@ var draw = function(res, filename, map, x, y){
 					2 * Math.PI);
 		}
 		//background
-		ctx.fillStyle = 'silver';
+		if(map.nodes[index].external == 'true'){
+			ctx.fillStyle = '#F2F2F2';
+		} else {
+			//default
+			ctx.fillStyle = 'silver';
+		}
 		ctx.fill();
 		ctx.stroke();
 	}

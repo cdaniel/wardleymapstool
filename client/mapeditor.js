@@ -83,7 +83,10 @@ function updateSelectionMenus(){
 		$('#actionMenu').hide();
 	}
 	if(selectedNode){
+		
 		$('#node_name').text(selectedNode.getText());
+		
+		
 		$('#node_userneed').editable('destroy');
 		$('#node_userneed').editable({
 		    source: {'1': 'This is a user need'},
@@ -98,6 +101,22 @@ function updateSelectionMenus(){
 		} else {
 			$('#node_userneed').editable('setValue',-1);
 		}
+		
+		$('#node_external').editable('destroy');
+		$('#node_external').editable({
+		    source: {'0': 'internal', '1' : 'external'},
+		    emptytext: 'This is not a user need.',
+		    success : function(data, value) {
+		    	selectedNode.setExternal(value == 1);
+				fireDirty();
+			}
+		});
+		if(selectedNode.isExternal()){
+			$('#node_external').editable('setValue',1);
+		} else {
+			$('#node_external').editable('setValue',0);
+		}
+		
 		$('#nodeMenu').show();
 	} else {
 		$('#nodeMenu').hide();
@@ -514,6 +533,21 @@ function HTMLMapNode(parentNode, nodeData) {
 		return "" + self.nodeData.userneed == "true";
 	}
 	
+	self.setExternal = function(external) {
+		if ("" + external == "true") {
+			self.internalNode.addClass("mapExternal");
+			self.nodeData.external = true;
+		} else {
+			self.internalNode.removeClass("mapExternal");
+			self.nodeData.external = false;
+		}
+	};
+	
+	self.isExternal = function() {
+		return "" + self.nodeData.external == "true";
+	}
+	
+	self.setExternal(self.nodeData.external);
 	self.setUserNeed(self.nodeData.userneed);
 }
 
