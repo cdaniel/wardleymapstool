@@ -87,8 +87,8 @@ function analyse(map) {
 	for(var i = 0; i < map.history[0].nodes.length; i++){
 		var currentNode = map.history[0].nodes[i];
 		currentNode.positionX = parseFloat(currentNode.positionX);
-		currentNode.external = JSON.parse(currentNode.external);
-		currentNode.userneed = JSON.parse(currentNode.userneed);
+		currentNode.external = 'true' == currentNode.external ? true : false;
+		currentNode.userneed = 'true' == currentNode.userneed ? true : false;
 		
 		if(currentNode.name == ""){
 			allnames = false;
