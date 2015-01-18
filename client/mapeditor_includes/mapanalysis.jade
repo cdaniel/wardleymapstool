@@ -1,0 +1,11 @@
+.modal.fade#analysisModal(tabindex="-1" role="dialog" aria-labelledby="analysisModal" aria-hidden="true")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+                h4.modal-title Automated Analysis
+            .modal-body#analysisModalBody Please wait...
+            .modal-footer
+                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close
+script.
+    $('body').on('hidden.bs.modal', '#analysisModal', function () { $(this).removeData('bs.modal'); $('#analysisModalBody)').empty();});

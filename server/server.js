@@ -22,6 +22,7 @@ var logger = require('./util/log').log.getLogger('server');
 var maps = require('./maps');
 var exportmap = require('./export');
 var stormpath = require('express-stormpath');
+var analyzer = require('./analyzer');
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -188,6 +189,16 @@ var WardleyMapsApp = function() {
 				res) {
 			exportmap.exportmap(req, res, req.params.mapid, req.params.name,
 					req.params.size);
+		};
+		
+		// 6. analysis
+		self.routes.get['/api/map/:mapid/analysis'] = function(req,
+				res) {
+			maps.getMap(req, req.params.mapid, function(map) {
+				//XXX: make this async
+				var result = analyzer.analyse(map);
+				res.render('analysis', {result:result});
+			});
 		};
 		
 		// 7. thumbnail 100x100

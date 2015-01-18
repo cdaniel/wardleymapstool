@@ -1,0 +1,11 @@
+.modal-header
+    button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+    h4.modal-title Automated Analysis
+.modal-body#analysisModalBody
+    each feedback in result
+        .panel(class=feedback.type)
+           .panel-heading
+                h3.panel-title=feedback.title
+            .panel-body=feedback.message
+.modal-footer
+    button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close
