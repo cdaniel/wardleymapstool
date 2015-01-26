@@ -57,6 +57,7 @@ var WardleyMapsApp = function() {
 	self.populateCache = function() {
 		if (typeof self.zcache === "undefined") {
 			self.zcache = {};
+			self.cache('analytics.js');
 			self.cache('index.js');
 			self.cache('index.css');
 			self.cache('mapeditor.js');
