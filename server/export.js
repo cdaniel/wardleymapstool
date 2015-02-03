@@ -63,6 +63,18 @@ function drawLineArrow(ctx, x1,y1,x2,y2) {
     drawFilledPolygon(ctx, translateShape(rotateShape(arrow,ang),x2,y2));
 };
 
+function drawStrokedLine(ctx, x1, y1, y2){
+	var length = y2-y1;
+	var step1 = 7;
+	var step2 = 3;
+	var numberOfSteps = length / (step1 + step2);
+	
+	for(var i = 0 ; i < numberOfSteps; i++){
+		ctx.moveTo(x1,y1 + i * (step1 + step2));
+		ctx.lineTo(x1,y1 + i * (step1 + step2) + step2);
+	}
+}
+
 var draw = function(res, filename, map, x, y){
 	var canvas = new Canvas(x,y);
 	var stream = canvas.pngStream();
@@ -97,6 +109,15 @@ var draw = function(res, filename, map, x, y){
 	ctx.fillText('Evolution', x - 60, y - 15);
 	ctx.fillText('Value', 33, 60);
 	
+	ctx.save();
+	ctx.strokeStyle = "#FBFBFB";
+	ctx.fillStyle = "#FFFFFF";
+	ctx.setLineDash([5,15]);
+	drawStrokedLine(ctx, x/4, 40, y-30);
+	drawStrokedLine(ctx, x/2, 40, y-30);
+	drawStrokedLine(ctx, 3*x/4, 40, y-30);
+	ctx.stroke();
+	ctx.restore();
 	
 	// calculate nodes
 	

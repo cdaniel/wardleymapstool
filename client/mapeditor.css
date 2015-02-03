@@ -18,6 +18,7 @@
     position: absolute;
     border-radius: 10px;
     position: absolute;
+     z-index: 2;
 }
 
 .itemSelected {
@@ -100,6 +101,27 @@
     border: 1px solid gray;
 }
 
+.axis-support {
+    position: absolute;
+    border-width: 1px;
+    top: 3%;
+    bottom: 2%;
+    border: 1px dashed silver;
+    z-index: 1;
+}
+
+#support-1 {
+    left: 25%;
+}
+
+#support-2 {
+    left: 50%;
+}
+
+#support-3 {
+    left: 75%;
+}
+
 #arrow-y {
     position: absolute;
     width: 0;
@@ -114,3 +136,5 @@
 .connectionlabel {
 	background-color: rgba(255,255,255,0.8);
 }
+
+._jsPlumb_endpoint { z-index: 10; } 

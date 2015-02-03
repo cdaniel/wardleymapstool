@@ -666,7 +666,7 @@ jsPlumb.ready(initalizeJSPlumb);
 $( window ).resize(function() {
 	jsPlumb.reset();
 	//remove everything except axes
-	$('#map-container').children().slice(6/*number of divs making axes*/).remove();
+	$('#map-container').children().slice(9/*number of divs making axes*/).remove();
 	initalizeJSPlumb();
 });
 
