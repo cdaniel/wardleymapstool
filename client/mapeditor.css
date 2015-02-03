@@ -1,10 +1,9 @@
 #map-container {
     border: 1px solid gray;
     min-height: 800px;
-    overflow: auto;
+    max-height: 800px;
+    min-width: 800px;
     height: auto;
-    background-image: url('/background.svg');
-    background-size: 100% 100%;
     position: relative;
     z-index: 2;
 }
@@ -57,16 +56,59 @@
 
 #value {
     z-index: 1;
-    top: 40px;
-    left: 25px;
+    font-size: smaller;
+    top: 3%;
+    left: 3%;
     position: absolute;
 }
 
 #evolution {
     z-index: 1;
-    bottom: 25px;
-    right: 10px;
+    bottom: 3%;
+    right: 3%;
     position: absolute;
+    font-size: smaller;
+}
+
+#axis-x {
+	position: absolute;
+	bottom: 2%;
+	height: 1px;
+	left: 2%;
+	right: 2%;
+	border: 1px solid gray;
+}
+
+#arrow-x {
+	position: absolute;
+    width: 0;
+    height: 0; 
+    border-top: 4px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-left: 10px solid gray;
+    right: 2%;
+    bottom: 2%;
+}
+
+#axis-y {
+    width: 1px;
+    position: absolute;
+    border-width: 1px;
+    top: 2%;
+    bottom: 2%;
+    left: 2%;
+    border: 1px solid gray;
+}
+
+#arrow-y {
+    position: absolute;
+    width: 0;
+    height: 0; 
+    border-left: 2px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 10px solid gray;
+    left: 2%;
+    top: 2%;
 }
 
 .connectionlabel {

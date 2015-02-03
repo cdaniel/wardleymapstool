@@ -551,8 +551,7 @@ function HTMLMapNode(parentNode, nodeData) {
 	self.setUserNeed(self.nodeData.userneed);
 }
 
-// initialize graph drawing
-jsPlumb.ready(function() {
+function initalizeJSPlumb() {
 	jsPlumb.setContainer($('#map-container'));
 	var mapContainer = $('#map-container');
 	// create new component/node on click
@@ -659,6 +658,16 @@ jsPlumb.ready(function() {
 		}
 	});
 	init();
+}
+	
+// initialize graph drawing
+jsPlumb.ready(initalizeJSPlumb);
+
+$( window ).resize(function() {
+	jsPlumb.reset();
+	//remove everything except axes
+	$('#map-container').children().slice(6/*number of divs making axes*/).remove();
+	initalizeJSPlumb();
 });
 
 //=======================================
