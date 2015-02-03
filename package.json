@@ -29,7 +29,7 @@
     "mongojs":"*",
     "node-serialize" :"*",
     "log4js": "*",
-    "canvas" : "*",
+    "canvas" : "1.1.6",
     "jade" : "*",
     "express-stormpath" : "*",
     "request" : "*"
