@@ -33,6 +33,7 @@ var NODE_SIZE = 10;
  */
 var selectedNode = null;
 var selectedConnection = null;
+var updatePositionLock = false;
 
 function updateSelectionMenus(){
 	if(selectedNode || selectedConnection){
@@ -439,10 +440,14 @@ function HTMLMapNode(parentNode, nodeData) {
 	};
 
 	self.updatePositionData = function() {
-		self.nodeData.positionX = parseInt(self.internalNode.css("left"), 10)
-				/ parseInt($('#map-container').width(), 10);
-		self.nodeData.positionY = parseInt(self.internalNode.css("top"), 10)
-				/ parseInt($('#map-container').height(), 10);
+		if (!updatePositionLock) {
+			self.nodeData.positionX = parseInt(self.internalNode.css("left"),
+					10)
+					/ parseInt($('#map-container').width(), 10);
+			self.nodeData.positionY = parseInt(self.internalNode.css("top"), 10)
+					/ parseInt($('#map-container').height(), 10);
+		}
+		;
 	};
 
 	self.blur = function() {
@@ -664,10 +669,12 @@ function initalizeJSPlumb() {
 jsPlumb.ready(initalizeJSPlumb);
 
 $( window ).resize(function() {
+	updatePositionLock = true;
 	jsPlumb.reset();
 	//remove everything except axes
 	$('#map-container').children().slice(9/*number of divs making axes*/).remove();
 	initalizeJSPlumb();
+	updatePositionLock = false;
 });
 
 //=======================================
