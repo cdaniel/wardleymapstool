@@ -47,6 +47,7 @@ function exportToMailChimp(firstName, lastName, email, next) {
 		double_optin : 'false'
 	}, function(data) {
 		// gently ignore
+		logger.debug(data);
 		if (next)
 			next();
 	}, function(error) {
