@@ -15,6 +15,7 @@ limitations under the License.*/
 var db = require('./db').database;
 var logger = require('./util/log.js').log.getLogger('user');
 var request = require('request');
+var mailchimp = require('./mailchimp');
 
 
 logger.setLevel('ALL');
@@ -99,6 +100,11 @@ var user = function() {
 
 	this.normalizeLoginInfo = function(account, res, next) {
 		self.fetchStormPathProviderData(account, res, next);
+
+		mailchimp.exportToMailChimp(
+				account.givenName,
+				account.surname,
+				account.email);
 	};
 	
 };

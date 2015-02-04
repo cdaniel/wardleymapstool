@@ -32,7 +32,8 @@
     "canvas" : "1.1.6",
     "jade" : "*",
     "express-stormpath" : "*",
-    "request" : "*"
+    "request" : "*",
+    "mailchimp-api" : "*"
   },
   
   "devDependencies": {

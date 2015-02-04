@@ -15,11 +15,23 @@ limitations under the License.*/
 var user = require('../server/user').user;
 var should = require('should');
 var sinon = require('sinon');
+var config = require('../server/config/mailchimpconfig').mailchimpconfig;
+
+var mailchimpEnablement;
 
 describe(
 		'User',
 		function() {
-
+			before(function(){
+				mailchimpEnablement = config.enabled; 
+				config.enabled=false;
+			});
+			
+			after(function(){
+				config.enabled=mailchimpEnablement;
+			});
+			
+			
 			describe(
 					'post registration handler',
 					function() {
