@@ -19,7 +19,7 @@ limitations under the License.*/
 function stormpathconfig() {
 	
 	this.getApiKeyId = function (){
-		var result = "6CONEX0NW160YDOTCY540929S";
+		var result = "";
 		if(result === ""){
 			console.error("please obtain stormpath account");
 		}
@@ -27,7 +27,7 @@ function stormpathconfig() {
 	};
 	
 	this.getApiKeySecret = function (){
-		var result = "SkwoCTWHiEIwpTgrGI7DK/NmAW5Ee8KEWeO5XPtf1cA";
+		var result = "";
 		if(result === ""){
 			console.error("please obtain stormpath account");
 		}
@@ -35,7 +35,7 @@ function stormpathconfig() {
 	};
 	
 	this.getSecretKey = function (){
-		var result = "EEsrtXb3NXbjpuIzYiCs07rvOB5eabfTkNp1yoL4T4WP8thMj3DbuQ==";
+		var result = "";
 		if(result === ""){
 			console.error("please obtain stormpath account");
 		}
