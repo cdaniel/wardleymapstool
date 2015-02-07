@@ -48,7 +48,11 @@ html
                                                         data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
                         ul.nav.navbar-nav.navbar-right
                             li
-                                a(href="/logout") Logout
+                                a(href="/profile")
+                                    span.glyphicon.glyphicon-user=user.givenName
+                            li
+                                a(href="/logout")
+                                    span.glyphicon.glyphicon-log-out Logout
                 #selectors.row
                     //- new map button
                     .col-xs-12.col-sm-6.col-md-3.col-lg-2

@@ -69,6 +69,13 @@ html
                         li
                             a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
                                                         data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
+                    ul.nav.navbar-nav.navbar-right
+                            li
+                                a(href="/profile")
+                                    span.glyphicon.glyphicon-user=user.givenName
+                            li
+                                a(href="/logout")
+                                    span.glyphicon.glyphicon-log-out Logout
             p Description: 
                 a#description(href="#" data-type="text" data-title="Description" value=map.history[0].description data-pk="description" data-url='/api/map/partial/#{map._id}')=map.history[0].description
             //- canvas

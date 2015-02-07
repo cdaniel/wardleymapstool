@@ -127,6 +127,11 @@ var WardleyMapsApp = function() {
 		self.routes.post = {};
 		self.routes.del = {};
 
+		// redirect for yet not implemented
+		self.routes.get['/profile'] = function(req, res) {
+			res.redirect('/');
+		};
+		
 		//generic access to protected files
 		self.routes.get['/:filename'] = function(req1, res1) {
 			if (endsWith(req1.params.filename, ".js")) {
@@ -180,7 +185,8 @@ var WardleyMapsApp = function() {
 		self.routes.get['/map/:mapid'] = function(req, res) {
 			maps.getMap(req, req.params.mapid, function(map) {
 				res.render('mapeditor', {
-					map : map
+					map : map, 
+					user : req.user
 				});
 			});
 		};
@@ -207,13 +213,15 @@ var WardleyMapsApp = function() {
 			exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
 		};
 		
-
+		
 		// main entry point
 		self.routes.get['/'] = function(req, res) {
 			maps.getMaps(req, function(response) {
-				res.render('index', {response : response});
+				res.render('index', {response : response, user : req.user});
 			});
 		};
+		
+		
 	};
 
 	/**
@@ -258,8 +266,6 @@ var WardleyMapsApp = function() {
 									expandCustomData : true
 								}));
 		
-		self.app.set('views', 'client');
-		self.app.set('view engine', 'jade');
 		
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {
@@ -274,6 +280,8 @@ var WardleyMapsApp = function() {
 			self.app.del(r, stormpath.loginRequired, self.routes.del[r]);
 		}
 
+		self.app.set('views', 'client');
+		self.app.set('view engine', 'jade');
 	};
 
 	/**
