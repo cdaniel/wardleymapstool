@@ -38,3 +38,7 @@ which is open source and can be downloaded for all platforms from [its homepage]
 Support, questions and similar:
 -----------------
 Via twitter [@wardleymaps](https://twitter.com/wardleymaps). Don't hesistate to ask, I will do what I can to help you.
+
+Logo:
+-----------------
+Please note that favicon.ico is a logo identifying wardleymaps.com and therefore should not be used if the tool is used commercially outside of wardleymaps.com.
