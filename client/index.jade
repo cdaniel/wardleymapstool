@@ -104,7 +104,7 @@ html
                         form#newMapCreationForm(action="/api/map/" 
                                                 method='post' class="form-horizontal")
                             .form-group
-                                label(for="name" class="col-sm-3 control-label") Name:
+                                label(for="name" class="col-sm-3 control-label") Line's name:
                                 .col-sm-8
                                     input#name.form-control(type="text" name="name" value="" required)
                             .form-group
@@ -114,8 +114,7 @@ html
                             .form-group
                                 .col-sm-5.col-sm-offset-8
                                     button.btn.btn-default(type="button" data-dismiss="modal") Cancel
-                                    &nbsp;
-                                    &nbsp;
+                                    span &nbsp;&nbsp;
                                     button.btn.btn-primary(type="submit") Map!
         script(src='index.js')
         script(src='analytics.js')
