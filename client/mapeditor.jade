@@ -15,7 +15,7 @@ doctype html
 html
     head
         meta(charset='utf-8')
-        title Wardley Maps Tool
+        title Wardley Maps Tool - #{map.history[0].name}
         script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
         script(src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js')
         script(src='http://malsup.github.com/jquery.form.js')
@@ -64,13 +64,13 @@ html
                                     a#exportmedium(download="#{map._id}.png" href="/api/map/#{map._id}/export/2/#{map._id}.png") Medium
                                 li
                                     a#exportsmall(download="#{map._id}.png" href="/api/map/#{map._id}/export/3/#{map._id}.png") Large
-                        li
+                        -li
                             a(href="/api/map/#{map._id}/analysis" data-toggle="modal"  data-target="#analysisModal") Analysis
                         li
                             a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
                                                         data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
-            p Your goal: 
-                a#description(href="#" data-type="text" data-title="Your goal" value=map.history[0].description data-pk="description" data-url='/api/map/partial/#{map._id}')=map.history[0].description
+            p Description: 
+                a#description(href="#" data-type="text" data-title="Description" value=map.history[0].description data-pk="description" data-url='/api/map/partial/#{map._id}')=map.history[0].description
             //- canvas
             #map-container.col-lg-10
                 .axis-support#support-1

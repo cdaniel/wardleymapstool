@@ -42,7 +42,7 @@ html
                     #navbarCollapse.collapse.navbar-collapse
                         ul.nav.navbar-nav
                             li.active
-                                a(href="/") Your maps
+                                a(href="/") Your lines
                             li
                                 a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
                                                         data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
@@ -56,7 +56,7 @@ html
                             a(href="#" onclick="showAddMapDialog()").text-center 
                                 .glyphicon.glyphicon-plus.img-thumbnail(style="font-size:140px;color:silver")
                         .caption
-                            h3 Create a new map...
+                            h3 Map a new business line...
                     //- this part actually renders maps
                     each map in response
                         .col-xs-12.col-sm-6.col-md-3.col-lg-2(id=map._id)
@@ -90,7 +90,7 @@ html
                         | destroy the entire galaxy or (this one quite seriously) make 
                         | you leave your job. Be warned. It may record your every move.
                         | It is not even alpha.
-        //- new map dialog
+        //- new business line dialog
         #basicModal(class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true")
             div(class="modal-dialog")
                 div(class="modal-content")
@@ -99,7 +99,7 @@ html
                                 class="close" 
                                 data-dismiss="modal" 
                                 aria-hidden="true")    &times;
-                        h4#myModalLabel(class="modal-title") Create a new map...
+                        h4#myModalLabel(class="modal-title") Map a new business line...
                     div(class="modal-body")
                         form#newMapCreationForm(action="/api/map/" 
                                                 method='post' class="form-horizontal")
@@ -114,6 +114,8 @@ html
                             .form-group
                                 .col-sm-5.col-sm-offset-8
                                     button.btn.btn-default(type="button" data-dismiss="modal") Cancel
-                                    button.btn.btn-primary(type="submit") Create!
+                                    &nbsp;
+                                    &nbsp;
+                                    button.btn.btn-primary(type="submit") Map!
         script(src='index.js')
         script(src='analytics.js')
