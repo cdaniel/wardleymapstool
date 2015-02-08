@@ -1,0 +1,77 @@
+ul.list-group
+            a.list-group-item.disabled Work progress:
+                .progress
+                    .progress-bar#progressprogressbar(role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;")
+            li#mapping-progress-0.list-group-item 
+                p.progress-title Define user needs.
+                    a(href="/help/assistuserneeds" data-toggle="modal"  data-target="#mapcreationassist0") 
+                        span.glyphicon.glyphicon-question-sign
+                p#mapping-progress-group-0
+                    | Just click anywhere on the map.
+                    | Each component will be marked as a user need automatically in this step.
+                    | <br/>
+                    | Click on the label to change component name.
+                    | <br/>
+                    button.btn.btn-default.btn-xs(type="button" onclick="progressHelper.advance()" disabled="true") Mark complete 
+                        span.glyphicon.glyphicon-check
+            li#mapping-progress-1.list-group-item
+                p.progress-title Define value chain.
+                    a(href="/help/assistvaluechain" data-toggle="modal"  data-target="#mapcreationassist1") 
+                        span.glyphicon.glyphicon-question-sign
+                p#mapping-progress-group-1
+                    | Click on a component to focus it. Click on a map to create a new component.
+                    | <br/>
+                    | Drag a dependency from the dark circle.
+                    | <br/>
+                    | Drop the dependency on any component to establish a relationship.
+                    | <br/>
+                    | Remember about marking external components (those that you buy).
+                    | <br/>
+                    button.btn.btn-default.btn-xs(type="button" onclick="progressHelper.advance()") Mark complete 
+                        span.glyphicon.glyphicon-check
+            li#mapping-progress-2.list-group-item
+                p.progress-title Determine evolution phases.
+                    a(href="/help/assistevolution" data-toggle="modal"  data-target="#mapcreationassist2") 
+                        span.glyphicon.glyphicon-question-sign
+                p#mapping-progress-group-2
+                    | Drag to the left components that are new, novel, and you believe in them, but actually nobody is using them yet. 
+                    | <br/>
+                    | Drag to the right components that are cost of doing business.
+                    | <br/>
+                    | Align transitional components.
+                    | <br/>
+                    button.btn.btn-default.btn-xs(type="button" onclick="progressHelper.advance()") Mark complete 
+                        span.glyphicon.glyphicon-check
+            li#mapping-progress-3.list-group-item
+                p.progress-title More to come here soon...
+                p#mapping-progress-group-3 This is just being implemented. Stay tuned!
+
+.modal.fade#mapcreationassist0(tabindex="-1" role="dialog" aria-labelledby="mapcreationassist0" aria-hidden="true")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+                h4.modal-title Help
+            .modal-body User needs help coming soon.
+            .modal-footer
+                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close
+                
+.modal.fade#mapcreationassist1(tabindex="-1" role="dialog" aria-labelledby="mapcreationassist1" aria-hidden="true")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+                h4.modal-title Help
+            .modal-body Value chain help coming soon.
+            .modal-footer
+                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close
+                
+.modal.fade#mapcreationassist2(tabindex="-1" role="dialog" aria-labelledby="mapcreationassist2" aria-hidden="true")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+                h4.modal-title Help
+            .modal-body Evolution stages help coming soon.
+            .modal-footer
+                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close

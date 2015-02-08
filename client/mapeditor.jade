@@ -29,9 +29,11 @@ html
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css')
         link(rel='stylesheet', href='/mapeditor.css')
         link(rel='shortcut icon', href='favicon.ico', type="/favicon.ico")
+        script(src='/progresshelper.js')
         script.
             var mapURL = '/api/map/#{map._id}';
             var partialUpdateURL = '/api/map/partial/#{map._id}';
+            var progressURL = '/api/map/#{map._id}/progressstate';
             var map = {
                 name : "#{map.history[0].name}",
                 description : !{JSON.stringify(map.history[0].description)},
@@ -40,6 +42,7 @@ html
                 nodes : !{JSON.stringify(map.history[0].nodes)},
                 connections: !{JSON.stringify(map.history[0].connections)}
             };
+            var progressHelper = new ProgressHelper();
     body
         .container-fluid
             nav.navbar.navbar-default(role="navigation")
@@ -89,6 +92,8 @@ html
                 #axis-y
                 #arrow-x
                 #arrow-y
+            .col-lg-2#mapcreationassist(style="display:none")
+                include ./mapeditor_includes/mapcreationassist.jade
             #menu.col-lg-2
                 include ./mapeditor_includes/actionmenu.jade
                 include ./mapeditor_includes/nodemenu.jade

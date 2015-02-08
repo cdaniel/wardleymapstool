@@ -64,8 +64,21 @@ function createNewMap(req, res){
 		}
 		if(saved) {
 			logger.debug("new map", saved._id, "created for user", userId);
-			//tell the client where is the map
-			res.redirect('/map/'+saved._id);
+			var mapid = '' + saved._id;
+			db.collection('progress').save({mapid:mapid, progress : 0}, function(err, savedprogress) {
+				if (err !== null) {
+					logger.error(err);
+					res.setHeader('Content-Type', 'application/json');
+					res.statusCode = 500;
+					res.send(JSON.stringify(err));
+					res.end();
+				}
+				if(savedprogress) {
+					logger.debug("progress created for map", saved._id);
+					//tell the client where is the map
+					res.redirect('/map/'+saved._id);
+				}
+			});
 		}
 	});
 }
@@ -282,6 +295,46 @@ function getMaps(req, next) {
 	});
 }
 
+//TODO: check user access
+function getProgressState(req, mapid, callback){
+	db.progress.findOne({mapid: mapid}, function (err, state){
+		if(err){
+			logger.error(err);
+			return;
+		}
+		if(!state){
+			callback( {
+				progress : -1
+			} );
+			return;
+		}
+		callback( {
+			progress : state.progress
+		} );
+	});
+}
+
+function advanceProgressState(req, mapid, callback){
+	db.progress.findAndModify({
+		query : {
+			mapid : mapid
+		},
+		update : {
+			$inc : {
+				progress : 1
+			}
+		}
+	}, function(err, object) {
+		if(err){
+			logger.error(err);
+		}
+		callback( {
+			// this is updated in db
+			progress : object.progress + 1
+		} );
+	});
+}
+
 exports.createNewMap = createNewMap;
 exports.deleteMap = deleteMap;
 exports.updateMap = updateMap;
@@ -290,3 +343,5 @@ exports.partialMapUpdate = partialMapUpdate;
 exports.getMap = getMap;
 /* get all the maps of the user */
 exports.getMaps = getMaps;
+exports.getProgressState = getProgressState;
+exports.advanceProgressState = advanceProgressState;

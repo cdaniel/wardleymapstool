@@ -272,6 +272,9 @@ function init() {
 	});
 
 	drawMap();
+	
+	//update the progress helper
+	progressHelper.refresh();
 }
 
 // =======================================
@@ -429,7 +432,7 @@ function HTMLMapNode(parentNode, nodeData) {
 			selectedNode.blur();
 		}
 		selectedNode = self;
-		var endpoints = [ self.endpointOut, self.actionEndpointOut ];
+		var endpoints = progressHelper.limitEndpointsToShow([ self.endpointOut, self.actionEndpointOut ]);
 		for (var i = 0; i < endpoints.length; i++) {
 			var ps = endpoints[i].getPaintStyle();
 			ps = jQuery.extend({}, ps);
@@ -560,7 +563,7 @@ function initalizeJSPlumb() {
 	jsPlumb.setContainer($('#map-container'));
 	var mapContainer = $('#map-container');
 	// create new component/node on click
-	mapContainer.click(function(e) {
+	mapContainer.off('click').click(function(e) {
 
 		// click on the map, awful comparison but works		
 		if ($(e.target)[0] == $('#map-container')[0]) {
@@ -571,6 +574,7 @@ function initalizeJSPlumb() {
 				'top' : e.pageY - e.target.offsetTop,
 				'left' : e.pageX - e.target.offsetLeft
 			}, true);
+			progressHelper.updateNodeAccordingToProgressState(n);
 			n.focus();
 			updateSelectionMenus();
 			fireDirty();
@@ -658,6 +662,7 @@ function initalizeJSPlumb() {
 			addConnectionListener(c);
 
 			map.connections.push(connectionData);
+			progressHelper.updateNodeAccordingToProgressState(n);
 			n.focus();
 			fireDirty();
 		}
@@ -671,6 +676,12 @@ jsPlumb.ready(initalizeJSPlumb);
 $( window ).resize(function() {
 	updatePositionLock = true;
 	jsPlumb.reset();
+	if(selectedConnection){
+		selectedConnection = null;
+	};
+	if(selectedNode) {
+		selectedNode = null;
+	}
 	//remove everything except axes
 	$('#map-container').children().slice(9/*number of divs making axes*/).remove();
 	initalizeJSPlumb();

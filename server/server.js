@@ -62,6 +62,7 @@ var WardleyMapsApp = function() {
 			self.cache('index.js');
 			self.cache('index.css');
 			self.cache('mapeditor.js');
+			self.cache('progresshelper.js');
 			self.cache('mapeditor.css');
 			self.cache('logout.html');
 			self.cache('dom.jsPlumb-1.7.2.js');
@@ -125,6 +126,7 @@ var WardleyMapsApp = function() {
 		self.routes = {};
 		self.routes.get = {};
 		self.routes.post = {};
+		self.routes.put = {};
 		self.routes.del = {};
 
 		// redirect for yet not implemented
@@ -208,9 +210,30 @@ var WardleyMapsApp = function() {
 			});
 		};
 		
+		// progress
+		self.routes.get['/api/map/:mapid/progressstate'] = function(req,
+				res) {
+			maps.getProgressState(req, req.params.mapid, function(progress) {
+				res.json(progress);
+			});
+		};
+		
+
+		// progress
+		self.routes.put['/api/map/:mapid/progressstate'] = function(req, res) {
+			maps.advanceProgressState(req, req.params.mapid, function(progress) {
+				res.json(progress);
+			});
+		};
+		
 		// 7. thumbnail 100x100
 		self.routes.get['/api/map/:mapid/thumbnail.png'] = function(req, res) {
 			exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
+		};
+		
+		// help
+		self.routes.get['/help/:filename'] = function(req, res) {
+			res.render('help/'+req.params.filename);
 		};
 		
 		
@@ -270,6 +293,10 @@ var WardleyMapsApp = function() {
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {
 			self.app.get(r, stormpath.loginRequired, self.routes.get[r]);
+		}
+		
+		for ( var r in self.routes.put) {
+			self.app.put(r, stormpath.loginRequired, self.routes.put[r]);
 		}
 		
 		for ( var r in self.routes.post) {

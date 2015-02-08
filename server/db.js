@@ -22,13 +22,14 @@ var logger = log.getLogger("db");
 /**
  * default collections that will be used
  */
-var DEFAULT_COLLECTIONS = ['users', 'maps'];
+var DEFAULT_COLLECTIONS = ['users', 'maps', 'progress'];
 
 
 // actually connect to the database
 var db = mongojs(mongodbdata.getConnectionString(), DEFAULT_COLLECTIONS);
 db.collection('users');
 db.collection('maps');
+db.collection('progress');
 
 exports.database = db;
 
