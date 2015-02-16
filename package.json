@@ -29,25 +29,28 @@
     "mongojs":"*",
     "node-serialize" :"*",
     "log4js": "*",
-    "canvas" : "1.1.6",
     "jade" : "*",
-    "express-stormpath" : "*",
     "request" : "*",
-    "mailchimp-api" : "*"
+    "mailchimp-api" : "*",
+    "canvas" : "1.1.6"
   },
-  
+
+  "optionalDependencies": {
+    "express-stormpath" : "*"
+  },
+
   "devDependencies": {
 	  "mocha" : "*",
 	  "should" : "*",
 	  "sinon" : "*"
   },
-  
+
   "bundleDependencies": [],
 
   "private": true,
   "main": "server/server.js",
   "license" : "ASL 2.0",
-  
+
   "scripts": {
 	    "test": "mocha server-tests"
   }

@@ -15,13 +15,10 @@ limitations under the License.*/
 
 var express = require('express');
 var fs = require('fs');
-var stormpathconfig = require('./config/stormpathconfig').stormpathconfig;
-var googleauth = require('./config/googleauth').googleauth;
 var user = require('./user').user;
 var logger = require('./util/log').log.getLogger('server');
 var maps = require('./maps');
 var exportmap = require('./export');
-var stormpath = require('express-stormpath');
 var analyzer = require('./analyzer');
 
 function endsWith(str, suffix) {
@@ -50,7 +47,7 @@ var WardleyMapsApp = function() {
 	self.cache = function(name){
 		self.zcache[name] = fs.readFileSync('client/' + name);
 	};
-	
+
 	/**
 	 * Populate the cache.
 	 */
@@ -72,7 +69,7 @@ var WardleyMapsApp = function() {
 
 	/**
 	 * Retrieve entry (content) from cache.
-	 * 
+	 *
 	 * @param {string}
 	 *            key Key identifying content to retrieve from cache.
 	 */
@@ -83,7 +80,7 @@ var WardleyMapsApp = function() {
 	/**
 	 * terminator === the termination handler Terminate server on receipt of the
 	 * specified signal.
-	 * 
+	 *
 	 * @param {string}
 	 *            sig Signal to terminate on.
 	 */
@@ -133,7 +130,7 @@ var WardleyMapsApp = function() {
 		self.routes.get['/profile'] = function(req, res) {
 			res.redirect('/');
 		};
-		
+
 		//generic access to protected files
 		self.routes.get['/:filename'] = function(req1, res1) {
 			if (endsWith(req1.params.filename, ".js")) {
@@ -154,27 +151,27 @@ var WardleyMapsApp = function() {
 			res1.send(self.cache_get(req1.params.filename));
 		};
 		// api
-		
+
 		// 1. create a map
 		self.routes.post['/api/map/'] = function(req, res) {
 			maps.createNewMap(req, res);
 		};
-		
+
 		// 2a. update a map (partially)
 		self.routes.post['/api/map/partial/:mapid'] = function(req, res) {
 			maps.partialMapUpdate(req, res, req.params.mapid);
 		};
-		
+
 		// 2b. update a map
 		self.routes.post['/api/map/:mapid'] = function(req, res) {
 			maps.updateMap(req, res, req.params.mapid);
 		};
-		
+
 		// 4. delete a map
 		self.routes.del['/api/map/:mapid'] = function(req, res) {
 			maps.deleteMap(req, res, req.params.mapid);
 		};
-		
+
 		// 4a. delete a map
 		// workaround for the lack of get from the link
 		// we operate with this as with a regular delete, and we perform
@@ -182,24 +179,24 @@ var WardleyMapsApp = function() {
 		self.routes.get['/api/map/delete/:mapid'] = function(req, res) {
 			maps.deleteMap(req, res, req.params.mapid, "/");
 		};
-		
+
 		// 5. map editor
 		self.routes.get['/map/:mapid'] = function(req, res) {
 			maps.getMap(req, req.params.mapid, function(map) {
 				res.render('mapeditor', {
-					map : map, 
+					map : map,
 					user : req.user
 				});
 			});
 		};
-		
+
 		// 6. export
 		self.routes.get['/api/map/:mapid/export/:size/:name'] = function(req,
 				res) {
 			exportmap.exportmap(req, res, req.params.mapid, req.params.name,
 					req.params.size);
 		};
-		
+
 		// 6. analysis
 		self.routes.get['/api/map/:mapid/analysis'] = function(req,
 				res) {
@@ -209,7 +206,7 @@ var WardleyMapsApp = function() {
 				res.render('analysis', {result:result});
 			});
 		};
-		
+
 		// progress
 		self.routes.get['/api/map/:mapid/progressstate'] = function(req,
 				res) {
@@ -217,7 +214,7 @@ var WardleyMapsApp = function() {
 				res.json(progress);
 			});
 		};
-		
+
 
 		// progress
 		self.routes.put['/api/map/:mapid/progressstate'] = function(req, res) {
@@ -225,26 +222,26 @@ var WardleyMapsApp = function() {
 				res.json(progress);
 			});
 		};
-		
+
 		// 7. thumbnail 100x100
 		self.routes.get['/api/map/:mapid/thumbnail.png'] = function(req, res) {
 			exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
 		};
-		
+
 		// help
 		self.routes.get['/help/:filename'] = function(req, res) {
 			res.render('help/'+req.params.filename);
 		};
-		
-		
+
+
 		// main entry point
 		self.routes.get['/'] = function(req, res) {
 			maps.getMaps(req, function(response) {
 				res.render('index', {response : response, user : req.user});
 			});
 		};
-		
-		
+
+
 	};
 
 	/**
@@ -262,49 +259,24 @@ var WardleyMapsApp = function() {
 			secret : 'modecommcd90le'
 		}));
 
-		self.app
-				.use(stormpath
-						.init(
-								self.app,
-								{
-									apiKeyId : stormpathconfig.getApiKeyId(),
-									apiKeySecret : stormpathconfig
-											.getApiKeySecret(),
-									secretKey : stormpathconfig.getSecretKey(),
-									application : stormpathconfig
-											.getApplication(),
-									postRegistrationHandler : function(account,
-											res, next) {
-										user.normalizeLoginInfo(account, res,
-												next);
-									},
-									enableGoogle : true,
-									social : {
-										google : {
-											clientId : googleauth.getClientID(),
-											clientSecret : googleauth.getClientSecret(),
-										},
-									},
-									expandProviderData : true,
-									expandCustomData : true
-								}));
-		
-		
+        var userProvider = require('./user-provider')(self.app);
+		self.app.use(userProvider);
+
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {
-			self.app.get(r, stormpath.loginRequired, self.routes.get[r]);
+			self.app.get(r, userProvider.loginRequired, self.routes.get[r]);
 		}
-		
+
 		for ( var r in self.routes.put) {
-			self.app.put(r, stormpath.loginRequired, self.routes.put[r]);
+			self.app.put(r, userProvider.loginRequired, self.routes.put[r]);
 		}
-		
+
 		for ( var r in self.routes.post) {
-			self.app.post(r, stormpath.loginRequired, self.routes.post[r]);
+			self.app.post(r, userProvider.loginRequired, self.routes.post[r]);
 		}
-		
+
 		for ( var r in self.routes.del) {
-			self.app.del(r, stormpath.loginRequired, self.routes.del[r]);
+			self.app.del(r, userProvider.loginRequired, self.routes.del[r]);
 		}
 
 		self.app.set('views', 'client');
