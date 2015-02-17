@@ -14,8 +14,11 @@ limitations under the License.*/
 
 var logger = require('./util/log.js').log.getLogger('exportmap');
 var db = require('./db').database;
-var Canvas = require('canvas')
-, Image = Canvas.Image;
+var Canvas, Image;
+try {
+     Canvas = require('canvas');
+     Image = Canvas.Image;
+} catch(ex) {}
 
 var arrow = [
              [ 2, 0 ],
@@ -68,7 +71,7 @@ function drawStrokedLine(ctx, x1, y1, y2){
 	var step1 = 7;
 	var step2 = 3;
 	var numberOfSteps = length / (step1 + step2);
-	
+
 	for(var i = 0 ; i < numberOfSteps; i++){
 		ctx.moveTo(x1,y1 + i * (step1 + step2));
 		ctx.lineTo(x1,y1 + i * (step1 + step2) + step2);
@@ -80,35 +83,35 @@ var draw = function(res, filename, map, x, y){
 	var stream = canvas.pngStream();
 	var ctx = canvas.getContext('2d');
 	ctx.antialias = 'subpixel';
-	
+
 	// background
 	ctx.fillStyle = "#FFFFFF";
 	ctx.fillRect(0,0,x,y);
-	
+
 	ctx.strokeStyle = "#000000";
 	ctx.fillStyle = "#000000";
 	ctx.font = 'bold 12px Impact';
-	
-	
+
+
 	var name = ctx.measureText(map.name);
 	ctx.fillText(map.name, 30, 15);
-	
+
 	ctx.font = '10px Impact';
 	var description = ctx.measureText(map.description);
 	ctx.fillText(map.description, 30, 30);
-	
+
 	var createdAt = 'Created at www.wardleymaps.com';
 	var createdAtMeasure = ctx.measureText(createdAt);
 	ctx.fillText(createdAt, x - 30 - createdAtMeasure.width, 15);
-	
-	
+
+
 	//TODO: draw axes here (30px from each border)
 	drawLineArrow(ctx, 30, y - 30, 30, 40);
-	drawLineArrow(ctx, 30, y - 30, x - 30, y - 30); 
-	
+	drawLineArrow(ctx, 30, y - 30, x - 30, y - 30);
+
 	ctx.fillText('Evolution', x - 60, y - 15);
 	ctx.fillText('Value', 33, 60);
-	
+
 	ctx.save();
 	ctx.strokeStyle = "#FBFBFB";
 	ctx.fillStyle = "#FFFFFF";
@@ -118,12 +121,12 @@ var draw = function(res, filename, map, x, y){
 	drawStrokedLine(ctx, 3*x/4, 40, y-30);
 	ctx.stroke();
 	ctx.restore();
-	
+
 	// calculate nodes
-	
+
 	var availableWidth = x - 2 * 30;
 	var availableHeight = y - 2 * 30;
-	
+
 	var calculatedNodes = [];
 	for(var index in map.nodes){
 		var node = map.nodes[index];
@@ -137,7 +140,7 @@ var draw = function(res, filename, map, x, y){
 		});
 	}
 	ctx.stroke();
-	
+
 	var recordedConnectionLabels = [];
 	//draw connections
 	for(var index in map.connections){
@@ -148,20 +151,20 @@ var draw = function(res, filename, map, x, y){
 		var start;
 		var end;
 		for(var nodeIndex in calculatedNodes){
-			
+
 			if(calculatedNodes[nodeIndex].componentId == source){
 				start = calculatedNodes[nodeIndex];
 			}
 			if(calculatedNodes[nodeIndex].componentId == target){
 				end = calculatedNodes[nodeIndex];
 			}
-			
+
 		}
 		if(scope == "jsPlumb_DefaultScope"){
 			ctx.strokeStyle = 'silver';
 			ctx.moveTo(start.x, start.y);
 			ctx.lineTo(end.x,end.y);
-			ctx.stroke();			
+			ctx.stroke();
 		}
 		if(scope == "Actions"){
 			ctx.strokeStyle = 'green';
@@ -177,7 +180,7 @@ var draw = function(res, filename, map, x, y){
 			}
 		}
 	}
-	
+
 	ctx.strokeStyle = 'black';
 	//and now draw nodes
 	for ( var index in calculatedNodes) {
@@ -200,18 +203,18 @@ var draw = function(res, filename, map, x, y){
 		ctx.fill();
 		ctx.stroke();
 	}
-	
+
 	for ( var index in calculatedNodes) {
 		ctx.beginPath();
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = 'white';
-		
+
 		ctx.fillStyle = 'black';
 		ctx.shadowColor = 'white';
 		ctx.shadowBlur = 2;
 		ctx.shadowOffsetX = 2;
 		ctx.shadowOffsetY = 2;
-		
+
 		var words = calculatedNodes[index].name.split(' ');
 		for(var wordIndex in words) {
 			ctx.fillText(words[wordIndex],
@@ -241,7 +244,7 @@ var draw = function(res, filename, map, x, y){
 		recordedConnectionLabels = [];
 		ctx.stroke();
 	}
-	
+
 	res.setHeader('Content-Type', 'image/png');
 	stream.on('data', function(chunk){
 		  res.write(chunk);
@@ -261,12 +264,12 @@ var thumbnail_draw = function(res, filename, map){
 	// background
 	ctx.fillStyle = "#FFFFFF";
 	ctx.fillRect(0,0,x,y);
-	
+
 	// calculate nodes
-	
+
 	var availableWidth = x ;
 	var availableHeight = y ;
-	
+
 	var calculatedNodes = [];
 	for(var index in map.nodes){
 		var node = map.nodes[index];
@@ -279,10 +282,10 @@ var thumbnail_draw = function(res, filename, map){
 			componentId : node.componentId
 		});
 	}
-	
+
 	ctx.strokeStyle = 'silver';
 	ctx.fillStyle = 'silver';
-	
+
 	//draw connections
 	for(var index in map.connections){
 		var connection = map.connections[index];
@@ -291,14 +294,14 @@ var thumbnail_draw = function(res, filename, map){
 		var start;
 		var end;
 		for(var nodeIndex in calculatedNodes){
-			
+
 			if(calculatedNodes[nodeIndex].componentId == source){
 				start = calculatedNodes[nodeIndex];
 			}
 			if(calculatedNodes[nodeIndex].componentId == target){
 				end = calculatedNodes[nodeIndex];
 			}
-			
+
 		}
 		if(start == undefined || end == undefined){
 			logger.error('found connection ' + source + ' ' + target  + ' without nodes');
@@ -308,19 +311,19 @@ var thumbnail_draw = function(res, filename, map){
 			ctx.stroke();
 		}
 	}
-	
+
 	//and now draw nodes
 	for ( var index in calculatedNodes) {
 		ctx.beginPath();
 		ctx.arc(calculatedNodes[index].x, calculatedNodes[index].y, 1, 0,
 				2 * Math.PI);
 		ctx.stroke();
-		
+
 		//background
 		ctx.fill();
 	}
-	
-	
+
+
 	res.setHeader('Content-Type', 'image/png');
 	stream.on('data', function(chunk){
 		  res.write(chunk);
@@ -350,7 +353,7 @@ var exportmap = function(req, res, mapId, filename, scale) {
 		x = 1280;
 		y = 800;
 	}
-	
+
 	db.maps.find({
 		"userIdGoogle" : userId,
 		"_id" : mapId
@@ -394,5 +397,23 @@ var thumbnail = function(req, res, mapId, filename) {
 	});
 };
 
-exports.exportmap = exportmap;
-exports.thumbnail = thumbnail;
+if (Canvas) {
+    exports.exportmap = exportmap;
+    exports.thumbnail = thumbnail;
+} else {
+    exports.exportmap = function r404(req, res) {
+        res.status(404, 'Export to canvas not supported in the instance');
+    };
+    exports.thumbnail = function(req, res) {
+        var fs = require('fs');
+        fs.readFile(__dirname + '/../client/favicon.svg', function(err, buff) {
+            if (err) {
+                console.log(err, __dirname + '/../client/favicon.svg');
+                res.send(500, err);
+            } else {
+                res.setHeader('Content-Type', 'image/svg+xml');
+                res.send(buff);
+            }
+        });
+    }
+}
