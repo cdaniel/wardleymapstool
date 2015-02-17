@@ -15,13 +15,10 @@ limitations under the License.*/
 
 var express = require('express');
 var fs = require('fs');
-var stormpathconfig = require('./config/stormpathconfig').stormpathconfig;
-var googleauth = require('./config/googleauth').googleauth;
 var user = require('./user').user;
 var logger = require('./util/log').log.getLogger('server');
 var maps = require('./maps');
 var exportmap = require('./export');
-var stormpath = require('express-stormpath');
 var analyzer = require('./analyzer');
 
 function endsWith(str, suffix) {
@@ -262,49 +259,26 @@ var WardleyMapsApp = function() {
 			secret : 'modecommcd90le'
 		}));
 
-		self.app
-				.use(stormpath
-						.init(
-								self.app,
-								{
-									apiKeyId : stormpathconfig.getApiKeyId(),
-									apiKeySecret : stormpathconfig
-											.getApiKeySecret(),
-									secretKey : stormpathconfig.getSecretKey(),
-									application : stormpathconfig
-											.getApplication(),
-									postRegistrationHandler : function(account,
-											res, next) {
-										user.normalizeLoginInfo(account, res,
-												next);
-									},
-									enableGoogle : true,
-									social : {
-										google : {
-											clientId : googleauth.getClientID(),
-											clientSecret : googleauth.getClientSecret(),
-										},
-									},
-									expandProviderData : true,
-									expandCustomData : true
-								}));
+
+		var userProvider = require('./user-provider')(self.app);
+		self.app.use(userProvider);
 
 
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {
-			self.app.get(r, stormpath.loginRequired, self.routes.get[r]);
+			self.app.get(r, userProvider.loginRequired, self.routes.get[r]);
 		}
 
 		for ( var r in self.routes.put) {
-			self.app.put(r, stormpath.loginRequired, self.routes.put[r]);
+			self.app.put(r, userProvider.loginRequired, self.routes.put[r]);
 		}
 
 		for ( var r in self.routes.post) {
-			self.app.post(r, stormpath.loginRequired, self.routes.post[r]);
+			self.app.post(r, userProvider.loginRequired, self.routes.post[r]);
 		}
 
 		for ( var r in self.routes.del) {
-			self.app.del(r, stormpath.loginRequired, self.routes.del[r]);
+			self.app.del(r, userProvider.loginRequired, self.routes.del[r]);
 		}
 
 		self.app.set('views', 'client');
