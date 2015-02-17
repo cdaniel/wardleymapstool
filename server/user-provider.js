@@ -12,8 +12,9 @@ try {
         var stormpathconfig = require('./config/stormpathconfig').stormpathconfig;
         var googleauth = require('./config/googleauth').googleauth;
         var stormpath = require('express-stormpath');
+        var user = require('./user').user;
 
-        return  stormpath
+        app.use(stormpath
                 .init(
                         app,
                         {
@@ -37,7 +38,9 @@ try {
                             },
                             expandProviderData : true,
                             expandCustomData : true
-                        });
+                        }));
+        
+        return stormpath;
     }
 
     if (config.userProvider === 'os') {
@@ -48,8 +51,11 @@ try {
         osUserMiddleware.loginRequired = function(req, res, next) {
             next();
         }
+        app.use(osUserMiddleware);
         return osUserMiddleware;
     }
 
-    return require(config.userProvider);
+    var someOtherProvider = require(config.userProvider);
+    app.use(someOtherProvider);
+    return someOtherProvider;
  }

@@ -15,7 +15,6 @@ limitations under the License.*/
 
 var express = require('express');
 var fs = require('fs');
-var user = require('./user').user;
 var logger = require('./util/log').log.getLogger('server');
 var maps = require('./maps');
 var exportmap = require('./export');
@@ -261,8 +260,6 @@ var WardleyMapsApp = function() {
 
 
 		var userProvider = require('./user-provider')(self.app);
-		self.app.use(userProvider);
-
 
 		// Add handlers for the app (from the routes).
 		for ( var r in self.routes.get) {
