@@ -56,8 +56,8 @@ html
                 #selectors.row
                     //- new map button
                     .col-xs-12.col-sm-6.col-md-3.col-lg-2
-                        .thumbnail.text-center 
-                            a(href="#" onclick="showAddMapDialog()").text-center 
+                        .thumbnail.text-center
+                            a(href="#" onclick="showAddMapDialog()").text-center
                                 .glyphicon.glyphicon-plus.img-thumbnail(style="font-size:140px;color:silver")
                         .caption
                             h3 Map a new business line...
@@ -66,7 +66,7 @@ html
                         .col-xs-12.col-sm-6.col-md-3.col-lg-2(id=map._id)
                             .thumbnail
                                 a(href="/map/" + map._id)
-                                    img.img-thumbnail(src='api/map/' + map._id + '/thumbnail.png' title=map.description)
+                                    img.img-thumbnail(src='api/map/' + map._id + '/thumbnail' title=map.description)
                             .caption
                                 div.col-xs-9
                                     h3.no_top_margin= map.name
@@ -87,19 +87,19 @@ html
                 div(class="panel-body")
                     p(class="text-info") Don't forget to tell 
                         a(href="https://twitter.com/intent/tweet?screen_name=wardleymaps" target="_blank") @wardleymaps 
-                        how do you like the tool. Your opinion <b>really</b> matters.
+                        | how do you like the tool. Your opinion <b>really</b> matters.
         //- new business line dialog
         #basicModal(class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true")
             div(class="modal-dialog")
                 div(class="modal-content")
                     div(class="modal-header")
-                        button(type="button" 
-                                class="close" 
-                                data-dismiss="modal" 
+                        button(type="button"
+                                class="close"
+                                data-dismiss="modal"
                                 aria-hidden="true")    &times;
                         h4#myModalLabel(class="modal-title") Map a new business line...
                     div(class="modal-body")
-                        form#newMapCreationForm(action="/api/map/" 
+                        form#newMapCreationForm(action="/api/map/"
                                                 method='post' class="form-horizontal")
                             .form-group
                                 label(for="name" class="col-sm-3 control-label") Line's name:
