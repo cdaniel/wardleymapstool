@@ -28,7 +28,7 @@ html
         link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css')
         link(rel='stylesheet', href='/mapeditor.css')
-        link(rel='shortcut icon', href='favicon.ico', type="/favicon.ico")
+        link(rel='shortcut icon', href='/favicon.ico', type="favicon.ico")
         script(src='/progresshelper.js')
         script.
             var mapURL = '/api/map/#{map._id}';
@@ -79,7 +79,7 @@ html
                             li
                                 a(href="/logout")
                                     span.glyphicon.glyphicon-log-out Logout
-            p Description: 
+            p Description:
                 a#description(href="#" data-type="text" data-title="Description" value=map.history[0].description data-pk="description" data-url='/api/map/partial/#{map._id}')=map.history[0].description
             //- canvas
             #map-container.col-lg-10
@@ -88,10 +88,15 @@ html
                 .axis-support#support-3
                 #value Value
                 #evolution Evolution
-                #axis-x
+                #axis-x.row
+                    .description.col-lg-3 Genesis
+                    .description.col-lg-3 Custom built
+                    .description.col-lg-3 Product(or rental)
+                    .description.col-lg-3 Commodity/Utility
                 #axis-y
                 #arrow-x
                 #arrow-y
+
             .col-lg-2#mapcreationassist(style="display:none")
                 include ./mapeditor_includes/mapcreationassist.jade
             #menu.col-lg-2
