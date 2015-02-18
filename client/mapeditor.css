@@ -78,12 +78,14 @@
 	left: 2%;
 	right: 2%;
 	border: 1px solid gray;
+    margin-right: 0;
+    margin-left: 0;
 }
 
 #arrow-x {
 	position: absolute;
     width: 0;
-    height: 0; 
+    height: 0;
     border-top: 4px solid transparent;
     border-bottom: 2px solid transparent;
     border-left: 10px solid gray;
@@ -125,7 +127,7 @@
 #arrow-y {
     position: absolute;
     width: 0;
-    height: 0; 
+    height: 0;
     border-left: 2px solid transparent;
     border-right: 4px solid transparent;
     border-bottom: 10px solid gray;
@@ -137,4 +139,4 @@
 	background-color: rgba(255,255,255,0.8);
 }
 
-._jsPlumb_endpoint { z-index: 10; } 
+._jsPlumb_endpoint { z-index: 10; }
