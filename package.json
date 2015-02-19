@@ -31,8 +31,7 @@
     "log4js": "*",
     "jade" : "*",
     "request" : "*",
-    "mailchimp-api" : "*",
-    "canvas" : "1.1.6"
+    "mailchimp-api" : "*"
   },
 
   "optionalDependencies": {
