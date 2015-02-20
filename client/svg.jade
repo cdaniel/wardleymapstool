@@ -4,6 +4,9 @@ html
         meta(charset='utf-8')
         title Wardley Maps Tool - SVG Export #{mapid}
         script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.min.js')
+        link(rel='stylesheet', href='/svg.css')
         link(rel='shortcut icon', href='/favicon.ico', type="favicon.ico")
     body(data-mapid='#{mapid}')
+        svg(class='map')
         script(src='/svg.js')
