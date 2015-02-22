@@ -120,6 +120,12 @@
             .attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')';  })
             .text(pick('name'));
         });
+
+        var svg = document.querySelector('svg');
+        var svgText = new XMLSerializer().serializeToString(svg);
+        d3.select('.svg-text')
+        .text(svgText);
+
     }
 
 })(window.d3, window._)

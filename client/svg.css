@@ -40,10 +40,12 @@
     stroke: green;
 }
 
-/*.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+.svg-text {
+    word-wrap: break-word;
+    font-family: monospace;
+    font-size: 8px;
+    width: 700px;
+    margin: 50px;
+    border: solid 1px;
+    padding: 20px;
 }
-*/
