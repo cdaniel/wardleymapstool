@@ -20,7 +20,7 @@ var xmldom = require('xmldom');
 var _ = require('underscore');
 
 
-var svg_css = "<![CDATA[" + fs.readFileSync("server/svg.css").toString() + "]]>";
+var svg_css = fs.readFileSync("server/svg.css").toString();
 
 var Canvas, Image;
 try {
@@ -262,18 +262,6 @@ var draw = function(res, filename, map, x, y){
 	});
 };
 
-function pick(key) {
-	return function(d) {
-		return d[key];
-	};
-}
-
-function unitify(unit) {
-	return function(d) {
-		return '' + d + unit;
-	};
-}
-	
 var thumbnail_draw = function(res, filename, map){
 	var htmlStub = '<html><head><script></script></head><body><div id="map-container"></div></body></html>';
 	var scripts = ['//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js', '//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.min.js'];
@@ -288,9 +276,28 @@ var thumbnail_draw = function(res, filename, map){
 		scripts : scripts, 
 		done : function(errors, window) {
 			
+			function pick(key) {
+				return function(d) {
+					if(typeof d[key] === 'string' && d[key] === 'true'){
+						return true;
+					}
+					if(typeof d[key] === 'string' && d[key] === 'false'){
+						return false;
+					}
+					return d[key];
+				};
+			}
+
+			function unitify(unit) {
+				return function(d) {
+					return '' + d + unit;
+				};
+			}
+				
+			
 			var x = 1280;
 			var y = 1024;
-			var thumbnailMargin = 1;
+			var thumbnailMargin = 20;
 			
 			var el = window.document.querySelector('#map-container');
 			var svgimg = d3.select(el).append('svg:svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('class', 'map');
@@ -351,7 +358,8 @@ var thumbnail_draw = function(res, filename, map){
 				.attr('transform', 'translate(0,' + height + ')')
 				.call(function(el) {
 					el.append('path')
-						.attr('d', line([{positionX:0, positionY:0}, {positionX:1, positionY:0}]));
+						.attr('d', line([{positionX:0, positionY:0}, {positionX:1, positionY:0}]))
+						.style('stroke','grey').style('stroke-width', '2px').style('marker-end', 'url(#arrow)');
 					el.selectAll('g.label')
 						.data(legendItems)
 						.enter()
@@ -359,7 +367,8 @@ var thumbnail_draw = function(res, filename, map){
 						.classed('label', true)
 						.attr('transform', function(d) { return 'translate(' + xLegend(d) + ',15)'; })
 						.append('text')
-						.text(_.identity);
+						.text(_.identity)
+						.style('font','10px sans-serif');;
 			});
 			
 			mapViz.append('g')
@@ -369,14 +378,16 @@ var thumbnail_draw = function(res, filename, map){
 				.enter()
 				.append('path')
 				.attr('transform', function(d) { return 'translate(' + (xLegend(d) - 40) + ',0)'; })
-				.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]));
+				.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]))
+				.style('stroke','grey').style('stroke-width', '1px').style('stroke-dasharray', '1,5');
 			
 			// y legend
 			mapViz.append('g')
 				.attr('class', 'y axis')
 				.call(function(el) {
 					el.append('path')
-					.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]));
+					.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]))
+					.style('stroke','grey').style('stroke-width', '2px').style('marker-end', 'url(#arrow)');
 			});
 			
 			// connections
@@ -386,7 +397,8 @@ var thumbnail_draw = function(res, filename, map){
 				.enter()
 				.append('path')
 				.classed('connection', true)
-				.attr('d', line);
+				.attr('d', line)
+				.style('stroke','black').style('stroke-width', '1px');
 			
 			// nodes
 			mapViz
@@ -404,18 +416,20 @@ var thumbnail_draw = function(res, filename, map){
 			
 			gnode
 				.append('circle')
-				.attr({ r: '10px', 'cx': moveX, 'cy': moveY });
+				.attr({ r: '10px', 'cx': moveX, 'cy': moveY })
+				.style('fill','silver').style('stroke','black').style('stroke-width', '3px');
 			
 			gnode.append('text')
 				.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 				.text(pick('name'));
 			});
 			
+			mapViz.selectAll('.userneed > circle').style('stroke-width', '4px');
+			mapViz.selectAll('.external > circle').style('fill', 'white');
+			
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el.firstChild); 
-			svgXML = svgXML.replace('&lt;', '\<');
-			console.log(svgXML);
 			res.setHeader('Content-Type', 'image/svg+xml');
-			res.send(svgXML);
+			res.send('<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + svgXML);
 		}
 	});
 
