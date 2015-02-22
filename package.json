@@ -31,11 +31,14 @@
     "log4js": "*",
     "jade" : "*",
     "request" : "*",
-    "mailchimp-api" : "*"
+    "mailchimp-api" : "*",
+    "d3" : "*",
+    "jsdom" : "*",
+    "xmldom" : "*",
+    "underscore" : "*"
   },
 
   "optionalDependencies": {
-    "canvas" : "1.1.6",
     "express-stormpath" : "*"
   },
 

@@ -1,4 +1,4 @@
-/* Copyright 2014 Krzysztof Daniel
+/* Copyright 2014-2015 Krzysztof Daniel
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +14,14 @@ limitations under the License.*/
 
 var logger = require('./util/log.js').log.getLogger('exportmap');
 var db = require('./db').database;
+var fs = require('fs');
+var d3 = require('d3'), jsdom = require('jsdom');
+var xmldom = require('xmldom');
+var _ = require('underscore');
+
+
+var svg_css = "<![CDATA[" + fs.readFileSync("server/svg.css").toString() + "]]>";
+
 var Canvas, Image;
 try {
      Canvas = require('canvas');
@@ -254,83 +262,163 @@ var draw = function(res, filename, map, x, y){
 	});
 };
 
+function pick(key) {
+	return function(d) {
+		return d[key];
+	};
+}
+
+function unitify(unit) {
+	return function(d) {
+		return '' + d + unit;
+	};
+}
+	
 var thumbnail_draw = function(res, filename, map){
-	var x = 200;
-	var y = 200;
-	var canvas = new Canvas(x,y);
-	var stream = canvas.pngStream();
-	var ctx = canvas.getContext('2d');
+	var htmlStub = '<html><head><script></script></head><body><div id="map-container"></div></body></html>';
+	var scripts = ['//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js', '//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.min.js'];
+	
+	jsdom.env({
+		features : {
+			QuerySelector : true,
+			FetchExternalResources : [ 'script', 'css' ],
+			ProcessExternalResources : [ 'script', 'css' ]
+		},
+		html : htmlStub,
+		scripts : scripts, 
+		done : function(errors, window) {
+			
+			var x = 1280;
+			var y = 1024;
+			var thumbnailMargin = 1;
+			
+			var el = window.document.querySelector('#map-container');
+			var svgimg = d3.select(el).append('svg:svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('class', 'map');
+			
+			
+			var defs = svgimg.append('defs');
+			
+			var css = defs.append('style').attr('type','txt/css');
+			css.text(svg_css);
+			
+			var marker = defs.append('marker');
+			marker.attr('id', 'arrow');
+			marker.attr('orient', 'auto');
+			marker.attr('markerWidth', '6');
+			marker.attr('markerHeight', '8');
+			marker.attr('refX', '0.1');
+			marker.attr('refY', '2');
+			
+			var path = marker.append('path');
+			path.attr('d', 'M0,0 V4 L2,2 Z');
+			path.attr('fill', 'grey');
 
-	// background
-	ctx.fillStyle = "#FFFFFF";
-	ctx.fillRect(0,0,x,y);
-
-	// calculate nodes
-
-	var availableWidth = x ;
-	var availableHeight = y ;
-
-	var calculatedNodes = [];
-	for(var index in map.nodes){
-		var node = map.nodes[index];
-		var cX = Math.floor(node.positionX * availableWidth);
-		var cY = Math.floor(node.positionY * availableHeight);
-		calculatedNodes.push({
-			x : cX,
-			y : cY,
-			name : node.name,
-			componentId : node.componentId
-		});
-	}
-
-	ctx.strokeStyle = 'silver';
-	ctx.fillStyle = 'silver';
-
-	//draw connections
-	for(var index in map.connections){
-		var connection = map.connections[index];
-		var source = connection.pageSourceId;
-		var target = connection.pageTargetId;
-		var start;
-		var end;
-		for(var nodeIndex in calculatedNodes){
-
-			if(calculatedNodes[nodeIndex].componentId == source){
-				start = calculatedNodes[nodeIndex];
-			}
-			if(calculatedNodes[nodeIndex].componentId == target){
-				end = calculatedNodes[nodeIndex];
-			}
-
+			
+			var nodes = _.groupBy(map.nodes, 'componentId');
+			var connections = map.connections.map(function(c) {
+				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+			});
+			
+			 // basic size
+			var margin = {top: thumbnailMargin, right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
+			var width = x - margin.left - margin.right;
+			var height = y - margin.top - margin.bottom;
+			
+			 // scales
+			var x = d3.scale.linear().range([0, width]);
+			var y = d3.scale.linear().range([0, height]);
+			var line = d3.svg.line()
+				.x(_.compose(x, pick('positionX')))
+				.y(_.compose(y, pick('positionY')));
+			
+			
+			// setup viz container
+			var mapViz = svgimg
+				.attr('width', width + margin.left + margin.right)
+				.attr('height', height + margin.top + margin.bottom)
+				.append('g')
+				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+			
+			// x legend
+			var legendItems = ['Genesis', 'Custom built', 'Product(or rental)', 'Commodity/Utility'];
+			
+			var xLegend = d3.scale.ordinal()
+				.domain(legendItems)
+				.rangeBands([0, width], 0, 0.1);
+			
+			mapViz.append('g')
+				.attr('class', 'x axis')
+				.attr('transform', 'translate(0,' + height + ')')
+				.call(function(el) {
+					el.append('path')
+						.attr('d', line([{positionX:0, positionY:0}, {positionX:1, positionY:0}]));
+					el.selectAll('g.label')
+						.data(legendItems)
+						.enter()
+						.append('g')
+						.classed('label', true)
+						.attr('transform', function(d) { return 'translate(' + xLegend(d) + ',15)'; })
+						.append('text')
+						.text(_.identity);
+			});
+			
+			mapViz.append('g')
+				.classed('evolution-marker', true)
+				.selectAll('path')
+				.data(_.tail(legendItems))
+				.enter()
+				.append('path')
+				.attr('transform', function(d) { return 'translate(' + (xLegend(d) - 40) + ',0)'; })
+				.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]));
+			
+			// y legend
+			mapViz.append('g')
+				.attr('class', 'y axis')
+				.call(function(el) {
+					el.append('path')
+					.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]));
+			});
+			
+			// connections
+			mapViz
+				.selectAll('.connection')
+				.data(connections)
+				.enter()
+				.append('path')
+				.classed('connection', true)
+				.attr('d', line);
+			
+			// nodes
+			mapViz
+				.append('g')
+				.classed('nodes', true)
+				.selectAll('node')
+				.data(map.nodes)
+				.enter()
+				.append('g')
+				.classed({ node: true, external: pick('external'), userneed: pick('userneed') })
+				.call(function(gnode) {
+			
+			var moveX = _.compose(x, pick('positionX'));
+			var moveY = _.compose(y, pick('positionY'));
+			
+			gnode
+				.append('circle')
+				.attr({ r: '10px', 'cx': moveX, 'cy': moveY });
+			
+			gnode.append('text')
+				.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
+				.text(pick('name'));
+			});
+			
+			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el.firstChild); 
+			svgXML = svgXML.replace('&lt;', '\<');
+			console.log(svgXML);
+			res.setHeader('Content-Type', 'image/svg+xml');
+			res.send(svgXML);
 		}
-		if(start == undefined || end == undefined){
-			logger.error('found connection ' + source + ' ' + target  + ' without nodes');
-		} else {
-			ctx.moveTo(start.x, start.y);
-			ctx.lineTo(end.x,end.y);
-			ctx.stroke();
-		}
-	}
-
-	//and now draw nodes
-	for ( var index in calculatedNodes) {
-		ctx.beginPath();
-		ctx.arc(calculatedNodes[index].x, calculatedNodes[index].y, 1, 0,
-				2 * Math.PI);
-		ctx.stroke();
-
-		//background
-		ctx.fill();
-	}
-
-
-	res.setHeader('Content-Type', 'image/png');
-	stream.on('data', function(chunk){
-		  res.write(chunk);
 	});
-	stream.on('end', function(){
-		res.end();
-	});
+
 };
 
 var exportmap = function(req, res, mapId, filename, scale) {

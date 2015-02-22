@@ -1,0 +1,52 @@
+
+.map circle {
+	fill: white;
+	stroke: black;
+	stroke-width: 3px;
+}
+
+.map .connection {
+	stroke: black;
+	stroke-width: 1px;
+}
+
+.axis text {
+	font: 10px sans-serif;
+}
+
+.map .axis path {
+	stroke: grey;
+	stroke-width: 2px;
+	marker-end: url(#arrow);
+}
+
+.evolution-marker path {
+	stroke: grey;
+	stroke-width: 1px;
+	stroke-dasharray: 1, 5;
+}
+
+.node /*not a need internal*/ circle {
+	stroke-dasharray: 10, 5;
+	stroke-width: 1px;
+	fill: white;
+}
+
+.node.userneed circle {
+	stroke-dasharray: 0;
+	stroke-width: 3px;
+}
+
+.node.external circle {
+	stroke: green;
+}
+
+.svg-text {
+	word-wrap: break-word;
+	font-family: monospace;
+	font-size: 8px;
+	width: 700px;
+	margin: 50px;
+	border: solid 1px;
+	padding: 20px;
+}
