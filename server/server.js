@@ -43,39 +43,6 @@ var WardleyMapsApp = function() {
 		self.localmode = true;
 	};
 
-	// self.cache = function(name){
-	// 	self.zcache[name] = fs.readFileSync('client/' + name);
-	// };
-
-	// /**
-	//  * Populate the cache.
-	//  */
-	// self.populateCache = function() {
-	// 	if (typeof self.zcache === "undefined") {
-	// 		self.zcache = {};
-	// 		self.cache('analytics.js');
-	// 		self.cache('favicon.ico');
-	// 		self.cache('index.js');
-	// 		self.cache('index.css');
-	// 		self.cache('mapeditor.js');
-	// 		self.cache('progresshelper.js');
-	// 		self.cache('mapeditor.css');
-	// 		self.cache('logout.html');
-	// 		self.cache('dom.jsPlumb-1.7.2.js');
-	// 		self.cache('jqBootstrapValidation.js');
-	// 	}
-	// };
-
-	// /**
-	//  * Retrieve entry (content) from cache.
-	//  *
-	//  * @param {string}
-	//  *            key Key identifying content to retrieve from cache.
-	//  */
-	// self.cache_get = function(key) {
-	// 	return self.zcache[key];
-	// };
-
 	/**
 	 * terminator === the termination handler Terminate server on receipt of the
 	 * specified signal.
@@ -130,25 +97,6 @@ var WardleyMapsApp = function() {
 			res.redirect('/');
 		};
 
-		// //generic access to protected files
-		// self.routes.get['/:filename'] = function(req1, res1) {
-		// 	if (endsWith(req1.params.filename, ".js")) {
-		// 		res1.setHeader('Content-Type', 'text/javascript');
-		// 	}
-		// 	if (endsWith(req1.params.filename, ".css")) {
-		// 		res1.setHeader('Content-Type', 'text/css');
-		// 	}
-		// 	if (endsWith(req1.params.filename, ".html")) {
-		// 		res1.setHeader('Content-Type', 'text/html');
-		// 	}
-		// 	if (endsWith(req1.params.filename, ".svg")) {
-		// 		res1.setHeader('Content-Type', 'image/svg+xml');
-		// 	}
-		// 	if (endsWith(req1.params.filename, ".png")) {
-		// 		res1.setHeader('Content-Type', 'image/png');
-		// 	}
-		// 	res1.send(self.cache_get(req1.params.filename));
-		// };
 		// api
 
 		// 1. create a map
@@ -297,9 +245,7 @@ var WardleyMapsApp = function() {
 	 */
 	self.initialize = function() {
 		self.setupVariables();
-		// self.populateCache();
 		self.setupTerminationHandlers();
-
 		// Create the express server and routes.
 		self.initializeServer();
 	};

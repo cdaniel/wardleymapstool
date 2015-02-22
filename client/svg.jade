@@ -9,4 +9,7 @@ html
         link(rel='shortcut icon', href='/favicon.ico', type="favicon.ico")
     body(data-mapid='#{mapid}')
         svg(class='map')
+            defs
+                marker(id='arrow',orient='auto',markerWidth='6',markerHeight='8',refX='0.1',refY='2')
+                    path(d='M0,0 V4 L2,2 Z',fill='grey')
         script(src='/svg.js')
