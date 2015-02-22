@@ -47,8 +47,8 @@
 
   "bundleDependencies": [],
 
-  "private": true,
   "main": "server/server.js",
+  "files": ["client", "server", "Dockerfile", "LICENSE", "supervisord.conf"],
   "license" : "ASL 2.0",
 
   "scripts": {
