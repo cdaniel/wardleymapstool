@@ -92,6 +92,15 @@ var WardleyMapsApp = function() {
 		self.routes.put = {};
 		self.routes.del = {};
 
+        var hasCanvas = false;
+        try {
+            hasCanvas = !!require('canvas');
+        } catch(ex) {}
+        var serverCapabilities = {
+            canvas: hasCanvas ? 'canvas' : 'no-canvas',
+            hasCanvas: hasCanvas
+        };
+
 		// redirect for yet not implemented
 		self.routes.get['/profile'] = function(req, res) {
 			res.redirect('/');
@@ -132,15 +141,15 @@ var WardleyMapsApp = function() {
 			maps.getMap(req, req.params.mapid, function(map) {
 				res.render('mapeditor', {
 					map : map,
-					user : req.user
+					user : req.user,
+                    serverCapabilities: serverCapabilities
 				});
 			});
 		};
 
 		// 6. export
 		self.routes.get['/api/map/:mapid/export/:size/:name'] = function(req, res) {
-			exportmap.exportmap(req, res, req.params.mapid, req.params.name,
-					req.params.size);
+			exportmap.exportmap(req, res, req.params.mapid, req.params.name, req.params.size);
 		};
 
 		self.routes.get['/api/map/:mapid'] = function(req, res) {

@@ -58,15 +58,17 @@ html
                     ul.nav.navbar-nav
                         li
                             a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
-                        li.dropdown
+                        li.dropdown.export
                             a.dropdown-toggle(data-toggle="dropdown" href="#") Export <b class="caret"></b>
                             ul.dropdown-menu(role="menu")
-                                li
+                                li(class="#{serverCapabilities.canvas}")
                                     a#exportsmall(download="#{map.history[0].name}.png" href="/api/map/#{map._id}/export/1/#{map._id}.png") Small
-                                li
+                                li(class="#{serverCapabilities.canvas}")
                                     a#exportmedium(download="#map.history[0].name}.png" href="/api/map/#{map._id}/export/2/#{map._id}.png") Medium
+                                li(class="#{serverCapabilities.canvas}")
+                                    a#exportlarge(download="#{map.history[0].name}.png" href="/api/map/#{map._id}/export/3/#{map._id}.png") Large
                                 li
-                                    a#exportsmall(download="#{map.history[0].name}.png" href="/api/map/#{map._id}/export/3/#{map._id}.png") Large
+                                    a(href="/map/svg/#{map._id}") SVG (client side)
                         //-li
                         //-    a(href="/api/map/#{map._id}/analysis" data-toggle="modal"  data-target="#analysisModal") Analysis
                         li

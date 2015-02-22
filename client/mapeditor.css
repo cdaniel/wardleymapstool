@@ -140,3 +140,7 @@
 }
 
 ._jsPlumb_endpoint { z-index: 10; }
+
+.export .no-canvas {
+    display: none;
+}
