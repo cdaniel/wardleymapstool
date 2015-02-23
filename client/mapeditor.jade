@@ -1,4 +1,4 @@
-//-Copyright 2015 Krzysztof Daniel
+//-Copyright 2015 Krzysztof Daniel and Scott Weinstein.
 //-
 //-Licensed under the Apache License, Version 2.0 (the "License");
 //-you may not use this file except in compliance with the License.
@@ -58,15 +58,8 @@ html
                     ul.nav.navbar-nav
                         li
                             a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
-                        li.dropdown
-                            a.dropdown-toggle(data-toggle="dropdown" href="#") Export <b class="caret"></b>
-                            ul.dropdown-menu(role="menu")
-                                li
-                                    a#exportsmall(download="#{map.history[0].name}.png" href="/api/map/#{map._id}/export/1/#{map._id}.png") Small
-                                li
-                                    a#exportmedium(download="#map.history[0].name}.png" href="/api/map/#{map._id}/export/2/#{map._id}.png") Medium
-                                li
-                                    a#exportsmall(download="#{map.history[0].name}.png" href="/api/map/#{map._id}/export/3/#{map._id}.png") Large
+                        li
+                            a#download(download="#{map.history[0].name}.png" href="/api/svg/#{map._id}/#{map._id}.svg") Download
                         //-li
                         //-    a(href="/api/map/#{map._id}/analysis" data-toggle="modal"  data-target="#analysisModal") Analysis
                         li

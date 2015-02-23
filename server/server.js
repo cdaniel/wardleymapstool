@@ -1,5 +1,5 @@
 //#!/bin/env node
-/* Copyright 2014 Krzysztof Daniel
+/* Copyright 2014, 2015 Krzysztof Daniel and Scott Weinstein.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@ var WardleyMapsApp = function() {
 			self.cache('favicon.ico');
 			self.cache('index.js');
 			self.cache('index.css');
-			self.cache('svg.css');
 			self.cache('mapeditor.js');
 			self.cache('progresshelper.js');
 			self.cache('mapeditor.css');
@@ -191,10 +190,9 @@ var WardleyMapsApp = function() {
 		};
 
 		// 6. export
-		self.routes.get['/api/map/:mapid/export/:size/:name'] = function(req,
+		self.routes.get['/api/svg/:mapid/:name'] = function(req,
 				res) {
-			exportmap.exportmap(req, res, req.params.mapid, req.params.name,
-					req.params.size);
+			exportmap.createSVG(req, res, req.params.mapid, req.params.name);
 		};
 
 		// 6. analysis
@@ -221,11 +219,6 @@ var WardleyMapsApp = function() {
 			maps.advanceProgressState(req, req.params.mapid, function(progress) {
 				res.json(progress);
 			});
-		};
-
-		// 7. thumbnail 100x100
-		self.routes.get['/api/map/:mapid/thumbnail'] = function(req, res) {
-			exportmap.thumbnail(req, res, req.params.mapid, 'thumbnail.png');
 		};
 
 		// help

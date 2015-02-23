@@ -1,4 +1,4 @@
-//-Copyright 2014 Krzysztof Daniel
+//-Copyright 2014, 2015 Krzysztof Daniel and Scott Weinstein.
 //-
 //-Licensed under the Apache License, Version 2.0 (the "License");
 //-you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ html
                         .col-xs-12.col-sm-6.col-md-3.col-lg-2(id=map._id)
                             .thumbnail
                                 a(href="/map/" + map._id)
-                                    img.img-thumbnail(src='api/map/' + map._id + '/thumbnail' title=map.description)
+                                    img.img-thumbnail(src='api/svg/' + map._id + '/thumbnail' title=map.description)
                             .caption
                                 div.col-xs-9
                                     h3.no_top_margin= map.name
