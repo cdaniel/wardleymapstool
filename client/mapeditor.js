@@ -84,10 +84,10 @@ function updateSelectionMenus(){
 		$('#actionMenu').hide();
 	}
 	if(selectedNode){
-		
+
 		$('#node_name').text(selectedNode.getText());
-		
-		
+
+
 		$('#node_userneed').editable('destroy');
 		$('#node_userneed').editable({
 		    source: {'1': 'This is a user need'},
@@ -102,7 +102,7 @@ function updateSelectionMenus(){
 		} else {
 			$('#node_userneed').editable('setValue',-1);
 		}
-		
+
 		$('#node_external').editable('destroy');
 		$('#node_external').editable({
 		    source: {'0': 'internal', '1' : 'external'},
@@ -117,7 +117,7 @@ function updateSelectionMenus(){
 		} else {
 			$('#node_external').editable('setValue',0);
 		}
-		
+
 		$('#nodeMenu').show();
 	} else {
 		$('#nodeMenu').hide();
@@ -182,7 +182,8 @@ function saveMap() {
 		url : mapURL,
 		type : 'post',
 		async : 'true',
-		data : map,
+        contentType: 'application/json',
+		data : JSON.stringify(map),
 		success : function(result) {
 			if (result.status) {
 				console.log('something went wrong');
@@ -201,7 +202,7 @@ function saveMap() {
 }
 
 function drawMap() {
-	
+
 	var mapContainer = $('#map-container');
 	var width = mapContainer.width();
 	var height = mapContainer.height();
@@ -272,7 +273,7 @@ function init() {
 	});
 
 	drawMap();
-	
+
 	//update the progress helper
 	progressHelper.refresh();
 }
@@ -331,7 +332,7 @@ function HTMLMapNode(parentNode, nodeData) {
 		map.nodes.push(nodeData);
 	}
 	self.nodeData = nodeData;
-	nodeData.componentId = "" + nodeData.componentId; 
+	nodeData.componentId = "" + nodeData.componentId;
 
 	// create and append item to the canvas
 	self.internalNode = $('<div>').attr('id', self.nodeData.componentId)
@@ -513,14 +514,14 @@ function HTMLMapNode(parentNode, nodeData) {
 		self.internalNode.remove();
 		for (var i = 0; i < map.nodes.length; i++) {
 			if (self.nodeData.componentId === map.nodes[i].componentId) {
-				map.nodes.splice(i, 1); 
+				map.nodes.splice(i, 1);
 				break;
 			}
 		};
 		for (var j = map.connections.length - 1; j > -1 ; j--) {
 			if (self.nodeData.componentId === map.connections[j].pageSourceId
 					|| self.nodeData.componentId === map.connections[j].pageTargetId) {
-				map.connections.splice(j, 1); 
+				map.connections.splice(j, 1);
 			}
 		};
 		delete self.nodeData;
@@ -536,11 +537,11 @@ function HTMLMapNode(parentNode, nodeData) {
 			self.nodeData.userneed = false;
 		}
 	};
-	
+
 	self.isUserNeed = function() {
 		return "" + self.nodeData.userneed == "true";
 	}
-	
+
 	self.setExternal = function(external) {
 		if ("" + external == "true") {
 			self.internalNode.addClass("mapExternal");
@@ -550,11 +551,11 @@ function HTMLMapNode(parentNode, nodeData) {
 			self.nodeData.external = false;
 		}
 	};
-	
+
 	self.isExternal = function() {
 		return "" + self.nodeData.external == "true";
 	}
-	
+
 	self.setExternal(self.nodeData.external);
 	self.setUserNeed(self.nodeData.userneed);
 }
@@ -565,7 +566,7 @@ function initalizeJSPlumb() {
 	// create new component/node on click
 	mapContainer.off('click').click(function(e) {
 
-		// click on the map, awful comparison but works		
+		// click on the map, awful comparison but works
 		if ($(e.target)[0] == $('#map-container')[0]) {
 
 			// create new node otherwise
@@ -669,7 +670,7 @@ function initalizeJSPlumb() {
 	});
 	init();
 }
-	
+
 // initialize graph drawing
 jsPlumb.ready(initalizeJSPlumb);
 
