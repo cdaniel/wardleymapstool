@@ -156,13 +156,6 @@ var WardleyMapsApp = function() {
 			maps.getMap(req, req.params.mapid, res.send.bind(res));
 		};
 
-		self.routes.get['/map/svg/:mapid'] = function(req, res) {
-			res.render('svg', {
-				mapid : req.params.mapid,
-				user : req.user
-			});
-		};
-
 
 		// 6. analysis
 		self.routes.get['/api/map/:mapid/analysis'] = function(req, res) {

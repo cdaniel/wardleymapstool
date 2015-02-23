@@ -67,8 +67,6 @@ html
                                     a#exportmedium(download="#map.history[0].name}.png" href="/api/map/#{map._id}/export/2/#{map._id}.png") Medium
                                 li(class="#{serverCapabilities.canvas}")
                                     a#exportlarge(download="#{map.history[0].name}.png" href="/api/map/#{map._id}/export/3/#{map._id}.png") Large
-                                li
-                                    a(href="/map/svg/#{map._id}") SVG (client side)
                         //-li
                         //-    a(href="/api/map/#{map._id}/analysis" data-toggle="modal"  data-target="#analysisModal") Analysis
                         li
