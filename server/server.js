@@ -142,6 +142,11 @@ var WardleyMapsApp = function() {
 				res) {
 			exportmap.createSVG(req, res, req.params.mapid, req.params.name);
 		};
+		
+		self.routes.get['/api/thumbnail/:mapid'] = function(req,
+				res) {
+			exportmap.createThumbnail(req, res, req.params.mapid);
+		};
 
 		self.routes.get['/api/map/:mapid'] = function(req, res) {
 			maps.getMap(req, req.params.mapid, res.send.bind(res));
