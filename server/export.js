@@ -29,16 +29,12 @@ var _ = require('underscore');
 
 var draw = function(res, filename, map){
 	var htmlStub = '<html><head><script></script></head><body><div id="map-container"></div></body></html>';
-	var scripts = ['//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js', '//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.min.js'];
 	
 	jsdom.env({
 		features : {
-			QuerySelector : true,
-			FetchExternalResources : [ 'script', 'css' ],
-			ProcessExternalResources : [ 'script', 'css' ]
+			QuerySelector : true
 		},
 		html : htmlStub,
-		scripts : scripts, 
 		done : function(errors, window) {
 			
 			function pick(key) {
