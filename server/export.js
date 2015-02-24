@@ -20,11 +20,9 @@ var xmldom = require('xmldom');
 var _ = require('underscore');
 
 
-// TODO: 'Created at www.wardleymaps.com'
-// TODO: map name
 // TODO: map description
-// TODO: scope:actions, scope:jsPlumb_DefaultScope
-
+// TODO: action connections - green arrows
+// TODO: action labels
 
 
 var draw = function(res, filename, map){
@@ -77,6 +75,8 @@ var draw = function(res, filename, map){
 			path.attr('d', 'M0,0 V4 L2,2 Z');
 			path.attr('fill', 'grey');
 
+			
+			
 			svgimg.append('rect')
 				.attr('x', 0)
 				.attr('y', 0)
@@ -85,13 +85,42 @@ var draw = function(res, filename, map){
 				.attr('fill', 'white')
 				.style('stroke-width','0px');
 			
+
+			svgimg.append("text").text('created at wardleymaps.com')
+				.attr('text-anchor', 'right')
+				.style('font', '10px sans-serif')
+				.attr('y', 20)
+				.attr('x', 1000); //the text with that font is 268px
+			
+			svgimg.append("text").text(map.name)
+			.style('font', '10px sans-serif')
+			.style('font-weight', 'bold')
+			.attr('y', 20)
+			.attr('x', 20); //the text with that font is 268px
+			
 			var nodes = _.groupBy(map.nodes, 'componentId');
-			var connections = map.connections.map(function(c) {
+			
+			var _dependencyConnections = [];
+			var _actionConnections = [];
+			for(var i = 0; i < map.connections.length; i++){
+				console.log(map.connections[i].scope);
+				if(map.connections[i].scope === 'Actions'){
+					_actionConnections.push(map.connections[i]);
+				} else {
+					_dependencyConnections.push(map.connections[i]);
+				}
+			}
+			
+			var dependencyConnections = _dependencyConnections.map(function(c) {
+				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+			});
+			
+			var actionConnections = _actionConnections.map(function(c) {
 				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
 			});
 			
 			 // basic size
-			var margin = {top: thumbnailMargin, right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
+			var margin = {top: thumbnailMargin + 10, right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
 			var width = x - margin.left - margin.right;
 			var height = y - margin.top - margin.bottom;
 			
@@ -154,15 +183,27 @@ var draw = function(res, filename, map){
 					.style('stroke','grey').style('stroke-width', '2px').style('marker-end', 'url(#arrow)');
 			});
 			
-			// connections
+			//action connections
+//			mapViz
+//				.selectAll('.connection')
+//				.data(actionConnections)
+//				.enter()
+//				.append('path')
+//				.classed('action', true)
+//				.attr('d', line)
+//				.style('stroke','green')
+//				.style('stroke-width', '2px')
+//				.style('marker-end', 'url(#arrow)');
+			
+			// regular dependencies
 			mapViz
 				.selectAll('.connection')
-				.data(connections)
+				.data(dependencyConnections)
 				.enter()
 				.append('path')
 				.classed('connection', true)
 				.attr('d', line)
-				.style('stroke','black').style('stroke-width', '1px');
+				.style('stroke','black').style('stroke-width', '2px');
 			
 			// nodes
 			mapViz
@@ -175,18 +216,18 @@ var draw = function(res, filename, map){
 				.classed({ node: true, external: pick('external'), userneed: pick('userneed') })
 				.call(function(gnode) {
 			
-			var moveX = _.compose(x, pick('positionX'));
-			var moveY = _.compose(y, pick('positionY'));
+					var moveX = _.compose(x, pick('positionX'));
+					var moveY = _.compose(y, pick('positionY'));
 			
-			gnode
-				.append('circle')
-				.attr({ r: '10px', 'cx': moveX, 'cy': moveY })
-				.style('fill','silver').style('stroke','black').style('stroke-width', '2px');
-			
-			gnode.append('text')
-				.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
-				.text(pick('name'));
-			});
+					gnode
+						.append('circle')
+						.attr({ r: '10px', 'cx': moveX, 'cy': moveY })
+						.style('fill','silver').style('stroke','black').style('stroke-width', '2px');
+					
+					gnode.append('text')
+						.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
+						.text(pick('name'));
+					});
 			
 			mapViz.selectAll('.userneed > circle').style('stroke-width', '4px');
 			mapViz.selectAll('.external > circle').style('fill', 'white');
