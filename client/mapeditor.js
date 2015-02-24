@@ -188,7 +188,7 @@ function saveMap() {
 			if (result.status) {
 				console.log('something went wrong');
 			} else {
-				console.log(result);
+				console.log('do something with this one');
 			}
 			saving = false;
 			lastSavedIndex = dirtyIndexCopy;
@@ -590,20 +590,30 @@ function initalizeJSPlumb() {
 	// the drag and drop and recreate connections using connect, because
 	// we need to care about using proper endpoints.
 	jsPlumb.bind("beforeDrop", function(connection) {
-		// console.log('before drop');
+//		console.log('before drop', connection);
 
 		if (connection.sourceId == connection.targetId) {
 			return false;
 		}
-		/* prepareConnectionMenu(connection.connection); */
 
 		var outcomingEndpointId = connection.sourceId + connection.scope + "o";
 		var acceptingEndpointId = connection.targetId + connection.scope + "i";
+		
+		if(jsPlumb.getConnections({
+			  scope:connection.scope,
+			  source : connection.sourceId,
+			  target : connection.targetId
+			}, true).length > 0){
+			//connection already exists
+			return false;
+		};
+
 
 		var c = jsPlumb.connect({
 			uuids : [ outcomingEndpointId, acceptingEndpointId, ],
 			deleteEndpointsOnDetach : false
 		});
+//		console.log('connection established',c);
 
 		var connectionData = {
 			connectionId : c.id,
@@ -626,7 +636,7 @@ function initalizeJSPlumb() {
 		// the endpoint or not.
 		// console.log(connection.dropEndpoint.scope, connection.scope);
 		if (connection.dropEndpoint.scope !== connection.scope) {
-			// console.log(connection.dropEndpoint);
+//			console.log('deleting scope', connection.dropEndpoint);
 			jsPlumb.deleteEndpoint(connection.dropEndpoint);
 		}
 		jsPlumb.repaintEverything();
