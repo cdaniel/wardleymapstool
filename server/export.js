@@ -21,7 +21,6 @@ var _ = require('underscore');
 
 
 // TODO: map description
-// TODO: action connections - green arrows
 // TODO: action labels
 
 
@@ -75,7 +74,17 @@ var draw = function(res, filename, map){
 			path.attr('d', 'M0,0 V4 L2,2 Z');
 			path.attr('fill', 'grey');
 
+			var marker2 = defs.append('marker');
+			marker2.attr('id', 'actionarrow');
+			marker2.attr('orient', 'auto');
+			marker2.attr('markerWidth', '6');
+			marker2.attr('markerHeight', '8');
+			marker2.attr('refX', '10');
+			marker2.attr('refY', '3');
 			
+			var path2 = marker2.append('path');
+			path2.attr('d', 'M0,0 V6 L5,3 Z');
+			path2.attr('fill', 'green');
 			
 			svgimg.append('rect')
 				.attr('x', 0)
@@ -103,7 +112,6 @@ var draw = function(res, filename, map){
 			var _dependencyConnections = [];
 			var _actionConnections = [];
 			for(var i = 0; i < map.connections.length; i++){
-				console.log(map.connections[i].scope);
 				if(map.connections[i].scope === 'Actions'){
 					_actionConnections.push(map.connections[i]);
 				} else {
@@ -184,16 +192,16 @@ var draw = function(res, filename, map){
 			});
 			
 			//action connections
-//			mapViz
-//				.selectAll('.connection')
-//				.data(actionConnections)
-//				.enter()
-//				.append('path')
-//				.classed('action', true)
-//				.attr('d', line)
-//				.style('stroke','green')
-//				.style('stroke-width', '2px')
-//				.style('marker-end', 'url(#arrow)');
+			mapViz
+				.selectAll('.connection')
+				.data(actionConnections)
+				.enter()
+				.append('path')
+				.classed('action', true)
+				.attr('d', line)
+				.style('stroke','green')
+				.style('stroke-width', '2px')
+				.style('marker-end', 'url(#actionarrow)');
 			
 			// regular dependencies
 			mapViz
