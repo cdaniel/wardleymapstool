@@ -33,7 +33,7 @@
     "request" : "*",
     "mailchimp-api" : "*",
     "d3" : "3.5.5",
-    "jsdom" : "*",
+    "jsdom" : "3.1.2",
     "xmldom" : "*",
     "underscore" : "*"
   },
