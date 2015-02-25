@@ -36,12 +36,6 @@ var draw = function(res, filename, map){
 			
 			function pick(key) {
 				return function(d) {
-					if(typeof d[key] === 'string' && d[key] === 'true'){
-						return true;
-					}
-					if(typeof d[key] === 'string' && d[key] === 'false'){
-						return false;
-					}
 					return d[key];
 				};
 			}

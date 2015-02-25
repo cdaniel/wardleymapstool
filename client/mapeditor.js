@@ -529,7 +529,7 @@ function HTMLMapNode(parentNode, nodeData) {
 	};
 
 	self.setUserNeed = function(userneed) {
-		if ("" + userneed == "true") {
+		if (userneed) {
 			self.internalNode.addClass("mapUserNeed");
 			self.nodeData.userneed = true;
 		} else {
@@ -539,11 +539,11 @@ function HTMLMapNode(parentNode, nodeData) {
 	};
 
 	self.isUserNeed = function() {
-		return "" + self.nodeData.userneed == "true";
+		return self.nodeData.userneed;
 	}
 
 	self.setExternal = function(external) {
-		if ("" + external == "true") {
+		if (external) {
 			self.internalNode.addClass("mapExternal");
 			self.nodeData.external = true;
 		} else {
@@ -553,7 +553,7 @@ function HTMLMapNode(parentNode, nodeData) {
 	};
 
 	self.isExternal = function() {
-		return "" + self.nodeData.external == "true";
+		return self.nodeData.external;
 	}
 
 	self.setExternal(self.nodeData.external);
