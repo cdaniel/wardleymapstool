@@ -1,4 +1,4 @@
-//#!/bin/env node
+#!/usr/bin/env node
 /* Copyright 2014, 2015 Krzysztof Daniel and Scott Weinstein.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,13 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+'use strict';
 var express = require('express');
 var fs = require('fs');
+var path = require('path');
 var logger = require('./util/log').log.getLogger('server');
 var maps = require('./maps');
 var exportmap = require('./export');
 var analyzer = require('./analyzer');
-
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -142,7 +143,7 @@ var WardleyMapsApp = function() {
 				res) {
 			exportmap.createSVG(req, res, req.params.mapid, req.params.name);
 		};
-		
+
 		self.routes.get['/api/thumbnail/:mapid'] = function(req,
 				res) {
 			exportmap.createThumbnail(req, res, req.params.mapid);
@@ -200,11 +201,11 @@ var WardleyMapsApp = function() {
 	self.initializeServer = function() {
 
 		self.createRoutes();
-
 		self.app = express();
+		var clientDir = path.join(__dirname, '..', 'client');
 		self.app.use(express.cookieParser());
 		self.app.use(express.bodyParser());
-		self.app.use(express.static('client/'))
+		self.app.use(express.static(clientDir));
 		self.app.use(express.session({
 			secret : 'modecommcd90le'
 		}));
@@ -229,7 +230,7 @@ var WardleyMapsApp = function() {
 			self.app.del(r, userProvider.loginRequired, self.routes.del[r]);
 		}
 
-		self.app.set('views', 'client');
+		self.app.set('views', clientDir);
 		self.app.set('view engine', 'jade');
 	};
 

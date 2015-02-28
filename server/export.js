@@ -18,25 +18,21 @@ var fs = require('fs');
 var d3 = require('d3'), jsdom = require('jsdom');
 var xmldom = require('xmldom');
 var _ = require('underscore');
-
+var path = require('path');
 
 // TODO: map description
 // TODO: action labels
-var htmlStub = '';
-fs.readFile("./server/svgtemplate.html", "UTF8", function(err, data) {
-    if (err) { throw err };
-    htmlStub = data;
-});
+var htmlStub = fs.readFileSync(path.join(__dirname, 'svgtemplate.html'), 'UTF8');
 
 var draw = function(res, filename, map){
-	
+
 	jsdom.env({
 		features : {
 			QuerySelector : true
 		},
 		html : htmlStub,
 		done : function(errors, window) {
-			
+
 			function pick(key) {
 				return function(d) {
 					return d[key];
@@ -48,23 +44,23 @@ var draw = function(res, filename, map){
 					return '' + d + unit;
 				};
 			}
-				
-			
+
+
 			var x = 1280;
 			var y = 1024;
 			var thumbnailMargin = 20;
-			
+
 			var el = window.document.querySelector('#svg');
 			var svgimg = d3.select(el);
-			
-			
+
+
 			svgimg.append("text").text(map.name)
 			.style('font-weight', 'bold')
 			.attr('y', 20)
 			.attr('x', 40);
-			
+
 			var nodes = _.groupBy(map.nodes, 'componentId');
-			
+
 			var _dependencyConnections = [];
 			var _actionConnections = [];
 			for(var i = 0; i < map.connections.length; i++){
@@ -74,42 +70,42 @@ var draw = function(res, filename, map){
 					_dependencyConnections.push(map.connections[i]);
 				}
 			}
-			
+
 			var dependencyConnections = _dependencyConnections.map(function(c) {
 				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
 			});
-			
+
 			var actionConnections = _actionConnections.map(function(c) {
 				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
 			});
-			
+
 			 // basic size
 			var margin = {top: (thumbnailMargin + 50), right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
 			var width = x - margin.left - margin.right;
 			var height = y - margin.top - margin.bottom;
-			
+
 			 // scales
 			var x = d3.scale.linear().range([0, width]);
 			var y = d3.scale.linear().range([0, height]);
 			var line = d3.svg.line()
 				.x(_.compose(x, pick('positionX')))
 				.y(_.compose(y, pick('positionY')));
-			
-			
+
+
 			// setup viz container
 			var mapViz = svgimg
 				.attr('width', width + margin.left + margin.right)
 				.attr('height', height + margin.top + margin.bottom)
 				.append('g')
 				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-			
+
 			// x legend
 			var legendItems = ['Genesis', 'Custom built', 'Product(or rental)', 'Commodity/Utility'];
-			
+
 			var xLegend = d3.scale.ordinal()
 				.domain(legendItems)
 				.rangeBands([0, width], 0, 0.1);
-			
+
 			mapViz.append('g')
 				.attr('class', 'x axis')
 				.attr('transform', 'translate(0,' + height + ')')
@@ -126,7 +122,7 @@ var draw = function(res, filename, map){
 						.append('text')
 						.text(_.identity);
 			});
-			
+
 			mapViz.append('g')
 				.classed('evolution-marker', true)
 				.selectAll('path')
@@ -136,7 +132,7 @@ var draw = function(res, filename, map){
 				.attr('transform', function(d) { return 'translate(' + (xLegend(d) - 40) + ',0)'; })
 				.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]))
 				.style('stroke','grey').style('stroke-width', '1px').style('stroke-dasharray', '1,5');
-			
+
 			// y legend
 			mapViz.append('g')
 				.attr('class', 'y axis')
@@ -145,7 +141,7 @@ var draw = function(res, filename, map){
 					.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]))
 					.style('stroke','grey').style('stroke-width', '2px').style('marker-end', 'url(#arrow)');
 			});
-			
+
 			//action connections
 			mapViz
 				.selectAll('.connection')
@@ -157,7 +153,7 @@ var draw = function(res, filename, map){
 				.style('stroke','green')
 				.style('stroke-width', '2px')
 				.style('marker-end', 'url(#actionarrow)');
-			
+
 			// regular dependencies
 			mapViz
 				.selectAll('.connection')
@@ -167,7 +163,7 @@ var draw = function(res, filename, map){
 				.classed('connection', true)
 				.attr('d', line)
 				.style('stroke','grey').style('stroke-width', '2px');
-			
+
 			// nodes
 			mapViz
 				.append('g')
@@ -178,21 +174,21 @@ var draw = function(res, filename, map){
 				.append('g')
 				.classed({ node: true, external: pick('external'), userneed: pick('userneed') })
 				.call(function(gnode) {
-			
+
 					var moveX = _.compose(x, pick('positionX'));
 					var moveY = _.compose(y, pick('positionY'));
-			
+
 					gnode
 						.append('circle')
 						.attr({ r: '10px', 'cx': moveX, 'cy': moveY })
 						.style('fill','silver').style('stroke','black').style('stroke-width', '2px');
-					
+
 					gnode.append('text')
 						.style('filter', 'url(#drop-shadow)')
 						.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 						.text(pick('name'));
 					});
-			
+
 			mapViz.selectAll('.userneed > circle').style('stroke-width', '4px');
 			mapViz.selectAll('.external > circle').style('fill', 'white');
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el);
