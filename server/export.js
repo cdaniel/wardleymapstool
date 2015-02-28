@@ -166,7 +166,7 @@ var draw = function(res, filename, map){
 				.append('path')
 				.classed('connection', true)
 				.attr('d', line)
-				.style('stroke','black').style('stroke-width', '2px');
+				.style('stroke','grey').style('stroke-width', '2px');
 			
 			// nodes
 			mapViz
