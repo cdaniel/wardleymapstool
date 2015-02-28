@@ -18,7 +18,7 @@ var mongodbdata = require('./config/mongodbdata').dbdata;
 var log = require('./util/log.js').log;
 
 var logger = log.getLogger("db");
-
+logger.setLevel('ALL');
 /**
  * default collections that will be used
  */
@@ -33,6 +33,44 @@ db.collection('progress');
 
 exports.database = db;
 
+function migrate(){
+	db.maps.find()
+	.toArray(function(err, maps) {
+		if (err !== null) {
+			logger.error(err);
+		} else {
+			for (var i = 0; i < maps.length; i++) {
+				var changed = false;
+				var singleMap = maps[i];
+				
+				for(var j = 0; j < singleMap.history.length; j++){
+					var historyEntry = singleMap.history[j];
+					
+					for (var k = 0; k < historyEntry.nodes.length; k++){
+						var node = historyEntry.nodes[k];
+						for(var field in node){
+							if(node[field] === 'true'){
+								changed = true;
+								node[field] = true;
+								logger.debug('changed ', field, node[field]);
+							} else if(node[field] === 'false'){
+								changed = true;
+								node[field] = false;
+								logger.debug('changed ', field, node[field]);
+							} 
+						}
+					}
+				}
+				if(changed){
+					db.maps.save(singleMap);
+					logger.log('changed ', singleMap);
+				}
+			}
+		}
+	});
+}
+
+migrate();
 /**
  * I hate that but... to perform effective searches by ID passed from JSON you need to convert it to 
  * mongojs Object ID, therefore the helper here.
