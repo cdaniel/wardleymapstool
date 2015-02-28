@@ -22,10 +22,13 @@ var _ = require('underscore');
 
 // TODO: map description
 // TODO: action labels
-
+var htmlStub = '';
+fs.readFile("./server/svgtemplate.html", "UTF8", function(err, data) {
+    if (err) { throw err };
+    htmlStub = data;
+});
 
 var draw = function(res, filename, map){
-	var htmlStub = '<html><head><script></script></head><body><div id="map-container"></div></body></html>';
 	
 	jsdom.env({
 		features : {
@@ -51,55 +54,14 @@ var draw = function(res, filename, map){
 			var y = 1024;
 			var thumbnailMargin = 20;
 			
-			var el = window.document.querySelector('#map-container');
-			var svgimg = d3.select(el).append('svg:svg').attr('xmlns', 'http://www.w3.org/2000/svg').attr('class', 'map');
+			var el = window.document.querySelector('#svg');
+			var svgimg = d3.select(el);
 			
-			var defs = svgimg.append('defs');
-			
-			var marker = defs.append('marker');
-			marker.attr('id', 'arrow');
-			marker.attr('orient', 'auto');
-			marker.attr('markerWidth', '6');
-			marker.attr('markerHeight', '8');
-			marker.attr('refX', '0.1');
-			marker.attr('refY', '2');
-			
-			var path = marker.append('path');
-			path.attr('d', 'M0,0 V4 L2,2 Z');
-			path.attr('fill', 'grey');
-
-			var marker2 = defs.append('marker');
-			marker2.attr('id', 'actionarrow');
-			marker2.attr('orient', 'auto');
-			marker2.attr('markerWidth', '6');
-			marker2.attr('markerHeight', '8');
-			marker2.attr('refX', '10');
-			marker2.attr('refY', '3');
-			
-			var path2 = marker2.append('path');
-			path2.attr('d', 'M0,0 V6 L5,3 Z');
-			path2.attr('fill', 'green');
-			
-			svgimg.append('rect')
-				.attr('x', 0)
-				.attr('y', 0)
-				.attr('width', '100%')
-				.attr('height', '100%')
-				.attr('fill', 'white')
-				.style('stroke-width','0px');
-			
-
-			svgimg.append("text").text('created at wardleymaps.com')
-				.attr('text-anchor', 'right')
-				.style('font', '10px sans-serif')
-				.attr('y', 20)
-				.attr('x', 1000); //the text with that font is 268px
 			
 			svgimg.append("text").text(map.name)
-			.style('font', '10px sans-serif')
 			.style('font-weight', 'bold')
 			.attr('y', 20)
-			.attr('x', 20); //the text with that font is 268px
+			.attr('x', 40);
 			
 			var nodes = _.groupBy(map.nodes, 'componentId');
 			
@@ -122,7 +84,7 @@ var draw = function(res, filename, map){
 			});
 			
 			 // basic size
-			var margin = {top: thumbnailMargin + 10, right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
+			var margin = {top: (thumbnailMargin + 50), right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
 			var width = x - margin.left - margin.right;
 			var height = y - margin.top - margin.bottom;
 			
@@ -162,8 +124,7 @@ var draw = function(res, filename, map){
 						.classed('label', true)
 						.attr('transform', function(d) { return 'translate(' + xLegend(d) + ',15)'; })
 						.append('text')
-						.text(_.identity)
-						.style('font','10px sans-serif');;
+						.text(_.identity);
 			});
 			
 			mapViz.append('g')
@@ -227,14 +188,14 @@ var draw = function(res, filename, map){
 						.style('fill','silver').style('stroke','black').style('stroke-width', '2px');
 					
 					gnode.append('text')
+						.style('filter', 'url(#drop-shadow)')
 						.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 						.text(pick('name'));
 					});
 			
 			mapViz.selectAll('.userneed > circle').style('stroke-width', '4px');
 			mapViz.selectAll('.external > circle').style('fill', 'white');
-			
-			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el.firstChild); 
+			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el);
 			res.setHeader('Content-Type', 'image/svg+xml');
 			res.send('<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + svgXML);
 		}
@@ -286,7 +247,6 @@ var createThumbnail = function(req, res, mapId) {
 			res.send(JSON.stringify(err));
 		} else {
 			//empty map
-			console.log(maps[0].history[0].nodes);
 			if(maps[0].history[0].nodes.length === 0){
 				res.redirect('/favicon.svg');
 			} else {

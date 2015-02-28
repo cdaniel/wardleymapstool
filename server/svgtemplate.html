@@ -1,0 +1,42 @@
+<html>
+<head>
+<script></script>
+</head>
+<body>
+	<div id="map-container">
+		<svg xmlns="http://www.w3.org/2000/svg" class="map" width="1280" height="1024" id="svg">
+            <defs>
+                <marker id="arrow" orient="auto" markerWidth="6" markerHeight="8" refX="0.1" refY="2">
+                     <path d="M0,0 V4 L2,2 Z" fill="grey" />
+                 </marker>
+                <marker id="actionarrow" orient="auto" markerWidth="6" markerHeight="8" refX="10" refY="3">
+                    <path d="M0,0 V6 L5,3 Z" fill="green" />
+                </marker>
+                <!-- blur -->
+                <filter x0="-50%" y0="-50%" id="drop-shadow" width="300%" height="300%">
+                    <feMorphology in="SourceAlpha" operator="dilate" radius="1" />
+                    <feGaussianBlur result="blur" stdDeviation="3" />
+                    <feComposite in2="SourceAlpha" operator="arithmetic" result="hlDiff" k2="2" k3="-2" />
+                    <feFlood flood-opacity="1" flood-color="white" />
+                    <feComposite in2="hlDiff" operator="in" />
+                    <feComposite in2="SourceGraphic" operator="over" result="withGlow" />
+                    <feOffset in="blur" dy="-1" dx="-1" />
+                    <feComposite in2="SourceAlpha" operator="arithmetic" k2="1" k3="-1" result="shadowDiff" />
+                    <feFlood flood-color="white" flood-opacity="1" />
+                    <feComposite in2="shadowDiff" operator="in" />
+                    <feComposite in2="withGlow" operator="over" />
+                </filter>
+                <style>
+                    .map {
+                        font-family : sans-serif;
+                    }
+                </style>
+                
+            </defs>
+            <!-- white background -->
+            <rect x="0" y="0" width="100%" height="100%" fill="white" style="stroke-width: 0px;" />
+            <text text-anchor="right" style="" y="20" x="1000">created at wardleymaps.com</text>
+        </svg>
+	</div>
+</body>
+</html>
