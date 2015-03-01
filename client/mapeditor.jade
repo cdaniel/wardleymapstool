@@ -60,6 +60,9 @@ html
                             a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
                         li
                             a#download(download="#{map.history[0].name}.svg" href="/api/svg/#{map._id}/#{map._id}.svg") Download
+                        li
+                            a#svg-href(href="/api/svg/#{map._id}/#{map._id}") Permlink(svg)
+
                         //-li
                         //-    a(href="/api/map/#{map._id}/analysis" data-toggle="modal"  data-target="#analysisModal") Analysis
                         li
