@@ -5,6 +5,11 @@
 <body>
 	<div id="map-container">
 		<svg xmlns="http://www.w3.org/2000/svg" class="map" width="1280" height="1024" id="svg">
+                <style type="text/css">
+                    .map {
+                        font-family : sans-serif;
+                    }
+                </style>
             <defs>
                 <marker id="arrow" orient="auto" markerWidth="6" markerHeight="8" refX="0.1" refY="2">
                      <path d="M0,0 V4 L2,2 Z" fill="grey" />
@@ -26,11 +31,6 @@
                     <feComposite in2="shadowDiff" operator="in" />
                     <feComposite in2="withGlow" operator="over" />
                 </filter>
-                <style>
-                    .map {
-                        font-family : sans-serif;
-                    }
-                </style>
                 
             </defs>
             <!-- white background -->
