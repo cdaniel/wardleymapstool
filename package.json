@@ -16,45 +16,44 @@
   "homepage": "http://wardleymaps.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/origin-server"
+    "url": "https://github.com/cdaniel/wardleymapstool"
   },
-
   "engines": {
     "node": ">= 0.6.0",
     "npm": ">= 1.0.0"
   },
-
   "dependencies": {
+    "d3": "3.5.5",
     "express": "~3.4.4",
-    "mongojs":"*",
-    "node-serialize" :"*",
-    "log4js": "*",
-    "jade" : "*",
-    "request" : "*",
-    "mailchimp-api" : "*",
-    "d3" : "3.5.5",
-    "jsdom" : "3.1.2",
-    "xmldom" : "*",
-    "underscore" : "*"
+    "jade": "^1.9.2",
+    "jsdom": "3.1.2",
+    "log4js": "^0.6.22",
+    "mongojs": "^0.18.1",
+    "underscore": "^1.8.2",
+    "xmldom": "^0.1.19"
   },
-
   "optionalDependencies": {
-    "express-stormpath" : "*"
+    "express-stormpath": "^0.6.6",
+    "mailchimp-api": "^2.0.7",
+    "request": "^2.53.0"
   },
-
   "devDependencies": {
-	  "mocha" : "*",
-	  "should" : "*",
-	  "sinon" : "*"
+    "mocha": "*",
+    "should": "*",
+    "sinon": "*"
   },
-
-  "bundleDependencies": [],
-
   "main": "server/server.js",
-  "files": ["client", "server", "Dockerfile", "LICENSE", "supervisord.conf"],
-  "license" : "ASL 2.0",
-
+  "files": [
+    "client",
+    "server",
+    "Dockerfile",
+    "LICENSE",
+    "supervisord.conf"
+  ],
+  "license": "Apache-2.0",
   "scripts": {
-	    "test": "mocha server-tests"
-  }
+    "test": "mocha server-tests",
+    "start": "node server/server.js"
+  },
+  "bin": "server/server.js"
 }

@@ -14,7 +14,9 @@ limitations under the License.*/
 
 
 var log4js = require('log4js');
-
+var fs = require('fs');
+fs.mkdir('logs', function ignore (err) {
+});
 log4js.configure({
 	appenders : [ {
 		type : 'console'
