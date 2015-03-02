@@ -25,7 +25,7 @@ function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
-var WardleyMapsApp = function() {
+var WardleyMapsApp = function(configOptions) {
 
 	// Scope.
 	var self = this;
@@ -34,15 +34,6 @@ var WardleyMapsApp = function() {
 	/* Helper functions. */
 	/* ================================================================ */
 
-	/**
-	 * Set up server IP address and port # using env variables/defaults.
-	 */
-	self.setupVariables = function() {
-		// Set the environment variables we need.
-		self.ipaddress = "0.0.0.0";
-		self.port =  8080;
-		self.localmode = true;
-	};
 
 	/**
 	 * terminator === the termination handler Terminate server on receipt of the
@@ -190,8 +181,6 @@ var WardleyMapsApp = function() {
 				res.render('index', {response : response, user : req.user});
 			});
 		};
-
-
 	};
 
 	/**
@@ -234,32 +223,47 @@ var WardleyMapsApp = function() {
 		self.app.set('view engine', 'jade');
 	};
 
-	/**
-	 * Initializes the sample application.
-	 */
-	self.initialize = function() {
-		self.setupVariables();
-		self.setupTerminationHandlers();
-		// Create the express server and routes.
-		self.initializeServer();
-	};
 
-	/**
-	 * Start the server (starts up the sample application).
-	 */
 	self.start = function() {
-		// Start the app on the specific interface (and port).
-		self.app.listen(self.port, self.ipaddress, function() {
-			console.log('%s: Node server started on %s:%d ...',
-					Date(Date.now()), self.ipaddress, self.port);
-		});
-	};
+		var _ = require('underscore');
+		self.ipaddress = configOptions.ipaddress || '0.0.0.0';
+		self.port = configOptions.port || configOptions.ssl ? 8443 : 8080;
+		self.localmode = true;
 
+		self.setupTerminationHandlers();
+		self.initializeServer();
+
+		var onStart = _.partial(console.log, '%s: Node server started on %s:%d ...', Date(Date.now()), self.ipaddress, self.port);
+		var server;
+		if (configOptions.ssl) {
+			var https = require('https');
+			server = https.createServer(configOptions.ssl, self.app);
+		} else {
+			var http = require('http');
+			server = http.createServer(self.app)
+		}
+		server.listen(self.port, self.ipaddress, onStart);
+	};
 };
 
-/**
- * main(): Main code.
- */
-var wmapp = new WardleyMapsApp();
-wmapp.initialize();
+
+
+function getConfig() {
+	var config = {};
+	try {
+		var configFile = (process.argv.length > 2) ? path.join(process.cwd() ,process.argv[2]) :  path.join(__dirname, '../config.json');
+		config = require(configFile);
+	} catch(ex) {
+		console.error(ex, configFile)
+	}
+
+	if (config.ssl) {
+		config.ssl.key = fs.readFileSync(config.ssl.key);
+		config.ssl.cert = fs.readFileSync(config.ssl.cert);
+	}
+
+	return config;
+}
+
+var wmapp = new WardleyMapsApp(getConfig());
 wmapp.start();
