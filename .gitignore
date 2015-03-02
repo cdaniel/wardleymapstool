@@ -3,3 +3,4 @@ config.json
 *.tgz
 npm-debug.log
 logs/
+*.pem

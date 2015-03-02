@@ -9,7 +9,7 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 
-[{package.json,.travis.yml}]
+[{package.json,.travis.yml,config.json}]
 indent_style = space
 indent_size = 2
 
