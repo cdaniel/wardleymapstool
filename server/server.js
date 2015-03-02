@@ -140,6 +140,7 @@ var WardleyMapsApp = function(configOptions) {
 			exportmap.createThumbnail(req, res, req.params.mapid);
 		};
 
+
 		self.routes.get['/api/map/:mapid'] = function(req, res) {
 			maps.getMap(req, req.params.mapid, res.send.bind(res));
 		};
@@ -166,6 +167,13 @@ var WardleyMapsApp = function(configOptions) {
 		self.routes.put['/api/map/:mapid/progressstate'] = function(req, res) {
 			maps.advanceProgressState(req, req.params.mapid, function(progress) {
 				res.json(progress);
+			});
+		};
+		
+		//share
+		self.routes.put['/api/map/:mapid/share/:mode'] = function(req, res) {
+			maps.share(req, req.params.mapid, req.params.mode, function(result) {
+				res.json(result);
 			});
 		};
 
@@ -206,6 +214,10 @@ var WardleyMapsApp = function(configOptions) {
 		for ( var r in self.routes.get) {
 			self.app.get(r, userProvider.loginRequired, self.routes.get[r]);
 		}
+		
+		self.app.get('/anonymous/:mapid/:filename',function(req, res) {
+			exportmap.createAnonymousSVG(req, res, req.params.mapid, req.params.name);
+		});
 
 		for ( var r in self.routes.put) {
 			self.app.put(r, userProvider.loginRequired, self.routes.put[r]);

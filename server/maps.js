@@ -256,6 +256,9 @@ function getMap(req, mapId, callback) {
 			if(!maps[0].history[0].connections){
 				maps[0].history[0].connections = [];
 			}
+			if(maps[0].anonymousShare == undefined){
+				maps[0].anonymousShare = false;
+			}
 			callback(maps[0]);
 		}
 	});
@@ -335,6 +338,35 @@ function advanceProgressState(req, mapid, callback){
 	});
 }
 
+function share(req, mapId, mode, callback){
+	var userId = req.user.href;
+	mapId = require('./db').toDatabaseId(mapId);
+	
+	logger.debug("sharing ", mapId, " for user ", userId, " mode ", mode);
+	
+	var anonymousShare = mode === 'anonymous';
+
+	db.maps.findAndModify({
+		query : {
+			"_id" : mapId,
+			"userIdGoogle" : userId,
+			deleted : false
+		},
+		update : {
+			$set : {
+				anonymousShare : anonymousShare
+			}
+		}
+	}, function(err, object) {
+		if(err){
+			logger.error(err);
+		}
+		callback( {
+			url : '/anonymous/'+mapId+'/map.svg'
+		} );
+	});
+}
+
 exports.createNewMap = createNewMap;
 exports.deleteMap = deleteMap;
 exports.updateMap = updateMap;
@@ -345,3 +377,4 @@ exports.getMap = getMap;
 exports.getMaps = getMaps;
 exports.getProgressState = getProgressState;
 exports.advanceProgressState = advanceProgressState;
+exports.share = share;
