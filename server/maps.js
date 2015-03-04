@@ -256,7 +256,7 @@ function getMap(req, mapId, callback) {
 			if(!maps[0].history[0].connections){
 				maps[0].history[0].connections = [];
 			}
-			if(maps[0].anonymousShare == undefined){
+			if(!maps[0].anonymousShare){
 				maps[0].anonymousShare = false;
 			}
 			callback(maps[0]);
