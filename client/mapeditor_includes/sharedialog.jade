@@ -7,9 +7,9 @@
             .modal-body
                 .checkbox
                     label
-                        input#sharedialog-anonymousshare(type="checkbox" value="" checked=map.anonymousShare ? 'true' : 'false')
+                        input#sharedialog-anonymousshare(type="checkbox" value="" checked=map.anonymousShare ? "checked" : undefined)
                         span Share this map!
-                .controls#sharedialog-controls(display=map.anonymousShare ? 'block' : 'none')
+                .controls#sharedialog-controls(style="display:"+(map.anonymousShare?"block":"none"))
                     .form-control-static
                         a#sharedialog-link(href="/anonymous/#{map._id}/map.svg") Copy this link
             .modal-footer
