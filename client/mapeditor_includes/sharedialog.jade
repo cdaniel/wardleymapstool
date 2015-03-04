@@ -1,0 +1,16 @@
+.modal.fade#sharedialog(tabindex="-1" role="dialog" aria-labelledby="sharedialog" aria-hidden="true")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+                h4.modal-title Share options
+            .modal-body
+                .checkbox
+                    label
+                        input#sharedialog-anonymousshare(type="checkbox" value="" checked=map.anonymousShare ? 'true' : 'false')
+                        span Share this map!
+                .controls#sharedialog-controls(display=map.anonymousShare ? 'block' : 'none')
+                    .form-control-static
+                        a#sharedialog-link(href="/anonymous/#{map._id}/map.svg") Copy this link
+            .modal-footer
+                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close

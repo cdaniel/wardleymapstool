@@ -34,6 +34,7 @@ html
             var mapURL = '/api/map/#{map._id}';
             var partialUpdateURL = '/api/map/partial/#{map._id}';
             var progressURL = '/api/map/#{map._id}/progressstate';
+            var anonymousshareURL = '/api/map/#{map._id}/share/';
             var map = {
                 name : "#{map.history[0].name}",
                 description : !{JSON.stringify(map.history[0].description)},
@@ -60,6 +61,8 @@ html
                             a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
                         li
                             a#download(download="#{map.history[0].name}.svg" href="/api/svg/#{map._id}/#{map._id}.svg") Download
+                        li
+                            a#share(href="#" data-toggle="modal"  data-target="#sharedialog") Share...
                         //-li
                         //-    a(href="/api/map/#{map._id}/analysis" data-toggle="modal"  data-target="#analysisModal") Analysis
                         li
@@ -96,5 +99,8 @@ html
                 include ./mapeditor_includes/actionmenu.jade
                 include ./mapeditor_includes/nodemenu.jade
                 button#deleteButton.btn.btn-danger.disabled(onclick="deleteSelection()") Delete
-           include ./mapeditor_includes/mapanalysis.jade
+           include mapeditor_includes/sharedialog.jade
+//- pure none sense, but this is proper formatting
+include mapeditor_includes/mapanalysis.jade
         script(src='/mapeditor.js')
+        script(src='/anonymousshare.js')

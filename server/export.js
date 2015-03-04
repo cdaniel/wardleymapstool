@@ -223,6 +223,35 @@ var createSVG = function(req, res, mapId, filename) {
 	});
 };
 
+var createAnonymousSVG = function(req, res, mapId, filename) {
+	mapId = require('./db').toDatabaseId(mapId);
+	logger.debug("drawing anonymous svg", mapId);
+
+	db.maps.find({
+		"_id" : mapId,
+		deleted:false,
+		anonymousShare:true
+	},{
+		history : {
+			$slice : -1
+		}
+	}).toArray(function(err, maps) {
+		res.setHeader('Content-Type', 'application/json');
+		if (err !== null) {
+			logger.error(err);
+			res.statusCode = 500;
+			res.send(JSON.stringify(err));
+		} else {
+			//empty map
+			if(maps.length == 0){
+				res.redirect('/favicon.svg');
+			} else {
+				draw(res, mapId, maps[0].history[0], filename);
+			}
+		}
+	});
+};
+
 var createThumbnail = function(req, res, mapId) {
 	var userId = req.user.href;
 	mapId = require('./db').toDatabaseId(mapId);
@@ -253,4 +282,5 @@ var createThumbnail = function(req, res, mapId) {
 };
 
 exports.createSVG = createSVG;
+exports.createAnonymousSVG = createAnonymousSVG;
 exports.createThumbnail = createThumbnail;
