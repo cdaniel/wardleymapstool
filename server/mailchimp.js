@@ -20,42 +20,90 @@ logger.setLevel('ALL');
 
 function exportToMailChimp(firstName, lastName, email, next) {
 
-	if (!config.enabled) {
-		console.log('mailchimp account not configured');
-		return;
-	}
+    if (!config.enabled) {
+        console.log('mailchimp account not configured');
+        return;
+    }
 
-	var merge_vars = {
-		FNAME : firstName,
-		LNAME : lastName
-	};
-/*	mc_implementation.lists.list({},function(data) {
-		console.log(data);
-		if (next)
-			next();
-	}, function(error) {
-		console.log(error)
-		if (next)
-			next();
-	});*/
-	mc_implementation.lists.subscribe({
-		id : config.listId,
-		email : {
-			email : email
-		},
-		merge_vars : merge_vars,
-		double_optin : 'false'
-	}, function(data) {
-		// gently ignore
-		logger.debug(data);
-		if (next)
-			next();
-	}, function(error) {
-		logger.error(error)
-		if (next)
-			next();
-	});
+    var merge_vars = {
+        FNAME : firstName,
+        LNAME : lastName
+    };
+    /*
+     * mc_implementation.lists.list({},function(data) { console.log(data); if
+     * (next) next(); }, function(error) { console.log(error) if (next) next();
+     * });
+     */
+    mc_implementation.lists.subscribe({
+        id : config.listId,
+        email : {
+            email : email
+        },
+        merge_vars : merge_vars,
+        double_optin : 'false'
+    }, function(data) {
+        // gently ignore
+        logger.debug(data);
+        if (next) {
+            next();
+        }
+    }, function(error) {
+        logger.error(error);
+        if (next) {
+            next();
+        }
+    });
 
 }
 
+function removeFromMailchimp(email, next) {
+    
+    if (!config.enabled) {
+        console.log('mailchimp account not configured');
+        return;
+    }
+    
+    mc_implementation.lists.unsubscribe({
+        id : config.listId,
+        email : {
+            email : email
+        },
+        send_goodbye : 'false'
+    }, function(data) {
+        // gently ignore
+        logger.debug(data);
+        if (next) {
+            next();
+        }
+    }, function(error) {
+        logger.error(error);
+        if (next) {
+            next();
+        }
+    });
+}
+
+function isPresent(email, callback){
+    
+    if (!config.enabled) {
+        console.log('mailchimp account not configured');
+        return;
+    }
+    
+    mc_implementation.lists.memberInfo({
+        id : config.listId,
+        emails : [
+            {email : email}
+        ],
+    }, function(data) {
+        // gently ignore
+        callback(data.success_count === 1);
+    }, function(error) {
+        logger.error(error);
+        callback(false,error);
+    });
+}
+
 exports.exportToMailChimp = exportToMailChimp;
+exports.removeFromMailchimp = removeFromMailchimp;
+exports.isPresent = isPresent;
