@@ -1,4 +1,4 @@
-/* Copyright 2014 Krzysztof Daniel
+/* Copyright 2014,2015 Krzysztof Daniel
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,12 +27,13 @@ var DEFAULT_COLLECTIONS = ['users', 'maps', 'progress'];
 
 // actually connect to the database
 var db = mongojs(mongodbdata.getConnectionString(), DEFAULT_COLLECTIONS);
-db.collection('users');
-db.collection('maps');
-db.collection('progress');
+
+db.on('ready',function() {
+    logger.debug('database connected');
+});
+
 
 exports.database = db;
-
 /**
  * I hate that but... to perform effective searches by ID passed from JSON you need to convert it to 
  * mongojs Object ID, therefore the helper here.
