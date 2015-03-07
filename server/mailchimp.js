@@ -15,7 +15,7 @@ var config = require('./config/mailchimpconfig').mailchimpconfig;
 
 var api = require('mailchimp-api');
 var mc_implementation = new api.Mailchimp(config.apiKey);
-var logger = require('./util/log.js').log.getLogger('mailchimp');
+var logger = require('./util/log.js').getLogger('mailchimp');
 logger.setLevel('ALL');
 
 function exportToMailChimp(firstName, lastName, email, next) {

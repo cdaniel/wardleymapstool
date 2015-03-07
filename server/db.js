@@ -1,4 +1,4 @@
-/* Copyright 2014,2015 Krzysztof Daniel
+/* Copyright 2014, 2015 Krzysztof Daniel
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,29 +13,17 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 
-var mongojs = require('mongojs');
-var mongodbdata = require('./config/mongodbdata').dbdata;
-var log = require('./util/log.js').log;
-
-var logger = log.getLogger("db");
-logger.setLevel('ALL');
-/**
- * default collections that will be used
- */
-var DEFAULT_COLLECTIONS = ['users', 'maps', 'progress'];
-
-
-// actually connect to the database
-var db = mongojs(mongodbdata.getConnectionString(), DEFAULT_COLLECTIONS);
-
-db.on('ready',function() {
-    logger.debug('database connected');
-});
-
-
-exports.database = db;
-/**
- * I hate that but... to perform effective searches by ID passed from JSON you need to convert it to 
- * mongojs Object ID, therefore the helper here.
- */
-exports.toDatabaseId = db.ObjectId;
+module.exports = function (connectionString) {
+    var logger = require('./util/log.js').getLogger("db");
+	logger.setLevel('ALL');
+	logger.debug('connecting to ', connectionString);
+	
+	var COLLECTIONS = ['users', 'maps', 'progress'];
+	var db = require('mongojs')(connectionString, COLLECTIONS);
+	
+	db.on('ready', function() {
+		logger.debug('connection to database established');
+	});
+	
+	return db;
+};

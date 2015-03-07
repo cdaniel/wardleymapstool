@@ -17,6 +17,8 @@ var log4js = require('log4js');
 var fs = require('fs');
 fs.mkdir('logs', function ignore (err) {
 });
+
+
 log4js.configure({
 	appenders : [ {
 		type : 'console'
@@ -29,4 +31,4 @@ log4js.configure({
 });
 
 
-exports.log = log4js;
+module.exports = log4js;

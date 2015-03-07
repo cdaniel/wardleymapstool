@@ -26,7 +26,7 @@ try {
         var stormpathconfig = require('./config/stormpathconfig').stormpathconfig;
         var googleauth = require('./config/googleauth').googleauth;
         var stormpath = require('express-stormpath');
-        var user = require('./user').user;
+        var user = require('./user')(app.db);
 
         app.use(stormpath
                 .init(
@@ -58,6 +58,8 @@ try {
     }
 
     if (config.userProvider === 'os') {
+        console.log('WARNING : development mode');
+        console.log('WARNING : auth disabled');
         function osUserMiddleware(req, res, next) {
             req.user = {href: process.env.USER || process.env.USERNAME};
             next();

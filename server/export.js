@@ -12,8 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-var logger = require('./util/log.js').log.getLogger('exportmap');
-var db = require('./db').database;
+var logger = require('./util/log.js').getLogger('exportmap');
 var fs = require('fs');
 var d3 = require('d3'), jsdom = require('jsdom');
 var xmldom = require('xmldom');
@@ -79,12 +78,12 @@ var draw = function(res, filename, map){
 				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
 			});
 
-			 // basic size
+			// basic size
 			var margin = {top: (thumbnailMargin + 50), right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
 			var width = x - margin.left - margin.right;
 			var height = y - margin.top - margin.bottom;
 
-			 // scales
+			// scales
 			var x = d3.scale.linear().range([0, width]);
 			var y = d3.scale.linear().range([0, height]);
 			var line = d3.svg.line()
@@ -197,90 +196,92 @@ var draw = function(res, filename, map){
 		}
 	});
 
-}
-
-var createSVG = function(req, res, mapId, filename) {
-	var userId = req.user.href;
-	mapId = require('./db').toDatabaseId(mapId);
-	logger.debug("drawing svg", mapId, "for user", userId);
-
-	db.maps.find({
-		"userIdGoogle" : userId,
-		"_id" : mapId
-	},{
-		history : {
-			$slice : -1
-		}
-	}).toArray(function(err, maps) {
-		res.setHeader('Content-Type', 'application/json');
-		if (err !== null) {
-			logger.error(err);
-			res.statusCode = 500;
-			res.send(JSON.stringify(err));
-		} else {
-			draw(res, mapId, maps[0].history[0], filename);
-		}
-	});
 };
 
-var createAnonymousSVG = function(req, res, mapId, filename) {
-	mapId = require('./db').toDatabaseId(mapId);
-	logger.debug("drawing anonymous svg", mapId);
+var export_module = function(db) {
+    return {
+    createSVG : function(req, res, mapId, filename) {
+        var userId = req.user.href;
+        mapId = db.ObjectId(mapId);
+        logger.debug("drawing svg", mapId, "for user", userId);
 
-	db.maps.find({
-		"_id" : mapId,
-		deleted:false,
-		anonymousShare:true
-	},{
-		history : {
-			$slice : -1
-		}
-	}).toArray(function(err, maps) {
-		res.setHeader('Content-Type', 'application/json');
-		if (err !== null) {
-			logger.error(err);
-			res.statusCode = 500;
-			res.send(JSON.stringify(err));
-		} else {
-			//empty map
-			if(maps.length == 0){
-				res.redirect('/favicon.svg');
-			} else {
-				draw(res, mapId, maps[0].history[0], filename);
-			}
-		}
-	});
+        db.maps.find({
+            "userIdGoogle" : userId,
+            "_id" : mapId
+        }, {
+            history : {
+                $slice : -1
+            }
+        }).toArray(function(err, maps) {
+            res.setHeader('Content-Type', 'application/json');
+            if (err !== null) {
+                logger.error(err);
+                res.statusCode = 500;
+                res.send(JSON.stringify(err));
+            } else {
+                draw(res, mapId, maps[0].history[0], filename);
+            }
+        });
+    },
+
+    createAnonymousSVG : function(req, res, mapId, filename) {
+        mapId = db.ObjectId(mapId);
+        logger.debug("drawing anonymous svg", mapId);
+
+        db.maps.find({
+            "_id" : mapId,
+            deleted : false,
+            anonymousShare : true
+        }, {
+            history : {
+                $slice : -1
+            }
+        }).toArray(function(err, maps) {
+            res.setHeader('Content-Type', 'application/json');
+            if (err !== null) {
+                logger.error(err);
+                res.statusCode = 500;
+                res.send(JSON.stringify(err));
+            } else {
+                // empty map
+                if (maps.length === 0) {
+                    res.redirect('/favicon.svg');
+                } else {
+                    draw(res, mapId, maps[0].history[0], filename);
+                }
+            }
+        });
+    },
+
+    createThumbnail : function(req, res, mapId) {
+        var userId = req.user.href;
+        mapId = db.ObjectId(mapId);
+        logger.debug("drawing thumbnail", mapId, "for user", userId);
+
+        db.maps.find({
+            "userIdGoogle" : userId,
+            "_id" : mapId
+        }, {
+            history : {
+                $slice : -1
+            }
+        }).toArray(function(err, maps) {
+            res.setHeader('Content-Type', 'application/json');
+            if (err !== null) {
+                logger.error(err);
+                res.statusCode = 500;
+                res.send(JSON.stringify(err));
+            } else {
+                // empty map
+                if (maps[0].history[0].nodes.length === 0) {
+                    res.redirect('/favicon.svg');
+                } else {
+                    draw(res, mapId, maps[0].history[0]);
+                }
+            }
+        });
+    }
+    };
 };
 
-var createThumbnail = function(req, res, mapId) {
-	var userId = req.user.href;
-	mapId = require('./db').toDatabaseId(mapId);
-	logger.debug("drawing thumbnail", mapId, "for user", userId);
-
-	db.maps.find({
-		"userIdGoogle" : userId,
-		"_id" : mapId
-	},{
-		history : {
-			$slice : -1
-		}
-	}).toArray(function(err, maps) {
-		res.setHeader('Content-Type', 'application/json');
-		if (err !== null) {
-			logger.error(err);
-			res.statusCode = 500;
-			res.send(JSON.stringify(err));
-		} else {
-			//empty map
-			if(maps[0].history[0].nodes.length === 0){
-				res.redirect('/favicon.svg');
-			} else {
-				draw(res, mapId, maps[0].history[0]);
-			}
-		}
-	});
-};
-
-exports.createSVG = createSVG;
-exports.createAnonymousSVG = createAnonymousSVG;
-exports.createThumbnail = createThumbnail;
+module.exports = export_module;

@@ -17,10 +17,9 @@ limitations under the License.*/
 var express = require('express');
 var fs = require('fs');
 var path = require('path');
-var logger = require('./util/log').log.getLogger('server');
-var maps = require('./maps');
-var exportmap = require('./export');
-var analyzer = require('./analyzer');
+var logger = require('./util/log').getLogger('server');
+
+
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -93,22 +92,22 @@ var WardleyMapsApp = function(configOptions) {
 
 		// 1. create a map
 		self.routes.post['/api/map/'] = function(req, res) {
-			maps.createNewMap(req, res);
+			self.maps.createNewMap(req, res);
 		};
 
 		// 2a. update a map (partially)
 		self.routes.post['/api/map/partial/:mapid'] = function(req, res) {
-			maps.partialMapUpdate(req, res, req.params.mapid);
+			self.maps.partialMapUpdate(req, res, req.params.mapid);
 		};
 
 		// 2b. update a map
 		self.routes.post['/api/map/:mapid'] = function(req, res) {
-			maps.updateMap(req, res, req.params.mapid);
+			self.maps.updateMap(req, res, req.params.mapid);
 		};
 
 		// 4. delete a map
 		self.routes.del['/api/map/:mapid'] = function(req, res) {
-			maps.deleteMap(req, res, req.params.mapid);
+			self.maps.deleteMap(req, res, req.params.mapid);
 		};
 
 		// 4a. delete a map
@@ -116,12 +115,12 @@ var WardleyMapsApp = function(configOptions) {
 		// we operate with this as with a regular delete, and we perform
 		// redirection to home.
 		self.routes.get['/api/map/delete/:mapid'] = function(req, res) {
-			maps.deleteMap(req, res, req.params.mapid, "/");
+			self.maps.deleteMap(req, res, req.params.mapid, "/");
 		};
 
 		// 5. map editor
 		self.routes.get['/map/:mapid'] = function(req, res) {
-			maps.getMap(req, req.params.mapid, function(map) {
+			self.maps.getMap(req, req.params.mapid, function(map) {
 				res.render('mapeditor', {
 					map : map,
 					user : req.user
@@ -132,32 +131,32 @@ var WardleyMapsApp = function(configOptions) {
 		// 6. export
 		self.routes.get['/api/svg/:mapid/:name'] = function(req,
 				res) {
-			exportmap.createSVG(req, res, req.params.mapid, req.params.name);
+			self.exportmap.createSVG(req, res, req.params.mapid, req.params.name);
 		};
 
 		self.routes.get['/api/thumbnail/:mapid'] = function(req,
 				res) {
-			exportmap.createThumbnail(req, res, req.params.mapid);
+			self.exportmap.createThumbnail(req, res, req.params.mapid);
 		};
 
 
 		self.routes.get['/api/map/:mapid'] = function(req, res) {
-			maps.getMap(req, req.params.mapid, res.send.bind(res));
+			self.maps.getMap(req, req.params.mapid, res.send.bind(res));
 		};
 
 
 		// 6. analysis
 		self.routes.get['/api/map/:mapid/analysis'] = function(req, res) {
-			maps.getMap(req, req.params.mapid, function(map) {
+			self.maps.getMap(req, req.params.mapid, function(map) {
 				//XXX: make this async
-				var result = analyzer.analyse(map);
+				var result = self.analyzer.analyse(map);
 				res.render('analysis', {result:result});
 			});
 		};
 
 		// progress
 		self.routes.get['/api/map/:mapid/progressstate'] = function(req, res) {
-			maps.getProgressState(req, req.params.mapid, function(progress) {
+			self.maps.getProgressState(req, req.params.mapid, function(progress) {
 				res.json(progress);
 			});
 		};
@@ -165,14 +164,14 @@ var WardleyMapsApp = function(configOptions) {
 
 		// progress
 		self.routes.put['/api/map/:mapid/progressstate'] = function(req, res) {
-			maps.advanceProgressState(req, req.params.mapid, function(progress) {
+			self.maps.advanceProgressState(req, req.params.mapid, function(progress) {
 				res.json(progress);
 			});
 		};
 		
 		//share
 		self.routes.put['/api/map/:mapid/share/:mode'] = function(req, res) {
-			maps.share(req, req.params.mapid, req.params.mode, function(result) {
+			self.maps.share(req, req.params.mapid, req.params.mode, function(result) {
 				res.json(result);
 			});
 		};
@@ -185,7 +184,7 @@ var WardleyMapsApp = function(configOptions) {
 
 		// main entry point
 		self.routes.get['/'] = function(req, res) {
-			maps.getMaps(req, function(response) {
+			self.maps.getMaps(req, function(response) {
 				res.render('index', {response : response, user : req.user});
 			});
 		};
@@ -216,7 +215,7 @@ var WardleyMapsApp = function(configOptions) {
 		}
 		
 		self.app.get('/anonymous/:mapid/:filename',function(req, res) {
-			exportmap.createAnonymousSVG(req, res, req.params.mapid, req.params.name);
+			self.exportmap.createAnonymousSVG(req, res, req.params.mapid, req.params.name);
 		});
 
 		for ( var r in self.routes.put) {
@@ -237,6 +236,12 @@ var WardleyMapsApp = function(configOptions) {
 
 
 	self.start = function() {
+		self.db = require('./db')(configOptions.databaseConnectionString);
+		
+		self.maps = new require('./maps')(self.db);
+		self.exportmap = new require('./export')(self.db);
+		self.analyzer = require('./analyzer');
+		
 		var _ = require('underscore');
 		self.ipaddress = configOptions.ipaddress || '0.0.0.0';
 		self.port = configOptions.port || configOptions.ssl ? 8443 : 8080;
@@ -252,7 +257,7 @@ var WardleyMapsApp = function(configOptions) {
 			server = https.createServer(configOptions.ssl, self.app);
 		} else {
 			var http = require('http');
-			server = http.createServer(self.app)
+			server = http.createServer(self.app);
 		}
 		server.listen(self.port, self.ipaddress, onStart);
 	};
@@ -266,7 +271,7 @@ function getConfig() {
 		var configFile = (process.argv.length > 2) ? path.join(process.cwd() ,process.argv[2]) :  path.join(__dirname, '../config.json');
 		config = require(configFile);
 	} catch(ex) {
-		console.error(ex, configFile)
+		console.error(ex, configFile);
 	}
 
 	if (config.ssl) {
@@ -274,6 +279,9 @@ function getConfig() {
 		config.ssl.cert = fs.readFileSync(config.ssl.cert);
 	}
 
+	var mongodbdata = require('./config/mongodbdata').dbdata;
+	config.databaseConnectionString = require('./config/mongodbdata').dbdata.getConnectionString();
+	
 	return config;
 }
 
