@@ -52,7 +52,7 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "test": "mocha server-tests",
+    "test": "mocha server-tests/tests_*",
     "start": "node server/server.js"
   },
   "bin": "server/server.js"

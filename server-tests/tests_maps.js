@@ -36,18 +36,68 @@ describe('Maps', function() {
                     if(arg.substr(0,5) !== '/map/'){
                         done('wrong redirect ' + arg);
                     }
-                    mapid = arg.substr(5);
-                    if(mapid.length != 24) {
-                        done('weird mapi length ' + mapid);
+                    res.mapid = arg.substr(5);
+                    if(res.mapid.length != 24) {
+                        done('weird mapi length ' + res.mapid);
                     }
-                    if(mapid.indexOf('/') !== -1) {
-                        done('mapid contains // ' + mapid);
+                    if(res.mapid.indexOf('/') !== -1) {
+                        done('mapid contains // ' + res.mapid);
                     }
                     done();
                 }
         }
         self.maps.createNewMap(req, res);
     });
+    
+    it('get a map', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                },
+                body : {}
+        };
+        self.maps.getMaps(req, function(response){
+            try{
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+                
+                var mapid = response[0]._id;
+                self.maps.getMap(req, mapid, function(map){
+                    try{
+                        should(map).have.property('history');
+                        should(map.history[0]).have.property('nodes');
+                        should(map.history[0]).have.property('connections');
+                        map.should.have.property('anonymousShare').which.is.equal(false);
+                    }catch(e) {
+                        done(e);
+                    }
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+            done();
+        });
+    });
+    
+    it('get a map without privileges', function(done){
+        var req = {
+                user : {
+                    href : 'notawardleymapper'
+                },
+                body : {}
+        };
+        self.maps.getMaps(req, function(response){
+            try{
+                should(response.length).be.equal(0);
+            } catch (e) {
+                done(e);
+                return;
+            }
+            done();
+        });
+    });
+    
 
     after(function() {
         self.db.collection('maps').drop();
