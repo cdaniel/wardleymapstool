@@ -21,6 +21,7 @@ describe('Maps', function() {
     before(function() {
         self.db = new require('../server/db')("127.0.0.1:27017/tests");
         self.maps = new require('../server/maps')(self.db);
+        self.exp = new require('../server/export')(self.db);
     });
     
     it('request without any parameters', function(done){
@@ -98,6 +99,82 @@ describe('Maps', function() {
         });
     });
     
+
+    it('share a map', function(done) {
+        var req = {
+            user : {
+                href : 'wardleymapper'
+            },
+            body : {}
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = response[0]._id;
+                self.maps.share(req, mapid, 'anonymous', function(result) {
+                    try {
+                        var req2 = {};
+                        var res2 = {
+                            setHeader : function() {
+                            },
+                            send : function() {
+                                done()
+                            }
+                        };
+                        should(result).have.property('url').which.is.equal('/anonymous/' + mapid + '/map.svg');
+                        self.exp.createAnonymousSVG(req2, res2, mapid, 'map.svg');
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    
+    it('unshare a map', function(done) {
+        var req = {
+            user : {
+                href : 'wardleymapper'
+            },
+            body : {}
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = response[0]._id;
+                self.maps.share(req, mapid, 'none', function(result) {
+                    try {
+                        var req2 = {};
+                        var res2 = {
+                            setHeader : function() {
+                            },
+                            send : function() {
+                                done('map should not be rendered');
+                            },
+                            redirect : function() {
+                                done();
+                            }
+                        };
+                        should(result).not.have.property('url');
+                        self.exp.createAnonymousSVG(req2, res2, mapid, 'map.svg');
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
 
     after(function() {
         self.db.collection('maps').drop();

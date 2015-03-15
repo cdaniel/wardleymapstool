@@ -367,9 +367,9 @@ var mapmodule = function(db) {
                 if (err) {
                     logger.error(err);
                 }
-                callback({
+                callback(anonymousShare ? {
                     url : '/anonymous/' + mapId + '/map.svg'
-                });
+                } : {});
             });
         }
     };
