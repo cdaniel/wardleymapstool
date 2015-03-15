@@ -12,33 +12,40 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+ZeroClipboard.config( { swfPath: "/3rd/ZeroClipboard.swf" } );
+
+var client = new ZeroClipboard();
 
 var shareCheckbox = $('#sharedialog-anonymousshare');
 var controls = $('#sharedialog-controls');
-var link = $('#sharedialog-link');
+var button = $('#sharedialog-copybutton');
+var text = $('#sharedialog-linktocopy');
 
-var toggleSharing = function(){
-	var checked = shareCheckbox.is(':checked');
-	if(checked){
-		$.ajax({
-			type : 'PUT',
-			url : anonymousshareURL + 'anonymous' /* defined in mapeditor.jade */,
-			dataType : 'json',
-			success : function(data) {
-				link.attr('href',data.url);
-				controls.show();
-			}
-		});
-	} else {
-		$.ajax({
-			type : 'PUT',
-			url : anonymousshareURL + 'none' /* defined in mapeditor.jade */,
-			dataType : 'json',
-			success : function(data) {
-				controls.hide();
-			}
-		});
-	}
+var copyclient = new ZeroClipboard(button);
+
+var toggleSharing = function() {
+    var checked = shareCheckbox.is(':checked');
+    if (checked) {
+        $.ajax({
+            type : 'PUT',
+            url : anonymousshareURL + 'anonymous' /* defined in mapeditor.jade */,
+            dataType : 'json',
+            success : function(data) {
+                text.text(data.url);
+                controls.show();
+            }
+        });
+    } else {
+        $.ajax({
+            type : 'PUT',
+            url : anonymousshareURL + 'none' /* defined in mapeditor.jade */,
+            dataType : 'json',
+            success : function(data) {
+                text.text('');
+                controls.hide();
+            }
+        });
+    }
 };
 
 shareCheckbox.on('click', toggleSharing);

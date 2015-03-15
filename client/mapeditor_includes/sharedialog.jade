@@ -8,9 +8,13 @@
                 .checkbox
                     label
                         input#sharedialog-anonymousshare(type="checkbox" value="" checked=map.anonymousShare ? "checked" : undefined)
-                        span Share this map!
+                        span Make this map available to everyone
                 .controls#sharedialog-controls(style="display:"+(map.anonymousShare?"block":"none"))
                     .form-control-static
-                        a#sharedialog-link(href="/anonymous/#{map._id}/map.svg") Copy this link
+                        .input-group.input-group-sm
+                            p#sharedialog-linktocopy.form-control-static(type="text" class="form-control" onClick="var range = document.createRange();var selection = window.getSelection();range.selectNodeContents(this);selection.removeAllRanges();selection.addRange(range);")= map.anonymousShareLink
+                            span.input-group-btn
+                                button#sharedialog-copybutton.btn.btn-sm(type="button" data-clipboard-target="sharedialog-linktocopy")
+                                    span.glyphicon.glyphicon-copy
             .modal-footer
                 button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close

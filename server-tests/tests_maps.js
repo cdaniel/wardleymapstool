@@ -105,7 +105,11 @@ describe('Maps', function() {
             user : {
                 href : 'wardleymapper'
             },
-            body : {}
+            body : {},
+            headers : {
+                referer : 'http://127.0.0.1:8080',
+                host : '127.0.0.1:8080'
+            }
         };
         self.maps.getMaps(req, function(response) {
             try {
@@ -123,7 +127,7 @@ describe('Maps', function() {
                                 done()
                             }
                         };
-                        should(result).have.property('url').which.is.equal('/anonymous/' + mapid + '/map.svg');
+                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/anonymous/' + mapid + '/map.svg');
                         self.exp.createAnonymousSVG(req2, res2, mapid, 'map.svg');
                     } catch (e) {
                         done(e);
