@@ -272,6 +272,8 @@ function init() {
 		}
 	});
 
+	$('#mapeditor-preference-clickcreate').checkbox();
+	
 	drawMap();
 
 	//update the progress helper
@@ -570,13 +572,24 @@ function initalizeJSPlumb() {
 		if ($(e.target)[0] == $('#map-container')[0]) {
 
 			// create new node otherwise
-			var n = new HTMLMapNode(mapContainer);
-			n.move({
-				'top' : e.pageY - e.target.offsetTop,
-				'left' : e.pageX - e.target.offsetLeft
-			}, true);
-			progressHelper.updateNodeAccordingToProgressState(n);
-			n.focus();
+		    if(!$('#mapeditor-preference-clickcreate').checkbox('checkChecked')[0].checked){
+                var n = new HTMLMapNode(mapContainer);
+                n.move({
+                    'top' : e.pageY - e.target.offsetTop,
+                    'left' : e.pageX - e.target.offsetLeft
+                }, true);
+                progressHelper.updateNodeAccordingToProgressState(n);
+                n.focus();
+		    } else {
+		        if(selectedConnection){
+		            selectedConnection.blur();
+		            selectedConnection = null;
+		        };
+		        if(selectedNode) {
+		            selectedNode.blur();
+		            selectedNode = null;
+		        }
+		    }
 			updateSelectionMenus();
 			fireDirty();
 		}

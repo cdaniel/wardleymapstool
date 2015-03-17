@@ -23,10 +23,12 @@ html
         script(src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js')
         script(src='/3rd/jqBootstrapValidation.js')
         script(src='/3rd/dom.jsPlumb-1.7.2.js')
+        script(src='/3rd/bootstrap-checkbox.js')
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.theme.min.css')
         link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css')
         link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css')
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css')
+        link(rel='stylesheet', href='/3rd/bootstrap-checkbox.css')
         link(rel='stylesheet', href='/mapeditor.css')
         link(rel='shortcut icon', href='/favicon.ico', type="favicon.ico")
         script(src='/progresshelper.js')
@@ -95,6 +97,8 @@ html
 
             .col-lg-2#mapcreationassist(style="display:none")
                 include ./mapeditor_includes/mapcreationassist.jade
+            .col-lg-2
+                include ./mapeditor_includes/preferences.jade
             #menu.col-lg-2
                 include ./mapeditor_includes/actionmenu.jade
                 include ./mapeditor_includes/nodemenu.jade
