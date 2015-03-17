@@ -589,16 +589,16 @@ function initalizeJSPlumb() {
                 }, true);
                 progressHelper.updateNodeAccordingToProgressState(n);
                 n.focus();
-		    } else {
-		        if(selectedConnection){
-		            selectedConnection.blur();
-		            selectedConnection = null;
-		        };
-		        if(selectedNode) {
-		            selectedNode.blur();
-		            selectedNode = null;
-		        }
-		    }
+            } else {
+                if (selectedConnection) {
+                    toggleConnectionSelectedStyle(selectedConnection, false);
+                    selectedConnection = null;
+                }
+                if (selectedNode) {
+                    selectedNode.blur();
+                    selectedNode = null;
+                }
+            }
 			updateSelectionMenus();
 			fireDirty();
 		}
