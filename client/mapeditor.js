@@ -321,6 +321,9 @@ var actionEndpointOptions = {
 	uniqueEndpoints : true
 };
 
+
+var passivePaintStyle = {fillStyle:"white", outlineColor:"white"};
+
 function HTMLMapNode(parentNode, nodeData) {
 	var self = this;
 
@@ -395,6 +398,7 @@ function HTMLMapNode(parentNode, nodeData) {
 				isSource : true,
 				scope : jsPlumb.getDefaultScope(),
 				deleteEndpointsOnDetach : false,
+				paintStyle: passivePaintStyle,
 				dragOptions : {
 					scope : "Actions"
 				},
@@ -420,6 +424,7 @@ function HTMLMapNode(parentNode, nodeData) {
 				isSource : true,
 				scope : "Actions",
 				deleteEndpointsOnDetach : false,
+				paintStyle:passivePaintStyle,
 				uuid : self.nodeData.componentId + "Actions" + "o",
 				dragOptions : {
 					scope : "Actions"
@@ -440,6 +445,8 @@ function HTMLMapNode(parentNode, nodeData) {
 			var ps = endpoints[i].getPaintStyle();
 			ps = jQuery.extend({}, ps);
 			ps.radius = 8;
+			ps.fillStyle = '#424242';
+			ps.outlineColor = '#424242';
 			endpoints[i].setPaintStyle(ps);
 		}
 		self.internalNode.addClass('itemSelected');
@@ -464,6 +471,8 @@ function HTMLMapNode(parentNode, nodeData) {
 			var en = endpoints[i];
 			ps = jQuery.extend({}, ps);
 			ps.radius = 1;
+			ps.fillStyle = passivePaintStyle.fillStyle;
+            ps.outlineColor = passivePaintStyle.outlineColor;
 			styles.push(ps);
 		}
 		for (var i = 0; i < endpoints.length; i++) {
