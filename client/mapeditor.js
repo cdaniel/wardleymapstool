@@ -145,6 +145,7 @@ function deleteSelection(){
 function addConnectionListener(c) {
 	if (c) {
 		c.bind("click", function(conn) {
+		    c = conn.component || conn;
 			if (selectedConnection == c) {
 				toggleConnectionSelectedStyle(selectedConnection, false);
 				selectedConnection = null;
@@ -309,7 +310,7 @@ var actionEndpointOptions = {
 		lineWidth : 2,
 		strokeStyle : 'green',
 		outlineWidth: 10,
-		outlineColor : 'rgba(0,0,255,0.2)'
+		outlineColor : "transparent"
 	},
 	endpoint : [ "Dot", {
 		radius : 1
@@ -322,7 +323,7 @@ var actionEndpointOptions = {
 };
 
 
-var passivePaintStyle = {fillStyle:"white", outlineColor:"white"};
+var passivePaintStyle = {fillStyle:"silver", outlineColor:"white"};
 
 function HTMLMapNode(parentNode, nodeData) {
 	var self = this;
