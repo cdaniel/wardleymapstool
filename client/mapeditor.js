@@ -614,35 +614,38 @@ function initalizeJSPlumb() {
 	// we need to care about using proper endpoints.
 	jsPlumb.bind("beforeDrop", function(connection) {
 //		console.log('before drop', connection);
-
+	    var scope = connection.connection.getData().scope;
+	    
 		if (connection.sourceId == connection.targetId) {
 			return false;
 		}
 
-		var outcomingEndpointId = connection.sourceId + connection.scope + "o";
-		var acceptingEndpointId = connection.targetId + connection.scope + "i";
+		var outcomingEndpointId = connection.sourceId + scope + "o";
+		var acceptingEndpointId = connection.targetId + scope + "i";
 		
 		if(jsPlumb.getConnections({
-			  scope:connection.scope,
+			  scope:scope,
 			  source : connection.sourceId,
 			  target : connection.targetId
 			}, true).length > 0){
 			//connection already exists
 			return false;
 		};
-
+		
+		if(connection.connection.getData().established) return false;
 
 		var c = jsPlumb.connect({
 			uuids : [ outcomingEndpointId, acceptingEndpointId, ],
 			deleteEndpointsOnDetach : false
 		});
+		connection.connection.getData().established = true;
 //		console.log('connection established',c);
 
 		var connectionData = {
 			connectionId : c.id,
 			pageSourceId : c.sourceId,
 			pageTargetId : c.targetId,
-			scope : c.scope
+			scope : scope
 		};
 
 		addConnectionListener(c);
@@ -657,8 +660,8 @@ function initalizeJSPlumb() {
 		// since our universal endpoint has two scopes, and proper
 		// endpoints have one scope, we use it to determine whether to delete
 		// the endpoint or not.
-		// console.log(connection.dropEndpoint.scope, connection.scope);
-		if (connection.dropEndpoint.scope !== connection.scope) {
+//		console.log(connection.dropEndpoint.scope, connection.scope, scope);
+		if (connection.dropEndpoint.scope !== scope) {
 //			console.log('deleting scope', connection.dropEndpoint);
 			jsPlumb.deleteEndpoint(connection.dropEndpoint);
 		}
@@ -669,6 +672,7 @@ function initalizeJSPlumb() {
 	});
 
 	jsPlumb.bind("connectionDragStop", function(info, e) {
+//	    console.log(info.getData(), e);
 		var sourceId = info.sourceId;
 		var targetId = info.targetId;
 		var mapContainer = $('#map-container');
@@ -681,17 +685,18 @@ function initalizeJSPlumb() {
 			}, true);
 			targetId = "" + n.nodeData.componentId;
 
-			var outcomingEndpointId = info.sourceId + info.scope + "o";
-			var acceptingEndpointId = targetId + info.scope + "i";
+			var outcomingEndpointId = info.sourceId + info.getData().scope + "o";
+			var acceptingEndpointId = targetId + info.getData().scope + "i";
 			var c = jsPlumb.connect({
 				uuids : [ outcomingEndpointId, acceptingEndpointId, ],
 				deleteEndpointsOnDetach : false
 			});
+			info.getData().established = true;
 			var connectionData = {
 				connectionId : c.id,
 				pageSourceId : c.sourceId,
 				pageTargetId : c.targetId,
-				scope : c.scope
+				scope : info.getData().scope
 			};
 			addConnectionListener(c);
 
@@ -701,6 +706,13 @@ function initalizeJSPlumb() {
 			fireDirty();
 		}
 	});
+	//put scope into connection - no more guessing
+	jsPlumb.bind("beforeDrag", function(a, b) {
+        return {
+            scope : a.endpoint.scope,
+            established : false
+        };
+    });
 	init();
 }
 
