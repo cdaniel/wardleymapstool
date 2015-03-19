@@ -16,7 +16,12 @@ limitations under the License.*/
 var logger = require('./util/log.js').getLogger('maps');
 
 var constructSharingURL = function(req, mapId) {
-    var protocol = req.headers.referer.split(':')[0];
+    var protocol;
+    if(req.headers.referer){
+        protocol = req.headers.referer.split(':')[0];
+    } else {
+        protocol = 'http';
+    }
     var url_main = protocol + '://' + req.headers.host;
     return url_main + '/anonymous/' + mapId + '/map.svg';
 };
