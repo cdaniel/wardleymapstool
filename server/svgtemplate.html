@@ -20,8 +20,8 @@
                 <!-- blur -->
                 <filter x0="-50%" y0="-50%" id="drop-shadow" width="300%" height="300%">
                     <feMorphology in="SourceAlpha" operator="dilate" radius="1" />
-                    <feGaussianBlur result="blur" stdDeviation="3" />
-                    <feComposite in2="SourceAlpha" operator="arithmetic" result="hlDiff" k2="2" k3="-2" />
+                    <feGaussianBlur result="blur" stdDeviation="5" />
+                    <feComposite in2="SourceAlpha" operator="arithmetic" result="hlDiff" k2="1" k3="-1" />
                     <feFlood flood-opacity="1" flood-color="white" />
                     <feComposite in2="hlDiff" operator="in" />
                     <feComposite in2="SourceGraphic" operator="over" result="withGlow" />
