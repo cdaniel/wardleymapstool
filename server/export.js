@@ -14,7 +14,13 @@ limitations under the License.*/
 
 var logger = require('./util/log.js').getLogger('exportmap');
 var fs = require('fs');
-var d3 = require('d3'), jsdom = require('jsdom');
+var d3 = require('d3');
+var jsdom = null;
+try {
+    jsdom = require('jsdom');
+} catch (e){
+    logger.error('Could not load jsdom');
+}
 var xmldom = require('xmldom');
 var _ = require('underscore');
 var path = require('path');
@@ -24,7 +30,11 @@ var path = require('path');
 var htmlStub = fs.readFileSync(path.join(__dirname, 'svgtemplate.html'), 'UTF8');
 
 var draw = function(res, filename, map){
-
+    if(!jsdom) {
+        res.statusCode = 500;
+        res.send('Could not create image');
+        return;
+    }
 	jsdom.env({
 		features : {
 			QuerySelector : true
