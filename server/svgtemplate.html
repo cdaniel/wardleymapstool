@@ -18,21 +18,16 @@
                     <path d="M0,0 V6 L5,3 Z" fill="green" />
                 </marker>
                 <!-- blur -->
-                <filter x0="-30%" y0="-30%" id="drop-shadow" width="160%" height="160%">
-                    <feGaussianBlur stdDeviation="3 3" result="blackglow"/>
-                    <feColorMatrix in="blackglow" type="matrix" values="-1 0 0 0 1 
+                <filter x0="-5%" y0="-5%" id="drop-shadow" width="110%" height="110%">
+                    <feGaussianBlur stdDeviation="2" in=glow" result="g1"/>
+                    <feBlend mode="multiply" in="g1" in2="g1" result="g2"/>
+                    <feBlend mode="multiply" in="g2" in2="g2" result="g3"/>
+                    <feBlend mode="multiply" in="g3" in2="g3" result="g4"/>
+                    <feColorMatrix in="g4" type="matrix" values="-1 0 0 0 1 
                                                               0 -1 0 0 1 
                                                               0 0 -1 0 1
                                                               0 0 0 1 0" result="glow"/>
-                        <feMerge>
-                            <feMergeNode in="glow"/>
-                            <feMergeNode in="glow"/>
-                            <feMergeNode in="glow"/>
-                            <feMergeNode in="glow"/>
-                            <feMergeNode in="glow"/>
-                            <feMergeNode in="glow"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
+                    <feBlend mode="darken" in="SourceGraphic" in2="glow2"/>
                 </filter>
                 
             </defs>
