@@ -193,10 +193,14 @@ var draw = function(res, filename, map){
 						.style('fill','silver').style('stroke','black').style('stroke-width', '2px');
 
 					gnode.append('text')
-						.style('filter', 'url(#drop-shadow)')
+						.style('filter', 'url(#glow);fill:#FFFFFF')
 						.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 						.text(pick('name'));
-					});
+			
+			        gnode.append('text')
+			            .attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
+			            .text(pick('name'));
+                    });
 
 			mapViz.selectAll('.userneed > circle').style('stroke-width', '4px');
 			mapViz.selectAll('.external > circle').style('fill', 'white');
