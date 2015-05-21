@@ -99,6 +99,67 @@ describe('Maps', function() {
         });
     });
     
+    it('get initial progress state', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = '' + response[0]._id;
+                self.maps.getProgressState(req, mapid, function(r){
+                    try{
+                        should(r.progress).be.equal(0);
+                    } catch (e) {
+                        done(e);
+                        return;
+                    }
+                    done();
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+//    it('get initial progress state without privileges', function(done){
+//        var req = {
+//                user : {
+//                    href : 'wardleymapper'
+//                }
+//        };
+//        var req2 = {
+//                user : {
+//                    href : 'notawardleymapper'
+//                }
+//        };
+//        self.maps.getMaps(req, function(response) {
+//            try {
+//                should(response.length).be.equal(1);
+//                should(response[0]).have.property('_id');
+//
+//                var mapid = '' + response[0]._id;
+//                self.maps.getProgressState(req2, mapid, function(r){
+//                    try{
+//                        should(r.progress).be.equal(-1);
+//                    } catch (e) {
+//                        done(e);
+//                        return;
+//                    }
+//                    done();
+//                });
+//            } catch (e) {
+//                done(e);
+//                return;
+//            }
+//        });
+//    });
+    
 
     it('share a map', function(done) {
         var req = {
