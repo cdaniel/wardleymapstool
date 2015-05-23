@@ -24,7 +24,7 @@ var ProgressHelper = function(){
 			dataType : 'json',
 			success : function(data) {
 				self.progress = data.progress;
-				self.updateUI(data.progress);
+				self.updateUI(data.progress, false);
 			}
 		});
 	};
@@ -36,16 +36,16 @@ var ProgressHelper = function(){
 			dataType : 'json',
 			success : function(data) {
 				self.progress = data.progress;
-				self.updateUI(data.progress);
+				self.updateUI(data.progress, true);
 			}
 		});
 	};
 	
-	self.updateUI = function(progress){
+	self.updateUI = function(progress,progressadvanced){
 		/*progress not tracked for this map*/
 		if(progress == -1) return;
 		
-		for(var i = 0; i < self.maxnumberofsteps; i++){
+		for(var i = 0; i < self.maxnumberofsteps - 1; i++){
 			var title = $('#mapping-progress-' + i +'> p.progress-title');
 			var group = $('#mapping-progress-group-' + i); 
 			if(i == progress){
@@ -71,6 +71,14 @@ var ProgressHelper = function(){
 		if(progress > -1){
 			$('#mapcreationassist').show(100);
 		}
+		if(progress >= self.maxnumberofsteps - 1 && progressadvanced){
+		    $('#progressprogressbar').attr('aria-valuenow', progressvalue).css('width', '' + 100 + '%');
+		    $('#mapcreationassist').hide(500);
+		}
+		// progress has not been changed, so the mapcreation assist is invisible, and even if it is, it should not be shown to the user.
+		if(progress >= self.maxnumberofsteps - 1 && !progressadvanced){
+            $('#mapcreationassist').hide();
+        }
 		//defined in the mapeditor.jade
 		if(map.nodes.length > 0){
 			self.makeAdvanceFromUserNeedAvailable();
