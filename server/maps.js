@@ -347,9 +347,15 @@ var mapmodule = function(db) {
                 db.progress.findOne({
                     mapid : mapId
                 }, function(err, state) {
-                    clbck(err, {
-                        progress : state.progress
-                    });
+                    if (state) {
+                        clbck(err, {
+                            progress : state.progress
+                        });
+                    } else {
+                        clbck(err, {
+                            progress : -1
+                        });
+                    }
                 });
             } ], function(err, result) {
                 if (err) {
