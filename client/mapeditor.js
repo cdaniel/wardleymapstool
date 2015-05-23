@@ -273,7 +273,8 @@ function init() {
 		}
 	});
 
-	$('#mapeditor-preference-clickcreate').checkbox();
+//	$('#mapeditor-preference-clickcreate').checkbox();
+	$('[data-toggle="tooltip"]').tooltip();
 	
 	drawMap();
 
@@ -582,7 +583,7 @@ function initalizeJSPlumb() {
 		if ($(e.target)[0] == $('#map-container')[0]) {
 
 			// create new node otherwise
-		    if(!$('#mapeditor-preference-clickcreate').checkbox('checkChecked')[0].checked){
+		    if(!$('#mapeditor-preference-clickcreate')[0].checked){
                 var n = new HTMLMapNode(mapContainer);
                 n.move({
                     'top' : e.pageY - e.target.offsetTop,

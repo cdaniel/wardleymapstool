@@ -79,6 +79,15 @@ var ProgressHelper = function(){
 		if(progress >= self.maxnumberofsteps - 1 && !progressadvanced){
             $('#mapcreationassist').hide();
         }
+		// fr=irst two steps involve a lot of node creation, so enable create by click
+		if(progress < 2){
+		    $('#mapeditor-preference-clickcreate')[0].checked = false;
+		}
+		// disable create by click if progress was changed
+		if(progress === 2 && progressadvanced){
+		    $('#mapeditor-preference-clickcreate')[0].checked = true;
+        }
+		
 		//defined in the mapeditor.jade
 		if(map.nodes.length > 0){
 			self.makeAdvanceFromUserNeedAvailable();

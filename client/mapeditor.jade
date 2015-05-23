@@ -61,6 +61,7 @@ html
                     ul.nav.navbar-nav
                         li
                             a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
+                        include ./mapeditor_includes/preferences.jade
                         li
                             a#download(download="#{map.history[0].name}.svg" href="/api/svg/#{map._id}/#{map._id}.svg") Download
                         li
@@ -97,8 +98,6 @@ html
 
             .col-lg-2#mapcreationassist(style="display:none")
                 include ./mapeditor_includes/mapcreationassist.jade
-            .col-lg-2
-                include ./mapeditor_includes/preferences.jade
             #menu.col-lg-2
                 include ./mapeditor_includes/actionmenu.jade
                 include ./mapeditor_includes/nodemenu.jade

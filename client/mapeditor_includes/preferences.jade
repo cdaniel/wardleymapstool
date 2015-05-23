@@ -1,1 +1,13 @@
-input.checkbox.mini#mapeditor-preference-clickcreate(type="checkbox" data-label="Disable creating new nodes with a single click")
+li
+    .checkbox.navbar-btn
+        label.btn#mapeditor-preference-clickcreatetooltip(
+                data-placement="bottom"
+                data-toggle="tooltip"
+                title="Every click on a map creates a new node by default. You may disable this functionality if your map is mature and you do not expect many new nodes."
+                )
+            input#mapeditor-preference-clickcreate(
+                aria-pressed="false"
+                type="checkbox"
+                checked
+                )
+            |Prevent accidental node creation
