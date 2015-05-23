@@ -159,7 +159,184 @@ describe('Maps', function() {
             }
         });
     });
+
+    it('advance progress state without privileges', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        var req2 = {
+                user : {
+                    href : 'notawardleymapper'
+                }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = '' + response[0]._id;
+                self.maps.advanceProgressState(req2, mapid, function(r){
+                    try{
+                        should(r.progress).be.equal(-1);
+                    } catch (e) {
+                        done(e);
+                        return;
+                    }
+                    done();
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
     
+    it('advance progress state nr 1', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = '' + response[0]._id;
+                self.maps.advanceProgressState(req, mapid, function(r){
+                    try{
+                        should(r.progress).be.equal(1);
+                    } catch (e) {
+                        done(e);
+                        return;
+                    }
+                    done();
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    it('advance progress state nr 2', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = '' + response[0]._id;
+                self.maps.advanceProgressState(req, mapid, function(r){
+                    try{
+                        should(r.progress).be.equal(2);
+                    } catch (e) {
+                        done(e);
+                        return;
+                    }
+                    done();
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    it('advance progress state without privileges', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        var req2 = {
+                user : {
+                    href : 'notawardleymapper'
+                }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = '' + response[0]._id;
+                self.maps.advanceProgressState(req2, mapid, function(r){
+                    try{
+                        should(r.progress).be.equal(-1);
+                    } catch (e) {
+                        done(e);
+                        return;
+                    }
+                    done();
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    it('advance progress state nr 3', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = '' + response[0]._id;
+                self.maps.advanceProgressState(req, mapid, function(r){
+                    try{
+                        should(r.progress).be.equal(3);
+                    } catch (e) {
+                        done(e);
+                        return;
+                    }
+                    done();
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    it('advance progress state nr 4', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = '' + response[0]._id;
+                self.maps.advanceProgressState(req, mapid, function(r){
+                    try{
+                        should(r.progress).be.equal(4);
+                    } catch (e) {
+                        done(e);
+                        return;
+                    }
+                    done();
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
 
     it('share a map', function(done) {
         var req = {

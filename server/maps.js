@@ -363,24 +363,59 @@ var mapmodule = function(db) {
             });
         },
 
-        advanceProgressState : function (req, mapid, callback) {
-            db.progress.findAndModify({
-                query : {
-                    mapid : mapid
-                },
-                update : {
-                    $inc : {
-                        progress : 1
+        advanceProgressState : function(req, mapid, finalCallback) {
+            var async = require('async');
+            async.waterfall([ function(clbck) {
+                var userId = req.user.href;
+
+                var objectIdmapId = db.ObjectId(mapid);
+
+                db.maps.find({
+                    "userIdGoogle" : userId,
+                    "_id" : objectIdmapId,
+                    deleted : false
+                /* don't return deleted maps */
+                }).toArray(function(err, maps) {
+                    if (err || !maps || maps.length !== 1) {
+                        clbck(err, false);
+                        return;
                     }
+                    if (maps.length === 1) {
+                        clbck(err, true);
+                        return;
+                    }
+                });
+            }, function(allowed, clbck) {
+                if (!allowed) {
+                    clbck(null, {
+                        progress : -1
+                    });
+                    return;
                 }
-            }, function(err, object) {
+                db.progress.findAndModify({
+                    query : {
+                        mapid : mapid
+                    },
+                    update : {
+                        $inc : {
+                            progress : 1
+                        }
+                    }
+                }, function(err, object) {
+                    clbck(err, {
+                        // this is updated in db
+                        progress : object.progress + 1
+                    });
+                });
+            } ], function(err, result) {
                 if (err) {
                     logger.error(err);
+                    finalCallback({
+                        progress : -1
+                    });
+                } else {
+                    finalCallback(result);
                 }
-                callback({
-                    // this is updated in db
-                    progress : object.progress + 1
-                });
             });
         },
 
