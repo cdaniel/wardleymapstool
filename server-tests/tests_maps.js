@@ -127,6 +127,25 @@ describe('Maps', function() {
         });
     });
     
+    it('get initial progress state for legacy map without progress', function(done) {
+        var req = {
+            user : {
+                href : 'wardleymapper'
+            }
+        };
+
+        var mapid = '54cfb4302f93942dca8ce8f5';
+        self.maps.getProgressState(req, mapid, function(r) {
+            try {
+                should(r.progress).be.equal(-1);
+            } catch (e) {
+                done(e);
+                return;
+            }
+            done();
+        });
+    });
+    
     it('get initial progress state without privileges', function(done){
         var req = {
                 user : {
