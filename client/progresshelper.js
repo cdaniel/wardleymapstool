@@ -68,7 +68,7 @@ var ProgressHelper = function(){
 		var progressvalue = progress *10;
 		$('#progressprogressbar').attr('aria-valuenow', progressvalue).css('width', '' + progressvalue + '%');
 		// there is progress, show the assistant box
-		if(progress > -1){
+		if(progress > -1 && progress < self.maxnumberofsteps - 1){
 			$('#mapcreationassist').show(100);
 		}
 		if(progress >= self.maxnumberofsteps - 1 && progressadvanced){
