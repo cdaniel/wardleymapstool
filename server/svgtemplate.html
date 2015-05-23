@@ -4,10 +4,13 @@
 </head>
 <body>
 	<div id="map-container">
-		<svg xmlns="http://www.w3.org/2000/svg" class="map" width="1280" height="1024" id="svg">
+		<svg xmlns="http://www.w3.org/2000/svg" class="map" width="1280px" height="800px" id="svg">
                 <style type="text/css">
                     .map {
                         font-family : sans-serif;
+                    }
+                    .node {
+                        font-size : 11px;
                     }
                 </style>
             <defs>
@@ -19,11 +22,13 @@
                 </marker>
                 <!-- glow -->
                 <filter id="glow" x="-2%" y="-2%" width="104%" height="104%">
-                    <feGaussianBlur stdDeviation="2" result="glow"/>
+                    <feGaussianBlur stdDeviation="2" result="glow2"/>
                     <feMerge>
-                        <feMergeNode in="glow"/>
-                        <feMergeNode in="glow"/>
-                        <feMergeNode in="glow"/>
+                        <feMergeNode in="glow2"/>
+                        <feMergeNode in="glow2"/>
+                        <feMergeNode in="glow2"/>
+                        <feMergeNode in="glow2"/>
+                        <feMergeNode in="glow2"/>
                     </feMerge>
 </filter>
             </defs>

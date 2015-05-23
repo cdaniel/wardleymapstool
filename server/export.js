@@ -56,7 +56,7 @@ var draw = function(res, filename, map){
 
 
 			var x = 1280;
-			var y = 1024;
+			var y = 800;
 			var thumbnailMargin = 20;
 
 			var el = window.document.querySelector('#svg');
