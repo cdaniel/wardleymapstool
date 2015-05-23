@@ -315,24 +315,51 @@ var mapmodule = function(db) {
             });
         },
 
-        // TODO: check user access
-        getProgressState : function (req, mapid, callback) {
-            db.progress.findOne({
-                mapid : mapid
-            }, function(err, state) {
-                if (err) {
-                    logger.error(err);
-                    return;
-                }
-                if (!state) {
-                    callback({
+        getProgressState : function(req, mapId, finalCallback) {
+            var async = require('async');
+            async.waterfall([ function(clbck) {
+                var userId = req.user.href;
+
+                var objectIdmapId = db.ObjectId(mapId);
+
+                db.maps.find({
+                    "userIdGoogle" : userId,
+                    "_id" : objectIdmapId,
+                    deleted : false
+                /* don't return deleted maps */
+                }).toArray(function(err, maps) {
+                    if (err || !maps || maps.length !== 1) {
+                        clbck(err, false);
+                        return;
+                    }
+                    if (maps.length === 1) {
+                        clbck(err, true);
+                        return;
+                    }
+                });
+            }, function(allowed, clbck) {
+                if (!allowed) {
+                    clbck(null, {
                         progress : -1
                     });
                     return;
                 }
-                callback({
-                    progress : state.progress
+                db.progress.findOne({
+                    mapid : mapId
+                }, function(err, state) {
+                    clbck(err, {
+                        progress : state.progress
+                    });
                 });
+            } ], function(err, result) {
+                if (err) {
+                    logger.error(err);
+                    finalCallback({
+                        progress : -1
+                    });
+                } else {
+                    finalCallback(result);
+                }
             });
         },
 

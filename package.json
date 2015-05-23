@@ -30,7 +30,8 @@
     "log4js": "^0.6.22",
     "mongojs": "^0.18.1",
     "underscore": "^1.8.2",
-    "xmldom": "^0.1.19"
+    "xmldom": "^0.1.19",
+    "async" : "1.0.0"
   },
   "optionalDependencies": {
     "express-stormpath": "^0.6.6",
