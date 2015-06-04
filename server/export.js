@@ -29,7 +29,7 @@ var path = require('path');
 // TODO: action labels
 var htmlStub = fs.readFileSync(path.join(__dirname, 'svgtemplate.html'), 'UTF8');
 
-var draw = function(res, filename, map, unused, config){
+var draw = function(res, filename, map, config){
     if(!jsdom) {
         res.statusCode = 500;
         res.send('Could not create image');
@@ -256,7 +256,7 @@ var export_module = function(db) {
                 res.statusCode = 500;
                 res.send(JSON.stringify(err));
             } else {
-                draw(res, mapId, maps[0].history[0], filename, {legend:true});
+                draw(res, mapId, maps[0].history[0], {legend:true});
             }
         });
     },
@@ -284,7 +284,7 @@ var export_module = function(db) {
                 if (maps.length === 0) {
                     res.redirect('/favicon.svg');
                 } else {
-                    draw(res, mapId, maps[0].history[0], filename,{legend:true});
+                    draw(res, mapId, maps[0].history[0], {legend:true});
                 }
             }
         });
