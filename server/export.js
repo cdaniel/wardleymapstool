@@ -42,6 +42,34 @@ var draw = function(res, filename, map){
 		html : htmlStub,
 		done : function(errors, window) {
 
+		    var x = 1280;
+		    var y = 800;
+            var thumbnailMargin = 20;
+            var margin = {top: (thumbnailMargin + 50), right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
+            var width = x - margin.left - margin.right;
+            var height = y - margin.top - margin.bottom;
+            var LEGEND = [ {
+                positionX : (margin.left + 3.0) / x,
+                positionY : (y - margin.bottom - 63.0) / y,
+                userneed : true,
+                external : false,
+                name : 'user need'
+            },
+            {
+                positionX : (margin.left + 3.0) / x,
+                positionY : (y - margin.bottom - 33.0) / y,
+                userneed : false,
+                external : true,
+                name : 'outsourced component'
+            },
+            {
+                positionX : (margin.left + 3.0) / x,
+                positionY : (y - margin.bottom - 3.0) / y,
+                userneed : false,
+                external : false,
+                name : 'internal component'
+            }];
+		    
 			function pick(key) {
 				return function(d) {
 					return d[key];
@@ -54,10 +82,6 @@ var draw = function(res, filename, map){
 				};
 			}
 
-
-			var x = 1280;
-			var y = 800;
-			var thumbnailMargin = 20;
 
 			var el = window.document.querySelector('#svg');
 			var svgimg = d3.select(el);
@@ -88,10 +112,6 @@ var draw = function(res, filename, map){
 				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
 			});
 
-			// basic size
-			var margin = {top: (thumbnailMargin + 50), right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
-			var width = x - margin.left - margin.right;
-			var height = y - margin.top - margin.bottom;
 
 			// scales
 			var x = d3.scale.linear().range([0, width]);
@@ -178,7 +198,7 @@ var draw = function(res, filename, map){
 				.append('g')
 				.classed('nodes', true)
 				.selectAll('node')
-				.data(map.nodes)
+				.data(map.nodes.concat(LEGEND))
 				.enter()
 				.append('g')
 				.classed({ node: true, external: pick('external'), userneed: pick('userneed') })
