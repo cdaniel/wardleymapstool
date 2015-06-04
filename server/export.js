@@ -29,12 +29,15 @@ var path = require('path');
 // TODO: action labels
 var htmlStub = fs.readFileSync(path.join(__dirname, 'svgtemplate.html'), 'UTF8');
 
-var draw = function(res, filename, map){
+var draw = function(res, filename, map, unused, config){
     if(!jsdom) {
         res.statusCode = 500;
         res.send('Could not create image');
         return;
     }
+    if(!config){
+        config={};
+    };
 	jsdom.env({
 		features : {
 			QuerySelector : true
@@ -48,7 +51,7 @@ var draw = function(res, filename, map){
             var margin = {top: (thumbnailMargin + 50), right: thumbnailMargin, bottom: thumbnailMargin, left: thumbnailMargin};
             var width = x - margin.left - margin.right;
             var height = y - margin.top - margin.bottom;
-            var LEGEND = [ {
+            var LEGEND = (config.legend ? [ {
                 positionX : (margin.left + 3.0) / x,
                 positionY : (y - margin.bottom - 63.0) / y,
                 userneed : true,
@@ -68,7 +71,7 @@ var draw = function(res, filename, map){
                 userneed : false,
                 external : false,
                 name : 'internal component'
-            }];
+            }] : []);
 		    
 			function pick(key) {
 				return function(d) {
@@ -253,7 +256,7 @@ var export_module = function(db) {
                 res.statusCode = 500;
                 res.send(JSON.stringify(err));
             } else {
-                draw(res, mapId, maps[0].history[0], filename);
+                draw(res, mapId, maps[0].history[0], filename, {legend:true});
             }
         });
     },
@@ -281,7 +284,7 @@ var export_module = function(db) {
                 if (maps.length === 0) {
                     res.redirect('/favicon.svg');
                 } else {
-                    draw(res, mapId, maps[0].history[0], filename);
+                    draw(res, mapId, maps[0].history[0], filename,{legend:true});
                 }
             }
         });
