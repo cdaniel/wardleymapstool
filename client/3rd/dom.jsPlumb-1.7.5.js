@@ -1,96 +1,98 @@
 /**
-* jsBezier-0.6
-*
-* Copyright (c) 2010 - 2013 Simon Porritt (simon.porritt@gmail.com)
-*
-* licensed under the MIT license.
-* 
-* a set of Bezier curve functions that deal with Beziers, used by jsPlumb, and perhaps useful for other people.  These functions work with Bezier
-* curves of arbitrary degree.
-*
-* - functions are all in the 'jsBezier' namespace.  
-* 
-* - all input points should be in the format {x:.., y:..}. all output points are in this format too.
-* 
-* - all input curves should be in the format [ {x:.., y:..}, {x:.., y:..}, {x:.., y:..}, {x:.., y:..} ]
-* 
-* - 'location' as used as an input here refers to a decimal in the range 0-1 inclusive, which indicates a point some proportion along the length
-* of the curve.  location as output has the same format and meaning.
-* 
-* 
-* Function List:
-* --------------
-* 
-* distanceFromCurve(point, curve)
-* 
-*   Calculates the distance that the given point lies from the given Bezier.  Note that it is computed relative to the center of the Bezier,
-* so if you have stroked the curve with a wide pen you may wish to take that into account!  The distance returned is relative to the values 
-* of the curve and the point - it will most likely be pixels.
-* 
-* gradientAtPoint(curve, location)
-* 
-*   Calculates the gradient to the curve at the given location, as a decimal between 0 and 1 inclusive.
-*
-* gradientAtPointAlongCurveFrom (curve, location)
-*
-*   Calculates the gradient at the point on the given curve that is 'distance' units from location. 
-* 
-* nearestPointOnCurve(point, curve) 
-* 
-*   Calculates the nearest point to the given point on the given curve.  The return value of this is a JS object literal, containing both the
-*point's coordinates and also the 'location' of the point (see above), for example:  { point:{x:551,y:150}, location:0.263365 }.
-* 
-* pointOnCurve(curve, location)
-* 
-*   Calculates the coordinates of the point on the given Bezier curve at the given location.  
-*       
-* pointAlongCurveFrom(curve, location, distance)
-* 
-*   Calculates the coordinates of the point on the given curve that is 'distance' units from location.  'distance' should be in the same coordinate
-* space as that used to construct the Bezier curve.  For an HTML Canvas usage, for example, distance would be a measure of pixels.
-*
-* locationAlongCurveFrom(curve, location, distance)
-* 
-*   Calculates the location on the given curve that is 'distance' units from location.  'distance' should be in the same coordinate
-* space as that used to construct the Bezier curve.  For an HTML Canvas usage, for example, distance would be a measure of pixels.
-* 
-* perpendicularToCurveAt(curve, location, length, distance)
-* 
-*   Calculates the perpendicular to the given curve at the given location.  length is the length of the line you wish for (it will be centered
-* on the point at 'location'). distance is optional, and allows you to specify a point along the path from the given location as the center of
-* the perpendicular returned.  The return value of this is an array of two points: [ {x:...,y:...}, {x:...,y:...} ].  
-*  
-* 
-*/
+ * jsBezier-0.7
+ *
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
+ *
+ * licensed under the MIT license.
+ *
+ * a set of Bezier curve functions that deal with Beziers, used by jsPlumb, and perhaps useful for other people.  These functions work with Bezier
+ * curves of arbitrary degree.
+ *
+ * - functions are all in the 'jsBezier' namespace.
+ *
+ * - all input points should be in the format {x:.., y:..}. all output points are in this format too.
+ *
+ * - all input curves should be in the format [ {x:.., y:..}, {x:.., y:..}, {x:.., y:..}, {x:.., y:..} ]
+ *
+ * - 'location' as used as an input here refers to a decimal in the range 0-1 inclusive, which indicates a point some proportion along the length
+ * of the curve.  location as output has the same format and meaning.
+ *
+ *
+ * Function List:
+ * --------------
+ *
+ * distanceFromCurve(point, curve)
+ *
+ *  Calculates the distance that the given point lies from the given Bezier.  Note that it is computed relative to the center of the Bezier,
+ * so if you have stroked the curve with a wide pen you may wish to take that into account!  The distance returned is relative to the values
+ * of the curve and the point - it will most likely be pixels.
+ *
+ * gradientAtPoint(curve, location)
+ *
+ *  Calculates the gradient to the curve at the given location, as a decimal between 0 and 1 inclusive.
+ *
+ * gradientAtPointAlongCurveFrom (curve, location)
+ *
+ *  Calculates the gradient at the point on the given curve that is 'distance' units from location.
+ *
+ * nearestPointOnCurve(point, curve)
+ *
+ *  Calculates the nearest point to the given point on the given curve.  The return value of this is a JS object literal, containing both the
+ *point's coordinates and also the 'location' of the point (see above), for example:  { point:{x:551,y:150}, location:0.263365 }.
+ *
+ * pointOnCurve(curve, location)
+ *
+ *  Calculates the coordinates of the point on the given Bezier curve at the given location.
+ *
+ * pointAlongCurveFrom(curve, location, distance)
+ *
+ *  Calculates the coordinates of the point on the given curve that is 'distance' units from location.  'distance' should be in the same coordinate
+ * space as that used to construct the Bezier curve.  For an HTML Canvas usage, for example, distance would be a measure of pixels.
+ *
+ * locationAlongCurveFrom(curve, location, distance)
+ *
+ *  Calculates the location on the given curve that is 'distance' units from location.  'distance' should be in the same coordinate
+ * space as that used to construct the Bezier curve.  For an HTML Canvas usage, for example, distance would be a measure of pixels.
+ *
+ * perpendicularToCurveAt(curve, location, length, distance)
+ *
+ *  Calculates the perpendicular to the given curve at the given location.  length is the length of the line you wish for (it will be centered
+ * on the point at 'location'). distance is optional, and allows you to specify a point along the path from the given location as the center of
+ * the perpendicular returned.  The return value of this is an array of two points: [ {x:...,y:...}, {x:...,y:...} ].
+ *
+ *
+ */
 
 (function() {
-    
+
+    var root = this;
+
     if(typeof Math.sgn == "undefined") {
         Math.sgn = function(x) { return x == 0 ? 0 : x > 0 ? 1 :-1; };
     }
-    
+
     var Vectors = {
             subtract    :   function(v1, v2) { return {x:v1.x - v2.x, y:v1.y - v2.y }; },
             dotProduct  :   function(v1, v2) { return (v1.x * v2.x)  + (v1.y * v2.y); },
             square      :   function(v) { return Math.sqrt((v.x * v.x) + (v.y * v.y)); },
             scale       :   function(v, s) { return {x:v.x * s, y:v.y * s }; }
         },
-        
-        maxRecursion = 64, 
+
+        maxRecursion = 64,
         flatnessTolerance = Math.pow(2.0,-maxRecursion-1);
 
     /**
      * Calculates the distance that the point lies from the curve.
-     * 
+     *
      * @param point a point in the form {x:567, y:3342}
      * @param curve a Bezier curve in the form [{x:..., y:...}, {x:..., y:...}, {x:..., y:...}, {x:..., y:...}].  note that this is currently
-     * hardcoded to assume cubiz beziers, but would be better off supporting any degree. 
+     * hardcoded to assume cubiz beziers, but would be better off supporting any degree.
      * @return a JS object literal containing location and distance, for example: {location:0.35, distance:10}.  Location is analogous to the location
      * argument you pass to the pointOnPath function: it is a ratio of distance travelled along the curve.  Distance is the distance in pixels from
-     * the point to the curve. 
+     * the point to the curve.
      */
     var _distanceFromCurve = function(point, curve) {
-        var candidates = [],     
+        var candidates = [],
             w = _convertToBezier(point, curve),
             degree = curve.length - 1, higherDegree = (2 * degree) - 1,
             numSolutions = _findRoots(w, higherDegree, candidates, 0),
@@ -115,17 +117,17 @@
     /**
      * finds the nearest point on the curve to the given point.
      */
-    var _nearestPointOnCurve = function(point, curve) {    
+    var _nearestPointOnCurve = function(point, curve) {
         var td = _distanceFromCurve(point, curve);
         return {point:_bezier(curve, curve.length - 1, td.location, null, null), location:td.location};
     };
     var _convertToBezier = function(point, curve) {
         var degree = curve.length - 1, higherDegree = (2 * degree) - 1,
             c = [], d = [], cdTable = [], w = [],
-            z = [ [1.0, 0.6, 0.3, 0.1], [0.4, 0.6, 0.6, 0.4], [0.1, 0.3, 0.6, 1.0] ];   
-            
+            z = [ [1.0, 0.6, 0.3, 0.1], [0.4, 0.6, 0.6, 0.4], [0.1, 0.3, 0.6, 1.0] ];
+
         for (var i = 0; i <= degree; i++) c[i] = Vectors.subtract(curve[i], point);
-        for (var i = 0; i <= degree - 1; i++) { 
+        for (var i = 0; i <= degree - 1; i++) {
             d[i] = Vectors.subtract(curve[i+1], curve[i]);
             d[i] = Vectors.scale(d[i], 3.0);
         }
@@ -154,16 +156,16 @@
     /**
      * counts how many roots there are.
      */
-    var _findRoots = function(w, degree, t, depth) {  
-        var left = [], right = [],  
-            left_count, right_count,    
+    var _findRoots = function(w, degree, t, depth) {
+        var left = [], right = [],
+            left_count, right_count,
             left_t = [], right_t = [];
-            
+
         switch (_getCrossingCount(w, degree)) {
-            case 0 : {  
-                return 0;   
+            case 0 : {
+                return 0;
             }
-            case 1 : {  
+            case 1 : {
                 if (depth >= maxRecursion) {
                     t[0] = (w[0].x + w[degree].x) / 2.0;
                     return 1;
@@ -179,11 +181,11 @@
         left_count  = _findRoots(left,  degree, left_t, depth+1);
         right_count = _findRoots(right, degree, right_t, depth+1);
         for (var i = 0; i < left_count; i++) t[i] = left_t[i];
-        for (var i = 0; i < right_count; i++) t[i+left_count] = right_t[i];    
+        for (var i = 0; i < right_count; i++) t[i+left_count] = right_t[i];
         return (left_count+right_count);
     };
     var _getCrossingCount = function(curve, degree) {
-        var n_crossings = 0, sign, old_sign;                
+        var n_crossings = 0, sign, old_sign;
         sign = old_sign = Math.sgn(curve[0].y);
         for (var i = 1; i <= degree; i++) {
             sign = Math.sgn(curve[i].y);
@@ -199,17 +201,17 @@
         a = curve[0].y - curve[degree].y;
         b = curve[degree].x - curve[0].x;
         c = curve[0].x * curve[degree].y - curve[degree].x * curve[0].y;
-    
+
         var max_distance_above = max_distance_below = 0.0;
-        
+
         for (var i = 1; i < degree; i++) {
-            var value = a * curve[i].x + b * curve[i].y + c;       
+            var value = a * curve[i].x + b * curve[i].y + c;
             if (value > max_distance_above)
                 max_distance_above = value;
             else if (value < max_distance_below)
                 max_distance_below = value;
         }
-        
+
         a1 = 0.0; b1 = 1.0; c1 = 0.0; a2 = a; b2 = b;
         c2 = c - max_distance_above;
         det = a1 * b2 - a2 * b1;
@@ -229,33 +231,33 @@
             XNM = curve[degree].x - curve[0].x, YNM = curve[degree].y - curve[0].y,
             XMK = curve[0].x - 0.0, YMK = curve[0].y - 0.0,
             det = XNM*YLK - YNM*XLK, detInv = 1.0/det,
-            S = (XNM*YMK - YNM*XMK) * detInv; 
+            S = (XNM*YMK - YNM*XMK) * detInv;
         return 0.0 + XLK * S;
     };
     var _bezier = function(curve, degree, t, left, right) {
         var temp = [[]];
         for (var j =0; j <= degree; j++) temp[0][j] = curve[j];
-        for (var i = 1; i <= degree; i++) { 
+        for (var i = 1; i <= degree; i++) {
             for (var j =0 ; j <= degree - i; j++) {
                 if (!temp[i]) temp[i] = [];
                 if (!temp[i][j]) temp[i][j] = {};
                 temp[i][j].x = (1.0 - t) * temp[i-1][j].x + t * temp[i-1][j+1].x;
                 temp[i][j].y = (1.0 - t) * temp[i-1][j].y + t * temp[i-1][j+1].y;
             }
-        }    
-        if (left != null) 
+        }
+        if (left != null)
             for (j = 0; j <= degree; j++) left[j]  = temp[j][0];
         if (right != null)
             for (j = 0; j <= degree; j++) right[j] = temp[degree-j][j];
-        
+
         return (temp[degree][0]);
     };
-    
+
     var _curveFunctionCache = {};
     var _getCurveFunctions = function(order) {
         var fns = _curveFunctionCache[order];
         if (!fns) {
-            fns = [];           
+            fns = [];
             var f_term = function() { return function(t) { return Math.pow(t, order); }; },
                 l_term = function() { return function(t) { return Math.pow((1-t), order); }; },
                 c_term = function(c) { return function(t) { return c; }; },
@@ -268,8 +270,8 @@
                         return p;
                     };
                 };
-            
-            fns.push(new f_term());  // first is t to the power of the curve order      
+
+            fns.push(new f_term());  // first is t to the power of the curve order
             for (var i = 1; i < order; i++) {
                 var terms = [new c_term(order)];
                 for (var j = 0 ; j < (order - i); j++) terms.push(new t_term());
@@ -277,30 +279,30 @@
                 fns.push(new _termFunc(terms));
             }
             fns.push(new l_term());  // last is (1-t) to the power of the curve order
-        
+
             _curveFunctionCache[order] = fns;
         }
-            
+
         return fns;
     };
-    
-    
+
+
     /**
      * calculates a point on the curve, for a Bezier of arbitrary order.
      * @param curve an array of control points, eg [{x:10,y:20}, {x:50,y:50}, {x:100,y:100}, {x:120,y:100}].  For a cubic bezier this should have four points.
      * @param location a decimal indicating the distance along the curve the point should be located at.  this is the distance along the curve as it travels, taking the way it bends into account.  should be a number from 0 to 1, inclusive.
      */
-    var _pointOnPath = function(curve, location) {      
+    var _pointOnPath = function(curve, location) {
         var cc = _getCurveFunctions(curve.length - 1),
             _x = 0, _y = 0;
         for (var i = 0; i < curve.length ; i++) {
             _x = _x + (curve[i].x * cc[i](location));
             _y = _y + (curve[i].y * cc[i](location));
         }
-        
+
         return {x:_x, y:_y};
     };
-    
+
     var _dist = function(p1,p2) {
         return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     };
@@ -308,7 +310,7 @@
     var _isPoint = function(curve) {
         return curve[0].x == curve[1].x && curve[0].y == curve[1].y;
     };
-    
+
     /**
      * finds the point that is 'distance' along the path from 'location'.  this method returns both the x,y location of the point and also
      * its 'location' (proportion of travel along the path); the method below - _pointAlongPathFrom - calls this method and just returns the
@@ -323,21 +325,21 @@
             };
         }
 
-        var prev = _pointOnPath(curve, location), 
-            tally = 0, 
-            curLoc = location, 
-            direction = distance > 0 ? 1 : -1, 
+        var prev = _pointOnPath(curve, location),
+            tally = 0,
+            curLoc = location,
+            direction = distance > 0 ? 1 : -1,
             cur = null;
-            
+
         while (tally < Math.abs(distance)) {
             curLoc += (0.005 * direction);
             cur = _pointOnPath(curve, curLoc);
-            tally += _dist(cur, prev);  
+            tally += _dist(cur, prev);
             prev = cur;
         }
-        return {point:cur, location:curLoc};            
+        return {point:cur, location:curLoc};
     };
-    
+
     var _length = function(curve) {
         if (_isPoint(curve)) return 0;
 
@@ -346,52 +348,52 @@
             curLoc = 0,
             direction = 1,
             cur = null;
-            
+
         while (curLoc < 1) {
             curLoc += (0.005 * direction);
             cur = _pointOnPath(curve, curLoc);
-            tally += _dist(cur, prev);  
+            tally += _dist(cur, prev);
             prev = cur;
         }
         return tally;
     };
-    
+
     /**
-     * finds the point that is 'distance' along the path from 'location'.  
+     * finds the point that is 'distance' along the path from 'location'.
      */
     var _pointAlongPathFrom = function(curve, location, distance) {
         return _pointAlongPath(curve, location, distance).point;
     };
 
     /**
-     * finds the location that is 'distance' along the path from 'location'.  
+     * finds the location that is 'distance' along the path from 'location'.
      */
     var _locationAlongPathFrom = function(curve, location, distance) {
         return _pointAlongPath(curve, location, distance).location;
     };
-    
+
     /**
      * returns the gradient of the curve at the given location, which is a decimal between 0 and 1 inclusive.
-     * 
+     *
      * thanks // http://bimixual.org/AnimationLibrary/beziertangents.html
      */
     var _gradientAtPoint = function(curve, location) {
-        var p1 = _pointOnPath(curve, location), 
+        var p1 = _pointOnPath(curve, location),
             p2 = _pointOnPath(curve.slice(0, curve.length - 1), location),
             dy = p2.y - p1.y, dx = p2.x - p1.x;
-        return dy == 0 ? Infinity : Math.atan(dy / dx);     
+        return dy == 0 ? Infinity : Math.atan(dy / dx);
     };
-    
+
     /**
-    returns the gradient of the curve at the point which is 'distance' from the given location.
-    if this point is greater than location 1, the gradient at location 1 is returned.
-    if this point is less than location 0, the gradient at location 0 is returned.
-    */
+     returns the gradient of the curve at the point which is 'distance' from the given location.
+     if this point is greater than location 1, the gradient at location 1 is returned.
+     if this point is less than location 0, the gradient at location 0 is returned.
+     */
     var _gradientAtPointAlongPathFrom = function(curve, location, distance) {
         var p = _pointAlongPath(curve, location, distance);
         if (p.location > 1) p.location = 1;
-        if (p.location < 0) p.location = 0;     
-        return _gradientAtPoint(curve, p.location);     
+        if (p.location < 0) p.location = 0;
+        return _gradientAtPoint(curve, p.location);
     };
 
     /**
@@ -407,19 +409,19 @@
             x =  length / 2 * Math.cos(_theta2);
         return [{x:p.point.x + x, y:p.point.y + y}, {x:p.point.x - x, y:p.point.y - y}];
     };
-    
-    var jsBezier = window.jsBezier = {
+
+    this.jsBezier = {
         distanceFromCurve : _distanceFromCurve,
         gradientAtPoint : _gradientAtPoint,
         gradientAtPointAlongCurveFrom : _gradientAtPointAlongPathFrom,
         nearestPointOnCurve : _nearestPointOnCurve,
-        pointOnCurve : _pointOnPath,        
+        pointOnCurve : _pointOnPath,
         pointAlongCurveFrom : _pointAlongPathFrom,
         perpendicularToCurveAt : _perpendicularToPathAt,
         locationAlongCurveFrom:_locationAlongPathFrom,
         getLength:_length
     };
-})();
+}).call(this);
 
 /**
  * Biltong v0.2
@@ -705,19 +707,6 @@
                 var tfn = _curryChildFilter(children, obj, fn, touchMap[evt]);
                 _bind(obj, touchMap[evt], tfn , fn);
             }
-
-            // TODO SP: a temporary change: bind mouse AND touch listeners if the device says it has both, rather than
-            // binding one or the other.
-            //
-            // this will break devices such as the nexus phones/tablets, since they post both events. but it will
-            // mean that window touch devices (chrome) will work. so the long term fix is to put in some handler
-            // that can filter extra mouse events on devices such as the nexus.
-            //
-            //else
-            //  _bind(obj, evt, _curryChildFilter(children, obj, fn, evt), fn);
-            //if (isMouseDevice && mouseevents.indexOf(evt) != -1)
-            // this will bind all mouse events and other stuff like keyboard events, resize, etc.
-            //if (touchevents.indexOf(evt) == -1)
             _bind(obj, evt, _curryChildFilter(children, obj, fn, evt), fn);
         },
         SmartClickHandler = function (obj, evt, fn, children) {
@@ -871,11 +860,7 @@
         isTouchDevice = "ontouchstart" in document.documentElement,
         isMouseDevice = "onmousedown" in document.documentElement,
         touchMap = { "mousedown": "touchstart", "mouseup": "touchend", "mousemove": "touchmove" },
-        mouseevents = "mouseover mouseout mouseenter mouseexit mousedown mousemove mouseup click dblclick contextmenu tap dbltap",
-        touchevents = [ "touchstart", "touchend", "touchmove" ],
         touchstart = "touchstart", touchend = "touchend", touchmove = "touchmove",
-        ta_down = "__MottleDown", ta_up = "__MottleUp",
-        ta_context_down = "__MottleContextDown", ta_context_up = "__MottleContextUp",
         iev = (function () {
             var rv = -1;
             if (navigator.appName == 'Microsoft Internet Explorer') {
@@ -992,8 +977,7 @@
      */
     this.Mottle = function (params) {
         params = params || {};
-        var self = this,
-            clickThreshold = params.clickThreshold || 150,
+        var clickThreshold = params.clickThreshold || 150,
             dblClickThreshold = params.dblClickThreshold || 350,
             mouseEnterExitHandler = new MouseEnterExitHandler(),
             tapHandler = new TapHandler(clickThreshold, dblClickThreshold),
@@ -1015,7 +999,7 @@
             };
 
         /**
-         * Removes an element from the DOM, and unregisters all event handlers for it. You should use this
+         * Removes an element from the DOM, and deregisters all event handlers for it. You should use this
          * to ensure you don't leak memory.
          * @method remove
          * @param {String|Element} el Element, or id of the element, to remove.
@@ -1067,8 +1051,8 @@
          * @param {Function} fn Event handler function.
          * @return {Mottle} The current Mottle instance; you can chain this method.
          */
-        this.off = function (el, evt, fn) {
-            _unbind(el, evt, fn);
+        this.off = function (el, event, fn) {
+            _unbind(el, event, fn);
             return this;
         };
 
@@ -1083,7 +1067,12 @@
          * @return {Mottle} The current Mottle instance; you can chain this method.
          */
         this.trigger = function (el, event, originalEvent, payload) {
-            var eventToBind = (isTouchDevice && touchMap[event]) ? touchMap[event] : event;
+            // MouseEvent undefined in old IE; that's how we know it's a mouse event.  A fine Microsoft paradox.
+            var originalIsMouse = isMouseDevice && (typeof MouseEvent === "undefined" || originalEvent == null || originalEvent.constructor === MouseEvent);
+
+            var eventToBind = (isTouchDevice && !isMouseDevice && touchMap[event]) ? touchMap[event] : event,
+                bindingAMouseEvent = !(isTouchDevice && !isMouseDevice && touchMap[event]);
+
             var pl = _pageLocation(originalEvent), sl = _screenLocation(originalEvent), cl = _clientLocation(originalEvent);
             _each(el, function () {
                 var _el = _gel(this), evt;
@@ -1112,12 +1101,6 @@
                         evt.initTouchEvent(eventToBind, true, true, window, null, sl[0], sl[1],
                             cl[0], cl[1], false, false, false, false,
                             touches, targetTouches, changedTouches, 1, 0);
-                        /*
-
-                         evt.initTouchEvent(eventToBind, true, true, window, 0,
-                         sl[0], sl[1],
-                         cl[0], cl[1],
-                         false, false, false, false, document.createTouchList(t));*/
                     },
                     "MouseEvents": function (evt) {
                         evt.initMouseEvent(eventToBind, true, true, window, 0,
@@ -1138,7 +1121,10 @@
                 };
 
                 if (document.createEvent) {
-                    var ite = (isTouchDevice && touchMap[event] && !Sniff.android), evtName = ite ? "TouchEvent" : "MouseEvents";
+
+                    var ite = !bindingAMouseEvent && !originalIsMouse && (isTouchDevice && touchMap[event] && !Sniff.android),
+                        evtName = ite ? "TouchEvent" : "MouseEvents";
+
                     evt = document.createEvent(evtName);
                     eventGenerators[evtName](evt);
                     _decorate(evt);
@@ -1531,7 +1517,7 @@
                 if (!moving) {
                     var _continue = this.params.events["start"]({el:this.el, pos:posAtDown, e:e, drag:this});
                     if (_continue !== false) {
-                        this.mark();
+                        this.mark(true);
                         moving = true;
                     }
                 }
@@ -1579,8 +1565,12 @@
             return dragEl || this.el;
         };
 
-        this.stop = function(e) {
-            if (moving) {
+        this.notifyStart = function(e) {
+            this.params.events["start"]({el:this.el, pos:this.params.getPosition(dragEl), e:e, drag:this});
+        };
+
+        this.stop = function(e, force) {
+            if (force || moving) {
                 var positions = [],
                     sel = k.getSelection(),
                     dPos = this.params.getPosition(dragEl);
@@ -1601,7 +1591,7 @@
             }
         };
 
-        this.mark = function() {
+        this.mark = function(andNotify) {
             posAtDown = this.params.getPosition(dragEl);
             this.size = this.params.getSize(dragEl);
             matchingDroppables = k.getMatchingDroppables(this);
@@ -1610,6 +1600,9 @@
             if (this.params.constrain || this.params.containment) {
                 var cs = this.params.getSize(dragEl.parentNode);
                 constrainRect = { w:cs[0], h:cs[1] };
+            }
+            if (andNotify) {
+                k.notifySelectionDragStart(this);
             }
         };
         this.unmark = function(e) {
@@ -1916,8 +1909,12 @@
         };
 
         this.notifySelectionDragStop = function(drag, evt) {
-            _foreach(_selection, function(e) { e.stop(evt); }, drag);
+            _foreach(_selection, function(e) { e.stop(evt, true); }, drag);
         };
+
+        this.notifySelectionDragStart = function(drag, evt) {
+            _foreach(_selection, function(e) { e.notifyStart(evt);}, drag);
+        }
 
         this.setZoom = function(z) { _zoom = z; };
         this.getZoom = function() { return _zoom; };
@@ -1980,7 +1977,7 @@
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
@@ -2440,7 +2437,7 @@
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
@@ -2512,603 +2509,8 @@
 
 /*
  * jsPlumb
- *
- * Title:jsPlumb 1.7.4
- *
- * Provides a way to visually connect elements on an HTML page, using SVG or VML.
- *
- * This file contains the base functionality for DOM type adapters.
- *
- * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
- *
- * http://jsplumbtoolkit.com
- * http://github.com/sporritt/jsplumb
- *
- * Dual licensed under the MIT and GPL2 licenses.
- */
-;
-(function () {
-
-    var root = this;
-
-    var svgAvailable = !!window.SVGAngle || document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"),
-        vmlAvailable = function () {
-            if (vmlAvailable.vml === undefined) {
-                var a = document.body.appendChild(document.createElement('div'));
-                a.innerHTML = '<v:shape id="vml_flag1" adj="1" />';
-                var b = a.firstChild;
-                if (b != null && b.style != null) {
-                    b.style.behavior = "url(#default#VML)";
-                    vmlAvailable.vml = b ? typeof b.adj == "object" : true;
-                }
-                else
-                    vmlAvailable.vml = false;
-                a.parentNode.removeChild(a);
-            }
-            return vmlAvailable.vml;
-        },
-    // TODO: remove this once we remove all library adapter versions and have only vanilla jsplumb: this functionality
-    // comes from Mottle.
-        iev = (function () {
-            var rv = -1;
-            if (navigator.appName == 'Microsoft Internet Explorer') {
-                var ua = navigator.userAgent,
-                    re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-                if (re.exec(ua) != null)
-                    rv = parseFloat(RegExp.$1);
-            }
-            return rv;
-        })(),
-        isIELT9 = iev > -1 && iev < 9,
-        _genLoc = function (e, prefix) {
-            if (e == null) return [ 0, 0 ];
-            var ts = _touches(e), t = _getTouch(ts, 0);
-            return [t[prefix + "X"], t[prefix + "Y"]];
-        },
-        _pageLocation = function (e) {
-            if (e == null) return [ 0, 0 ];
-            if (isIELT9) {
-                return [ e.clientX + document.documentElement.scrollLeft, e.clientY + document.documentElement.scrollTop ];
-            }
-            else {
-                return _genLoc(e, "page");
-            }
-        },
-        _screenLocation = function (e) {
-            return _genLoc(e, "screen");
-        },
-        _clientLocation = function (e) {
-            return _genLoc(e, "client");
-        },
-        _getTouch = function (touches, idx) {
-            return touches.item ? touches.item(idx) : touches[idx];
-        },
-        _touches = function (e) {
-            return e.touches && e.touches.length > 0 ? e.touches :
-                    e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches :
-                    e.targetTouches && e.targetTouches.length > 0 ? e.targetTouches :
-                [ e ];
-        };
-
-    /**
-     Manages dragging for some instance of jsPlumb.
-     */
-    var DragManager = function (_currentInstance) {
-        var _draggables = {}, _dlist = [], _delements = {}, _elementsWithEndpoints = {},
-        // elementids mapped to the draggable to which they belong.
-            _draggablesForElements = {};
-
-        /**
-         register some element as draggable.  right now the drag init stuff is done elsewhere, and it is
-         possible that will continue to be the case.
-         */
-        this.register = function (el) {
-            var id = _currentInstance.getId(el),
-                parentOffset = jsPlumbAdapter.getOffset(el, _currentInstance);
-
-            if (!_draggables[id]) {
-                _draggables[id] = el;
-                _dlist.push(el);
-                _delements[id] = {};
-            }
-
-            // look for child elements that have endpoints and register them against this draggable.
-            var _oneLevel = function (p) {
-                if (p) {
-                    for (var i = 0; i < p.childNodes.length; i++) {
-                        if (p.childNodes[i].nodeType != 3 && p.childNodes[i].nodeType != 8) {
-                            var cEl = jsPlumb.getElementObject(p.childNodes[i]),
-                                cid = _currentInstance.getId(p.childNodes[i], null, true);
-                            if (cid && _elementsWithEndpoints[cid] && _elementsWithEndpoints[cid] > 0) {
-                                var cOff = jsPlumbAdapter.getOffset(cEl, _currentInstance);
-                                _delements[id][cid] = {
-                                    id: cid,
-                                    offset: {
-                                        left: cOff.left - parentOffset.left,
-                                        top: cOff.top - parentOffset.top
-                                    }
-                                };
-                                _draggablesForElements[cid] = id;
-                            }
-                            _oneLevel(p.childNodes[i]);
-                        }
-                    }
-                }
-            };
-
-            _oneLevel(el);
-        };
-
-        // refresh the offsets for child elements of this element.
-        this.updateOffsets = function (elId) {
-            if (elId != null) {
-                var domEl = jsPlumb.getDOMElement(elId),
-                    id = _currentInstance.getId(domEl),
-                    children = _delements[id],
-                    parentOffset = jsPlumbAdapter.getOffset(domEl, _currentInstance);
-
-                if (children) {
-                    for (var i in children) {
-                        if (children.hasOwnProperty(i)) {
-                            var cel = jsPlumb.getElementObject(i),
-                                cOff = jsPlumbAdapter.getOffset(cel, _currentInstance);
-
-                            _delements[id][i] = {
-                                id: i,
-                                offset: {
-                                    left: cOff.left - parentOffset.left,
-                                    top: cOff.top - parentOffset.top
-                                }
-                            };
-                            _draggablesForElements[i] = id;
-                        }
-                    }
-                }
-            }
-        };
-
-        /**
-         notification that an endpoint was added to the given el.  we go up from that el's parent
-         node, looking for a parent that has been registered as a draggable. if we find one, we add this
-         el to that parent's list of elements to update on drag (if it is not there already)
-         */
-        this.endpointAdded = function (el, id) {
-
-            id = id || _currentInstance.getId(el);
-
-            var b = document.body,
-                p = el.parentNode;
-
-            _elementsWithEndpoints[id] = _elementsWithEndpoints[id] ? _elementsWithEndpoints[id] + 1 : 1;
-
-            while (p != null && p != b) {
-                var pid = _currentInstance.getId(p, null, true);
-                if (pid && _draggables[pid]) {
-                    var pLoc = jsPlumbAdapter.getOffset(p, _currentInstance);
-
-                    if (_delements[pid][id] == null) {
-                        var cLoc = jsPlumbAdapter.getOffset(el, _currentInstance);
-                        _delements[pid][id] = {
-                            id: id,
-                            offset: {
-                                left: cLoc.left - pLoc.left,
-                                top: cLoc.top - pLoc.top
-                            }
-                        };
-                        _draggablesForElements[id] = pid;
-                    }
-                    break;
-                }
-                p = p.parentNode;
-            }
-        };
-
-        this.endpointDeleted = function (endpoint) {
-            if (_elementsWithEndpoints[endpoint.elementId]) {
-                _elementsWithEndpoints[endpoint.elementId]--;
-                if (_elementsWithEndpoints[endpoint.elementId] <= 0) {
-                    for (var i in _delements) {
-                        if (_delements.hasOwnProperty(i) && _delements[i]) {
-                            delete _delements[i][endpoint.elementId];
-                            delete _draggablesForElements[endpoint.elementId];
-                        }
-                    }
-                }
-            }
-        };
-
-        this.changeId = function (oldId, newId) {
-            _delements[newId] = _delements[oldId];
-            _delements[oldId] = {};
-            _draggablesForElements[newId] = _draggablesForElements[oldId];
-            _draggablesForElements[oldId] = null;
-        };
-
-        this.getElementsForDraggable = function (id) {
-            return _delements[id];
-        };
-
-        this.elementRemoved = function (elementId) {
-            var elId = _draggablesForElements[elementId];
-            if (elId) {
-                delete _delements[elId][elementId];
-                delete _draggablesForElements[elementId];
-            }
-        };
-
-        this.reset = function () {
-            _draggables = {};
-            _dlist = [];
-            _delements = {};
-            _elementsWithEndpoints = {};
-        };
-
-        //
-        // notification drag ended. We check automatically if need to update some
-        // ancestor's offsets.
-        //
-        this.dragEnded = function (el) {
-            var id = _currentInstance.getId(el),
-                ancestor = _draggablesForElements[id];
-
-            if (ancestor) this.updateOffsets(ancestor);
-        };
-
-        this.setParent = function (el, elId, p, pId) {
-            var current = _draggablesForElements[elId];
-            if (current) {
-                if (!_delements[pId])
-                    _delements[pId] = {};
-                _delements[pId][elId] = _delements[current][elId];
-                delete _delements[current][elId];
-                var pLoc = jsPlumbAdapter.getOffset(p, _currentInstance),
-                    cLoc = jsPlumbAdapter.getOffset(el, _currentInstance);
-                _delements[pId][elId].offset = {
-                    left: cLoc.left - pLoc.left,
-                    top: cLoc.top - pLoc.top
-                };
-                _draggablesForElements[elId] = pId;
-            }
-        };
-
-        this.getDragAncestor = function (el) {
-            var de = jsPlumb.getDOMElement(el),
-                id = _currentInstance.getId(de),
-                aid = _draggablesForElements[id];
-
-            if (aid)
-                return jsPlumb.getDOMElement(aid);
-            else
-                return null;
-        };
-
-    };
-
-    var trim = function (str) {
-            return str == null ? null : (str.replace(/^\s\s*/, '').replace(/\s\s*$/, ''));
-        },
-        _setClassName = function (el, cn) {
-            cn = trim(cn);
-            if (typeof el.className.baseVal != "undefined")  // SVG
-                el.className.baseVal = cn;
-            else
-                el.className = cn;
-        },
-        _getClassName = function (el) {
-            return (typeof el.className.baseVal == "undefined") ? el.className : el.className.baseVal;
-        },
-        _classManip = function (el, classesToAdd, classesToRemove) {
-            classesToAdd = classesToAdd == null ? [] : jsPlumbUtil.isArray(classesToAdd) ? classesToAdd : classesToAdd.split(/\s+/);
-            classesToRemove = classesToRemove == null ? [] : jsPlumbUtil.isArray(classesToRemove) ? classesToRemove : classesToRemove.split(/\s+/);
-
-            var className = _getClassName(el),
-                curClasses = className.split(/\s+/);
-
-            var _oneSet = function (add, classes) {
-                for (var i = 0; i < classes.length; i++) {
-                    if (add) {
-                        if (jsPlumbUtil.indexOf(curClasses, classes[i]) == -1)
-                            curClasses.push(classes[i]);
-                    }
-                    else {
-                        var idx = jsPlumbUtil.indexOf(curClasses, classes[i]);
-                        if (idx != -1)
-                            curClasses.splice(idx, 1);
-                    }
-                }
-            };
-
-            _oneSet(true, classesToAdd);
-            _oneSet(false, classesToRemove);
-
-            _setClassName(el, curClasses.join(" "));
-        },
-        _each = function (spec, fn) {
-            if (spec == null) return;
-            if (typeof spec === "string")
-                fn(jsPlumb.getDOMElement(spec));
-            else if (spec.length != null) {
-                for (var i = 0; i < spec.length; i++)
-                    fn(jsPlumb.getDOMElement(spec[i]));
-            }
-            else
-                fn(spec); // assume it's an element.
-        };
-
-    window.jsPlumbAdapter = {
-
-        headless: false,
-
-        pageLocation: _pageLocation,
-        screenLocation: _screenLocation,
-        clientLocation: _clientLocation,
-
-        getAttribute: function (el, attName) {
-            return el.getAttribute != null ? el.getAttribute(attName) : null;
-        },
-
-        setAttribute: function (el, a, v) {
-            if (el.setAttribute != null) el.setAttribute(a, v);
-        },
-
-        setAttributes: function (el, atts) {
-            for (var i in atts)
-                if (atts.hasOwnProperty(i)) el.setAttribute(i, atts[i]);
-        },
-
-        appendToRoot: function (node) {
-            document.body.appendChild(node);
-        },
-        getRenderModes: function () {
-            return [ "svg", "vml" ];
-        },
-        isRenderModeAvailable: function (m) {
-            return {
-                "svg": svgAvailable,
-                "vml": vmlAvailable()
-            }[m];
-        },
-        getDragManager: function (_jsPlumb) {
-            return new DragManager(_jsPlumb);
-        },
-        setRenderMode: function (mode) {
-            var renderMode;
-
-            if (mode) {
-                mode = mode.toLowerCase();
-
-                var svgAvailable = this.isRenderModeAvailable("svg"),
-                    vmlAvailable = this.isRenderModeAvailable("vml");
-
-                // now test we actually have the capability to do this.
-                if (mode === "svg") {
-                    if (svgAvailable) renderMode = "svg";
-                    else if (vmlAvailable) renderMode = "vml";
-                }
-                else if (vmlAvailable) renderMode = "vml";
-            }
-
-            return renderMode;
-        },
-        addClass: function (el, clazz) {
-            _each(el, function (e) {
-                _classManip(e, clazz);
-            });
-        },
-        hasClass: function (el, clazz) {
-            el = jsPlumb.getDOMElement(el);
-            if (el.classList) return el.classList.contains(clazz);
-            else {
-                return _getClassName(el).indexOf(clazz) != -1;
-            }
-        },
-        removeClass: function (el, clazz) {
-            _each(el, function (e) {
-                _classManip(e, null, clazz);
-            });
-        },
-        updateClasses: function (el, toAdd, toRemove) {
-            _each(el, function (e) {
-                _classManip(e, toAdd, toRemove);
-            });
-        },
-        setClass: function (el, clazz) {
-            _each(el, function (e) {
-                _setClassName(e, clazz);
-            });
-        },
-        setPosition: function (el, p) {
-            el.style.left = p.left + "px";
-            el.style.top = p.top + "px";
-        },
-        getPosition: function (el) {
-            var _one = function (prop) {
-                var v = el.style[prop];
-                return v ? v.substring(0, v.length - 2) : 0;
-            };
-            return {
-                left: _one("left"),
-                top: _one("top")
-            };
-        },/*
-        getOffsetRect: function (elem, withRespectTo, zoom) {
-            // (1)
-            var box = elem.getBoundingClientRect(),
-                wrt = withRespectTo != null ? withRespectTo.getBoundingClientRect() : { left: 0, top: 0};
-
-            var body = document.body;
-            var docElem = document.documentElement;
-
-            // (2)
-            var scrollTop = 0;//window.pageYOffset || docElem.scrollTop || body.scrollTop;
-            var scrollLeft = 0;//window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
-
-            // (3)
-            var clientTop = docElem.clientTop || body.clientTop || 0;
-            var clientLeft = docElem.clientLeft || body.clientLeft || 0;
-
-            // (4)
-            var top = (box.top  - wrt.top) + scrollTop - clientTop;
-            var left = (box.left - wrt.left) + scrollLeft - clientLeft;
-
-            return { top: Math.round(top / zoom), left: Math.round(left / zoom) };
-        },
-        getOffsetNew: function (el, _instance, relativeToPage) {
-            el = jsPlumb.getDOMElement(el);
-            return this.getOffsetRect(el, relativeToPage ? null : _instance.getContainer(), _instance.getZoom());
-        },*/
-        getStyle:function(el, prop) {
-            if (typeof window.getComputedStyle !== 'undefined') {
-                return getComputedStyle(el, null).getPropertyValue(prop);
-            } else {
-                return el.currentStyle[prop];
-            }
-        },
-        getOffsetOld:function(el, _instance, relativeToRoot) {
-            el = jsPlumb.getDOMElement(el);
-            var container = _instance.getContainer();
-            var out = {
-                    left: el.offsetLeft,
-                    top: el.offsetTop
-                },
-                op = (relativeToRoot  || (container != null && el.offsetParent != container)) ?  el.offsetParent : null;
-
-            while (op != null) {
-                out.left += op.offsetLeft;
-                out.top += op.offsetTop;
-                op = relativeToRoot ? op.offsetParent :
-                        op.offsetParent == container ? null : op.offsetParent;
-            }
-
-            // if container is scrolled and the element (or its offset parent) is not absolute or fixed, adjust accordingly.
-            if (container != null && !relativeToRoot && (container.scrollTop > 0 || container.scrollLeft > 0)) {
-                var pp = el.offsetParent != null ? this.getStyle(el.offsetParent, "position") : "static",
-                    p = this.getStyle(el, "position");
-                if (p !== "absolute" && p !== "fixed" && pp !== "absolute" && pp != "fixed") {
-                    out.left -= container.scrollLeft;
-                    out.top -= container.scrollTop;
-                }
-            }
-            return out;
-        },
-        getOffset:function(el, _instance, relativeToRoot) {
-            el = jsPlumb.getDOMElement(el);
-            var container = _instance.getContainer();
-            var out = {
-                    left: el.offsetLeft,
-                    top: el.offsetTop
-                },
-                op = (relativeToRoot  || (container != null && el.offsetParent != container)) ?  el.offsetParent : null,
-                _maybeAdjustScroll = function(offsetParent) {
-                    if (offsetParent != null && (offsetParent.scrollTop > 0 || offsetParent.scrollLeft > 0)) {
-                        var p = this.getStyle(el, "position");
-                        if (p !== "fixed") {
-                            out.left -= offsetParent.scrollLeft;
-                            out.top -= offsetParent.scrollTop;
-                        }
-                    }
-                }.bind(this);
-
-            while (op != null) {
-                out.left += op.offsetLeft;
-                out.top += op.offsetTop;
-                _maybeAdjustScroll(op);
-                op = relativeToRoot ? op.offsetParent :
-                        op.offsetParent == container ? null : op.offsetParent;
-            }
-
-            // if container is scrolled and the element (or its offset parent) is not absolute or fixed, adjust accordingly.
-            if (container != null && !relativeToRoot && (container.scrollTop > 0 || container.scrollLeft > 0)) {
-                var pp = el.offsetParent != null ? this.getStyle(el.offsetParent, "position") : "static",
-                    p = this.getStyle(el, "position");
-                if (p !== "absolute" && p !== "fixed" && pp !== "absolute" && pp != "fixed") {
-                    out.left -= container.scrollLeft;
-                    out.top -= container.scrollTop;
-                }
-            }
-            return out;
-        },
-
-        /*
-        getOffsety: function (el, _instance) {
-            el = jsPlumb.getDOMElement(el);
-            var container = _instance.getContainer();
-            var l = el.offsetLeft, t = el.offsetTop, op = (container != null && el.offsetParent != container) ? el.offsetParent : null;
-            while (op != null) {
-                l += op.offsetLeft;
-                t += op.offsetTop;
-                op = op.offsetParent == container ? null : op.offsetParent;
-            }
-            return {
-                left: l, top: t
-            };
-        },*/
-        //
-        // return x+y proportion of the given element's size corresponding to the location of the given event.
-        //
-        getPositionOnElement: function (evt, el, zoom) {
-            var box = typeof el.getBoundingClientRect !== "undefined" ? el.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 },
-                body = document.body,
-                docElem = document.documentElement,
-                scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop,
-                scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft,
-                clientTop = docElem.clientTop || body.clientTop || 0,
-                clientLeft = docElem.clientLeft || body.clientLeft || 0,
-                pst = 0,
-                psl = 0,
-                top = box.top + scrollTop - clientTop + (pst * zoom),
-                left = box.left + scrollLeft - clientLeft + (psl * zoom),
-                cl = jsPlumbAdapter.pageLocation(evt),
-                w = box.width || (el.offsetWidth * zoom),
-                h = box.height || (el.offsetHeight * zoom),
-                x = (cl[0] - left) / w,
-                y = (cl[1] - top) / h;
-
-            return [ x, y ];
-        },
-
-        /**
-         * Gets the absolute position of some element as read from the left/top properties in its style.
-         * @method getAbsolutePosition
-         * @param {Element} el The element to retrieve the absolute coordinates from. **Note** this is a DOM element, not a selector from the underlying library.
-         * @return {Number[]} [left, top] pixel values.
-         */
-        getAbsolutePosition: function (el) {
-            var _one = function (s) {
-                var ss = el.style[s];
-                if (ss) return parseFloat(ss.substring(0, ss.length - 2));
-            };
-            return [ _one("left"), _one("top") ];
-        },
-
-        /**
-         * Sets the absolute position of some element by setting the left/top properties in its style.
-         * @method setAbsolutePosition
-         * @param {Element} el The element to set the absolute coordinates on. **Note** this is a DOM element, not a selector from the underlying library.
-         * @param {Number[]} xy x and y coordinates
-         * @param {Number[]} [animateFrom] Optional previous xy to animate from.
-         * @param {Object} [animateOptions] Options for the animation.
-         */
-        setAbsolutePosition: function (el, xy, animateFrom, animateOptions) {
-            if (animateFrom) {
-                this.animate(el, {
-                    left: "+=" + (xy[0] - animateFrom[0]),
-                    top: "+=" + (xy[1] - animateFrom[1])
-                }, animateOptions);
-            }
-            else {
-                el.style.left = xy[0] + "px";
-                el.style.top = xy[1] + "px";
-            }
-        }
-
-    };
-})();
-
-/*
- * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -3126,11 +2528,11 @@
     "use strict";
 
     var root = this;
-    var connectorTypes = [], rendererTypes = ["svg", "vml"];
+    var connectorTypes = [], rendererTypes;
 
     var _ju = root.jsPlumbUtil,
         _getOffset = function (el, _instance, relativeToRoot) {
-            return root.jsPlumbAdapter.getOffset(el, _instance, relativeToRoot);
+            return _instance.getOffset(el, relativeToRoot);
         },
 
         /**
@@ -3378,19 +2780,19 @@
         },
 
         hasClass:function(clazz) {
-            return jsPlumbAdapter.hasClass(this.canvas, clazz);
+            return jsPlumb.hasClass(this.canvas, clazz);
         },
 
         addClass: function (clazz) {
-            jsPlumbAdapter.addClass(this.canvas, clazz);
+            jsPlumb.addClass(this.canvas, clazz);
         },
 
         removeClass: function (clazz) {
-            jsPlumbAdapter.removeClass(this.canvas, clazz);
+            jsPlumb.removeClass(this.canvas, clazz);
         },
 
         updateClasses: function (classesToAdd, classesToRemove) {
-            jsPlumbAdapter.updateClasses(this.canvas, classesToAdd, classesToRemove);
+            jsPlumb.updateClasses(this.canvas, classesToAdd, classesToRemove);
         },
 
         setType: function (typeId, params, doNotRepaint) {
@@ -3741,7 +3143,7 @@
         //
         // 1. if Container exists, use that element.
         // 2. if the 'parent' parameter exists, use that.
-        // 3. otherwise just use the root element (for DOM usage, the document body).
+        // 3. otherwise just use the root element.
         //
         //
             _appendElement = function (el, parent) {
@@ -3765,9 +3167,10 @@
             _draw = function (element, ui, timestamp, clearEdits) {
 
                 // TODO is it correct to filter by headless at this top level? how would a headless adapter ever repaint?
-                if (!jsPlumbAdapter.headless && !_suspendDrawing) {
+                // NO. it is not correct.
+                if (!jsPlumb.headless && !_suspendDrawing) {
                     var id = _getId(element),
-                        repaintEls = _currentInstance.dragManager.getElementsForDraggable(id);
+                        repaintEls = _currentInstance.getDragManager().getElementsForDraggable(id);
 
                     if (timestamp == null) timestamp = _timestamp();
 
@@ -3809,8 +3212,7 @@
                 if (_ju.isArray(element)) {
                     retVal = [];
                     for (var i = 0, j = element.length; i < j; i++) {
-                        el = _currentInstance.getElementObject(element[i]);
-                        del = _currentInstance.getDOMElement(el);
+                        del = _currentInstance.getDOMElement(element[i]);
                         id = _currentInstance.getAttribute(del, "id");
                         retVal.push(fn.apply(_currentInstance, [del, id])); // append return values to what we will return
                     }
@@ -3836,7 +3238,7 @@
              */
             _initDraggableIfNecessary = function (element, isDraggable, dragOptions, id) {
                 // move to DragManager?
-                if (!jsPlumbAdapter.headless) {
+                if (!jsPlumb.headless) {
                     var _draggable = isDraggable == null ? false : isDraggable;
                     if (_draggable) {
                         if (jsPlumb.isDragSupported(element, _currentInstance) && !jsPlumb.isAlreadyDraggable(element, _currentInstance)) {
@@ -3846,7 +3248,7 @@
                                 stopEvent = jsPlumb.dragEvents.stop,
                                 startEvent = jsPlumb.dragEvents.start,
                                 _del = _currentInstance.getDOMElement(element),
-                                _ancestor = _currentInstance.dragManager.getDragAncestor(_del),
+                                _ancestor = _currentInstance.getDragManager().getDragAncestor(_del),
                                 _noOffset = {left: 0, top: 0},
                                 _ancestorOffset = _noOffset,
                                 _started = false;
@@ -3854,7 +3256,7 @@
                             _manage(id, element);
 
                             options[startEvent] = _ju.wrap(options[startEvent], function () {
-                                _ancestorOffset = _ancestor != null ? jsPlumbAdapter.getOffset(_ancestor, _currentInstance) : _noOffset;
+                                _ancestorOffset = _ancestor != null ? _currentInstance.getOffset(_ancestor) : _noOffset;
                                 _currentInstance.setHoverSuspended(true);
                                 _currentInstance.select({source: element}).addClass(_currentInstance.elementDraggingClass + " " + _currentInstance.sourceElementDraggingClass, true);
                                 _currentInstance.select({target: element}).addClass(_currentInstance.elementDraggingClass + " " + _currentInstance.targetElementDraggingClass, true);
@@ -3894,7 +3296,7 @@
                                     _currentInstance.removeClass(_e[0], "jsPlumb_dragged");
                                     _currentInstance.select({source: _e[0]}).removeClass(_currentInstance.elementDraggingClass + " " + _currentInstance.sourceElementDraggingClass, true);
                                     _currentInstance.select({target: _e[0]}).removeClass(_currentInstance.elementDraggingClass + " " + _currentInstance.targetElementDraggingClass, true);
-                                    _currentInstance.dragManager.dragEnded(_e[0]);
+                                    _currentInstance.getDragManager().dragEnded(_e[0]);
                                 };
 
                                 for (var i = 0; i < elements.length; i++)
@@ -3910,7 +3312,7 @@
                             var draggable = draggableStates[elId];
                             options.disabled = draggable == null ? false : !draggable;
                             _currentInstance.initDraggable(element, options);
-                            _currentInstance.dragManager.register(element);
+                            _currentInstance.getDragManager().register(element);
                         }
                     }
                 }
@@ -4111,8 +3513,9 @@
                 var ep = new endpointFunc(_p);
                 ep.id = "ep_" + _idstamp();
                 _manage(_p.elementId, _p.source);
-                if (!jsPlumbAdapter.headless)
-                    _currentInstance.dragManager.endpointAdded(_p.source, id);
+
+                if (!jsPlumb.headless)
+                    _currentInstance.getDragManager().endpointAdded(_p.source, id);
 
                 return ep;
             },
@@ -4276,7 +3679,7 @@
         this.Anchors = {};
         this.Connectors = {  "svg": {}, "vml": {} };
         this.Endpoints = { "svg": {}, "vml": {} };
-        this.Overlays = { "svg": {}, "vml": {}};
+        this.Overlays = { "svg": {}, "vml": {} } ;
         this.ConnectorRenderers = {};
         this.SVG = "svg";
         this.VML = "vml";
@@ -4332,9 +3735,10 @@
         };
 
         this.animate = function (el, properties, options) {
+            if (!this.animationSupported) return false;
+
             options = options || {};
-            var ele = _currentInstance.getElementObject(el),
-                del = _currentInstance.getDOMElement(el),
+            var del = _currentInstance.getDOMElement(el),
                 id = _getId(del),
                 stepFunction = jsPlumb.animEvents.step,
                 completeFunction = jsPlumb.animEvents.complete;
@@ -4348,7 +3752,7 @@
                 _currentInstance.revalidate(id);
             });
 
-            _currentInstance.doAnimate(ele, properties, options);
+            _currentInstance.doAnimate(del, properties, options);
         };
 
         /**
@@ -4491,7 +3895,7 @@
             managedElements = {};
             endpointsByUUID = {};
             _currentInstance.anchorManager.reset();
-            _currentInstance.dragManager.reset();
+            _currentInstance.getDragManager().reset();
             if (!_is) _currentInstance.setSuspendDrawing(false);
             return _currentInstance;
         };
@@ -4926,9 +4330,9 @@
          */
         this.getId = _getId;
 
-        this.getOffset = function (id) {
+        /*this.getOffset = function (id) {
             return _updateOffset({elId: id}).o;
-        };
+        };*/
 
         this.appendElement = _appendElement;
 
@@ -4938,12 +4342,6 @@
         };
         this.setHoverSuspended = function (s) {
             _hoverSuspended = s;
-        };
-
-        var _isAvailable = function (m) {
-            return function () {
-                return jsPlumbAdapter.isRenderModeAvailable(m);
-            };
         };
 
         // set an element's connections to be hidden
@@ -5016,7 +4414,7 @@
                 s = managedElements[elId] ? managedElements[elId].el : null;
                 if (s != null) {
                     sizes[elId] = _currentInstance.getSize(s);
-                    offsets[elId] = _getOffset(s, _currentInstance);
+                    offsets[elId] = _currentInstance.getOffset(s);
                     offsetTimestamps[elId] = timestamp;
                 }
             } else {
@@ -5045,6 +4443,8 @@
          * mouse listeners etc; can't do that until the library has provided a bind method)
          */
         this.init = function () {
+            rendererTypes = jsPlumb.getRenderModes();
+
             var _oneType = function (renderer, name, fn) {
                 jsPlumb.Connectors[renderer][name] = function () {
                     fn.apply(this, arguments);
@@ -5243,14 +4643,13 @@
                 getEndpoint: function (jpc) {
                     // make a new Endpoint for the target, or get it from the cache if uniqueEndpoint
                     // is set.
-                    var _el = _currentInstance.getElementObject(elInfo.el),
-                        def = elInfo.el[definitionId],
+                    var def = elInfo.el[definitionId],
                         newEndpoint = def.endpoint;
 
                     // if no cached endpoint, or there was one but it has been cleaned up
                     // (ie. detached), then create a new one.
                     if (newEndpoint == null || newEndpoint._jsPlumb == null) {
-                        newEndpoint = _currentInstance.addEndpoint(_el, p);
+                        newEndpoint = _currentInstance.addEndpoint(elInfo.el, p);
                         newEndpoint._mtNew = true;
                     }
 
@@ -5267,8 +4666,10 @@
                     // out where to locate the anchor.
                     if (newEndpoint.anchor.positionFinder != null) {
                         var dropPosition = _currentInstance.getUIPosition(arguments, _currentInstance.getZoom()),
-                            elPosition = _getOffset(_el, _currentInstance),
-                            elSize = _currentInstance.getSize(_el),
+                            //elPosition = _currentInstance.getOffset(_el),
+                            elPosition = _currentInstance.getOffset(elInfo.el),
+                            //elSize = _currentInstance.getSize(_el),
+                            elSize = _currentInstance.getSize(elInfo.el),
                             ap = newEndpoint.anchor.positionFinder(dropPosition, elPosition, elSize, newEndpoint.anchor.constructorParams);
                         newEndpoint.anchor.x = ap[0];
                         newEndpoint.anchor.y = ap[1];
@@ -5308,7 +4709,7 @@
                     return de != elInfo.el;
                 };
             }
-            _currentInstance.initDroppable(_currentInstance.getElementObject(elInfo.el), dropOptions, "internal");
+            _currentInstance.initDroppable(elInfo.el, dropOptions, "internal");
 
             return _drop;
 
@@ -5384,8 +4785,7 @@
                     // get the element's id and store the endpoint definition for it.  jsPlumb.connect calls will look for one of these,
                     // and use the endpoint definition if found.
                     var elid = elInfo.id,
-                        _el = this.getElementObject(elInfo.el),
-                        _del = this.getDOMElement(_el);
+                        _del = this.getDOMElement(elInfo.el);
 
                     _ensureContainer(elid);
 
@@ -5432,7 +4832,7 @@
                             // if the anchor has a 'positionFinder' set, then delegate to that function to find
                             // out where to locate the anchor. issue 117.
                             if (newAnchor.positionFinder != null) {
-                                var elPosition = _getOffset(_el, this),
+                                var elPosition = _currentInstance.getOffset(_el),
                                     elSize = this.getSize(_el),
                                     dropPosition = { left: elPosition.left + (oldAnchor.x * elSize[0]), top: elPosition.top + (oldAnchor.y * elSize[1]) },
                                     ap = newAnchor.positionFinder(dropPosition, elPosition, elSize, newAnchor.constructorParams);
@@ -5460,11 +4860,11 @@
                         // if disabled, return.
                         if (!def.enabled) return;
 
-                        elid = this.getId(this.getDOMElement(_el)); // elid might have changed since this method was called to configure the element.
+                        elid = this.getId(this.getDOMElement(elInfo.el)); // elid might have changed since this method was called to configure the element.
 
                         // if a filter was given, run it, and return if it says no.
                         if (p.filter) {
-                            var r = jsPlumbUtil.isString(p.filter) ? selectorFilter(evt, _el, p.filter, this, p.filterExclude) : p.filter(evt, _el);
+                            var r = jsPlumbUtil.isString(p.filter) ? selectorFilter(evt, elInfo.el, p.filter, this, p.filterExclude) : p.filter(evt, elInfo.el);
                             if (r === false) return;
                         }
 
@@ -5473,7 +4873,7 @@
                         if (def.maxConnections >= 0 && (def.uniqueEndpoint && sourceCount >= def.maxConnections)) {
                             if (onMaxConnections) {
                                 onMaxConnections({
-                                    element: _el,
+                                    element: elInfo.el,
                                     maxConnections: maxConnections
                                 }, e);
                             }
@@ -5482,7 +4882,7 @@
 
                         // find the position on the element at which the mouse was pressed; this is where the endpoint
                         // will be located.
-                        var elxy = jsPlumbAdapter.getPositionOnElement(evt, _del, _zoom), pelxy = elxy;
+                        var elxy = jsPlumb.getPositionOnElement(evt, _del, _zoom);
 
                         // we need to override the anchor in here, and force 'isSource', but we don't want to mess with
                         // the params passed in, because after a connection is established we're going to reset the endpoint
@@ -5517,7 +4917,7 @@
                             // legitimate endpoint, were it not for this check.  the flag is set after adding an
                             // endpoint and cleared in a drag listener we set in the dragOptions above.
                             _currentInstance.off(ep.canvas, "mouseup", _delTempEndpoint);
-                            _currentInstance.off(_el, "mouseup", _delTempEndpoint);
+                            _currentInstance.off(elInfo.el, "mouseup", _delTempEndpoint);
                             if (endpointAddedButNoDragYet) {
                                 endpointAddedButNoDragYet = false;
                                 _currentInstance.deleteEndpoint(ep);
@@ -5525,7 +4925,7 @@
                         };
 
                         _currentInstance.on(ep.canvas, "mouseup", _delTempEndpoint);
-                        _currentInstance.on(_el, "mouseup", _delTempEndpoint);
+                        _currentInstance.on(elInfo.el, "mouseup", _delTempEndpoint);
 
                         // and then trigger its mousedown event, which will kick off a drag, which will start dragging
                         // a new connection from this endpoint.
@@ -5535,14 +4935,16 @@
 
                     }.bind(this);
 
-                    this.on(_el, "mousedown", mouseDownListener);
+                    //this.on(_el, "mousedown", mouseDownListener);
+                    this.on(elInfo.el, "mousedown", mouseDownListener);
                     _def.trigger = mouseDownListener;
 
                     // if a filter was provided, set it as a dragFilter on the element,
                     // to prevent the element drag function from kicking in when we want to
                     // drag a new connection
                     if (p.filter && (jsPlumbUtil.isString(p.filter) || jsPlumbUtil.isFunction(p.filter))) {
-                        _currentInstance.setDragFilter(_el, p.filter/*, p.filterExclude*/);
+                        //_currentInstance.setDragFilter(_el, p.filter/*, p.filterExclude*/);
+                        _currentInstance.setDragFilter(elInfo.el, p.filter/*, p.filterExclude*/);
                     }
 
                     var dropOptions = jsPlumb.extend({}, p.dropOptions || {});
@@ -5774,7 +5176,7 @@
         var _doRemove = function(info, affectedElements) {
             _currentInstance.removeAllEndpoints(info.id, true, affectedElements);
             var _one = function(_info) {
-                _currentInstance.dragManager.elementRemoved(_info.id);
+                _currentInstance.getDragManager().elementRemoved(_info.id);
                 _currentInstance.anchorManager.clearFor(_info.id);
                 _currentInstance.anchorManager.removeFloatingConnection(_info.id);
                 delete _currentInstance.floatingConnections[_info.id];
@@ -5904,7 +5306,7 @@
             delete endpointsByElement[id];
 
             this.anchorManager.changeId(id, newId);
-            if (this.dragManager) this.dragManager.changeId(id, newId);
+            this.getDragManager().changeId(id, newId);
             managedElements[newId] = managedElements[id];
             delete managedElements[id];
 
@@ -5969,7 +5371,7 @@
         this.timestamp = _timestamp;
         this.setRenderMode = function (mode) {
             if (mode !== jsPlumb.SVG && mode !== jsPlumb.VML) throw new TypeError("Render mode [" + mode + "] not supported");
-            renderMode = jsPlumbAdapter.setRenderMode(mode);
+            renderMode = this.trySetRenderMode(mode);
             return renderMode;
         };
         this.getRenderMode = function () {
@@ -5984,11 +5386,6 @@
         this.toggleVisible = _toggleVisible;
         this.toggleDraggable = _toggleDraggable;
         this.addListener = this.bind;
-
-        if (!jsPlumbAdapter.headless) {
-            _currentInstance.dragManager = jsPlumbAdapter.getDragManager(_currentInstance);
-            _currentInstance.recalculateOffsets = _currentInstance.dragManager.updateOffsets;
-        }
     };
 
     jsPlumbUtil.extend(jsPlumbInstance, jsPlumbUtil.EventGenerator, {
@@ -6037,28 +5434,14 @@
         },
         // set parent: change the parent for some node and update all the registrations we need to.
         setParent: function (el, newParent) {
-            var _el = this.getElementObject(el),
-                _dom = this.getDOMElement(_el),
+            var _dom = this.getDOMElement(el),
                 _id = this.getId(_dom),
-                _pel = this.getElementObject(newParent),
-                _pdom = this.getDOMElement(_pel),
+                _pdom = this.getDOMElement(newParent),
                 _pid = this.getId(_pdom);
 
             _dom.parentNode.removeChild(_dom);
             _pdom.appendChild(_dom);
-            this.dragManager.setParent(_el, _id, _pel, _pid);
-        },
-        /**
-         * gets the size for the element, in an array : [ width, height ].
-         */
-        getSize: function (el) {
-            return [ el.offsetWidth, el.offsetHeight ];
-        },
-        getWidth: function (el) {
-            return el.offsetWidth;
-        },
-        getHeight: function (el) {
-            return el.offsetHeight;
+            this.getDragManager().setParent(_dom, _id, _pdom, _pid);
         },
         extend: function (o1, o2, names) {
             var i;
@@ -6074,7 +5457,7 @@
         getFloatingAnchorIndex: function (jpc) {
             return jpc.endpoints[0].isFloating() ? 0 : 1;
         }
-    }, jsPlumbAdapter);
+    });
 
 // --------------------- static instance + AMD registration ------------------------------------------- 
 
@@ -6110,7 +5493,594 @@
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
+ *
+ * Provides a way to visually connect elements on an HTML page, using SVG or VML.
+ *
+ * This file contains the base functionality for DOM type adapters.
+ *
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
+ *
+ * http://jsplumbtoolkit.com
+ * http://github.com/sporritt/jsplumb
+ *
+ * Dual licensed under the MIT and GPL2 licenses.
+ */
+;
+(function () {
+
+    var root = this, _ju = root.jsPlumbUtil;
+
+    var svgAvailable = !!window.SVGAngle || document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"),
+        vmlAvailable = function () {
+            if (vmlAvailable.vml === undefined) {
+                var a = document.body.appendChild(document.createElement('div'));
+                a.innerHTML = '<v:shape id="vml_flag1" adj="1" />';
+                var b = a.firstChild;
+                if (b != null && b.style != null) {
+                    b.style.behavior = "url(#default#VML)";
+                    vmlAvailable.vml = b ? typeof b.adj == "object" : true;
+                }
+                else
+                    vmlAvailable.vml = false;
+                a.parentNode.removeChild(a);
+            }
+            return vmlAvailable.vml;
+        },
+    // TODO: remove this once we remove all library adapter versions and have only vanilla jsplumb: this functionality
+    // comes from Mottle.
+        iev = (function () {
+            var rv = -1;
+            if (navigator.appName == 'Microsoft Internet Explorer') {
+                var ua = navigator.userAgent,
+                    re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+                if (re.exec(ua) != null)
+                    rv = parseFloat(RegExp.$1);
+            }
+            return rv;
+        })(),
+        isIELT9 = iev > -1 && iev < 9,
+        _genLoc = function (e, prefix) {
+            if (e == null) return [ 0, 0 ];
+            var ts = _touches(e), t = _getTouch(ts, 0);
+            return [t[prefix + "X"], t[prefix + "Y"]];
+        },
+        _pageLocation = function (e) {
+            if (e == null) return [ 0, 0 ];
+            if (isIELT9) {
+                return [ e.clientX + document.documentElement.scrollLeft, e.clientY + document.documentElement.scrollTop ];
+            }
+            else {
+                return _genLoc(e, "page");
+            }
+        },
+        _screenLocation = function (e) {
+            return _genLoc(e, "screen");
+        },
+        _clientLocation = function (e) {
+            return _genLoc(e, "client");
+        },
+        _getTouch = function (touches, idx) {
+            return touches.item ? touches.item(idx) : touches[idx];
+        },
+        _touches = function (e) {
+            return e.touches && e.touches.length > 0 ? e.touches :
+                    e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches :
+                    e.targetTouches && e.targetTouches.length > 0 ? e.targetTouches :
+                [ e ];
+        };
+
+    /**
+     Manages dragging for some instance of jsPlumb.
+
+     TODO instead of this being accessed directly, it should subscribe to events on the jsPlumb instance: every method
+     in here is called directly by jsPlumb. But what should happen is that we have unpublished events that this listens
+     to.  The only trick is getting one of these instantiated with every jsPlumb instance: it needs to have a hook somehow.
+     Basically the general idea is to pull ALL the drag code out (prototype method registrations plus this) into a
+     dedicated drag script), that does not necessarily need to be included.
+
+
+     */
+    var DragManager = function (_currentInstance) {
+        var _draggables = {}, _dlist = [], _delements = {}, _elementsWithEndpoints = {},
+        // elementids mapped to the draggable to which they belong.
+            _draggablesForElements = {};
+
+        /**
+         register some element as draggable.  right now the drag init stuff is done elsewhere, and it is
+         possible that will continue to be the case.
+         */
+        this.register = function (el) {
+            var id = _currentInstance.getId(el),
+                parentOffset = _currentInstance.getOffset(el);
+
+            if (!_draggables[id]) {
+                _draggables[id] = el;
+                _dlist.push(el);
+                _delements[id] = {};
+            }
+
+            // look for child elements that have endpoints and register them against this draggable.
+            var _oneLevel = function (p) {
+                if (p) {
+                    for (var i = 0; i < p.childNodes.length; i++) {
+                        if (p.childNodes[i].nodeType != 3 && p.childNodes[i].nodeType != 8) {
+                            var cEl = jsPlumb.getDOMElement(p.childNodes[i]),
+                                cid = _currentInstance.getId(p.childNodes[i], null, true);
+                            if (cid && _elementsWithEndpoints[cid] && _elementsWithEndpoints[cid] > 0) {
+                                var cOff = _currentInstance.getOffset(cEl);
+                                _delements[id][cid] = {
+                                    id: cid,
+                                    offset: {
+                                        left: cOff.left - parentOffset.left,
+                                        top: cOff.top - parentOffset.top
+                                    }
+                                };
+                                _draggablesForElements[cid] = id;
+                            }
+                            _oneLevel(p.childNodes[i]);
+                        }
+                    }
+                }
+            };
+
+            _oneLevel(el);
+        };
+
+        // refresh the offsets for child elements of this element.
+        this.updateOffsets = function (elId) {
+            if (elId != null) {
+                var domEl = jsPlumb.getDOMElement(elId),
+                    id = _currentInstance.getId(domEl),
+                    children = _delements[id],
+                    parentOffset = _currentInstance.getOffset(domEl);
+
+                if (children) {
+                    for (var i in children) {
+                        if (children.hasOwnProperty(i)) {
+                            var cel = jsPlumb.getDOMElement(i),
+                                cOff = _currentInstance.getOffset(cel);
+
+                            _delements[id][i] = {
+                                id: i,
+                                offset: {
+                                    left: cOff.left - parentOffset.left,
+                                    top: cOff.top - parentOffset.top
+                                }
+                            };
+                            _draggablesForElements[i] = id;
+                        }
+                    }
+                }
+            }
+        };
+
+        /**
+         notification that an endpoint was added to the given el.  we go up from that el's parent
+         node, looking for a parent that has been registered as a draggable. if we find one, we add this
+         el to that parent's list of elements to update on drag (if it is not there already)
+         */
+        this.endpointAdded = function (el, id) {
+
+            id = id || _currentInstance.getId(el);
+
+            var b = document.body,
+                p = el.parentNode;
+
+            _elementsWithEndpoints[id] = _elementsWithEndpoints[id] ? _elementsWithEndpoints[id] + 1 : 1;
+
+            while (p != null && p != b) {
+                var pid = _currentInstance.getId(p, null, true);
+                if (pid && _draggables[pid]) {
+                    var pLoc = _currentInstance.getOffset(p);
+
+                    if (_delements[pid][id] == null) {
+                        var cLoc = _currentInstance.getOffset(el);
+                        _delements[pid][id] = {
+                            id: id,
+                            offset: {
+                                left: cLoc.left - pLoc.left,
+                                top: cLoc.top - pLoc.top
+                            }
+                        };
+                        _draggablesForElements[id] = pid;
+                    }
+                    break;
+                }
+                p = p.parentNode;
+            }
+        };
+
+        this.endpointDeleted = function (endpoint) {
+            if (_elementsWithEndpoints[endpoint.elementId]) {
+                _elementsWithEndpoints[endpoint.elementId]--;
+                if (_elementsWithEndpoints[endpoint.elementId] <= 0) {
+                    for (var i in _delements) {
+                        if (_delements.hasOwnProperty(i) && _delements[i]) {
+                            delete _delements[i][endpoint.elementId];
+                            delete _draggablesForElements[endpoint.elementId];
+                        }
+                    }
+                }
+            }
+        };
+
+        this.changeId = function (oldId, newId) {
+            _delements[newId] = _delements[oldId];
+            _delements[oldId] = {};
+            _draggablesForElements[newId] = _draggablesForElements[oldId];
+            _draggablesForElements[oldId] = null;
+        };
+
+        this.getElementsForDraggable = function (id) {
+            return _delements[id];
+        };
+
+        this.elementRemoved = function (elementId) {
+            var elId = _draggablesForElements[elementId];
+            if (elId) {
+                delete _delements[elId][elementId];
+                delete _draggablesForElements[elementId];
+            }
+        };
+
+        this.reset = function () {
+            _draggables = {};
+            _dlist = [];
+            _delements = {};
+            _elementsWithEndpoints = {};
+        };
+
+        //
+        // notification drag ended. We check automatically if need to update some
+        // ancestor's offsets.
+        //
+        this.dragEnded = function (el) {
+            var id = _currentInstance.getId(el),
+                ancestor = _draggablesForElements[id];
+
+            if (ancestor) this.updateOffsets(ancestor);
+        };
+
+        this.setParent = function (el, elId, p, pId) {
+            var current = _draggablesForElements[elId];
+            if (current) {
+                if (!_delements[pId])
+                    _delements[pId] = {};
+                _delements[pId][elId] = _delements[current][elId];
+                delete _delements[current][elId];
+                var pLoc = _currentInstance.getOffset(p),
+                    cLoc = _currentInstance.getOffset(el);
+                _delements[pId][elId].offset = {
+                    left: cLoc.left - pLoc.left,
+                    top: cLoc.top - pLoc.top
+                };
+                _draggablesForElements[elId] = pId;
+            }
+        };
+
+        this.getDragAncestor = function (el) {
+            var de = jsPlumb.getDOMElement(el),
+                id = _currentInstance.getId(de),
+                aid = _draggablesForElements[id];
+
+            if (aid)
+                return jsPlumb.getDOMElement(aid);
+            else
+                return null;
+        };
+
+    };
+
+    var trim = function (str) {
+            return str == null ? null : (str.replace(/^\s\s*/, '').replace(/\s\s*$/, ''));
+        },
+        _setClassName = function (el, cn) {
+            cn = trim(cn);
+            if (typeof el.className.baseVal != "undefined")  // SVG
+                el.className.baseVal = cn;
+            else
+                el.className = cn;
+        },
+        _getClassName = function (el) {
+            return (typeof el.className.baseVal == "undefined") ? el.className : el.className.baseVal;
+        },
+        _classManip = function (el, classesToAdd, classesToRemove) {
+            classesToAdd = classesToAdd == null ? [] : jsPlumbUtil.isArray(classesToAdd) ? classesToAdd : classesToAdd.split(/\s+/);
+            classesToRemove = classesToRemove == null ? [] : jsPlumbUtil.isArray(classesToRemove) ? classesToRemove : classesToRemove.split(/\s+/);
+
+            var className = _getClassName(el),
+                curClasses = className.split(/\s+/);
+
+            var _oneSet = function (add, classes) {
+                for (var i = 0; i < classes.length; i++) {
+                    if (add) {
+                        if (jsPlumbUtil.indexOf(curClasses, classes[i]) == -1)
+                            curClasses.push(classes[i]);
+                    }
+                    else {
+                        var idx = jsPlumbUtil.indexOf(curClasses, classes[i]);
+                        if (idx != -1)
+                            curClasses.splice(idx, 1);
+                    }
+                }
+            };
+
+            _oneSet(true, classesToAdd);
+            _oneSet(false, classesToRemove);
+
+            _setClassName(el, curClasses.join(" "));
+        },
+        _each = function (spec, fn) {
+            if (spec == null) return;
+            if (typeof spec === "string")
+                fn(jsPlumb.getDOMElement(spec));
+            else if (spec.length != null) {
+                for (var i = 0; i < spec.length; i++)
+                    fn(jsPlumb.getDOMElement(spec[i]));
+            }
+            else
+                fn(spec); // assume it's an element.
+        };
+
+    jsPlumb.extend(jsPlumbInstance.prototype, {
+
+        headless: false,
+
+        pageLocation: _pageLocation,
+        screenLocation: _screenLocation,
+        clientLocation: _clientLocation,
+
+        getDragManager:function() {
+            if (this.dragManager == null)
+                this.dragManager = new DragManager(this);
+
+            return this.dragManager;
+        },
+
+        recalculateOffsets:function() {
+            this.getDragManager().updateOffsets();
+        },
+
+        createElement:function(tag, style, clazz, atts) {
+            return this.createElementNS(null, tag, style, clazz, atts);
+        },
+
+        createElementNS:function(ns, tag, style, clazz, atts) {
+            var e = ns == null ? document.createElement(tag) : document.createElementNS(ns, tag);
+            var i;
+            style = style || {};
+            for (i in style)
+                e.style[i] = style[i];
+
+            if (clazz)
+                e.className = clazz;
+
+            atts = atts || {};
+            for (i in atts)
+                e.setAttribute(i, "" + atts[i]);
+
+            return e;
+        },
+
+        getAttribute: function (el, attName) {
+            return el.getAttribute != null ? el.getAttribute(attName) : null;
+        },
+
+        setAttribute: function (el, a, v) {
+            if (el.setAttribute != null) el.setAttribute(a, v);
+        },
+
+        setAttributes: function (el, atts) {
+            for (var i in atts)
+                if (atts.hasOwnProperty(i)) el.setAttribute(i, atts[i]);
+        },
+
+        appendToRoot: function (node) {
+            document.body.appendChild(node);
+        },
+        getRenderModes: function () {
+            return [ "svg", "vml" ];
+        },
+        isRenderModeAvailable: function (m) {
+            return {
+                "svg": svgAvailable,
+                "vml": vmlAvailable()
+            }[m];
+        },
+        trySetRenderMode: function (mode) {
+            var renderMode;
+
+            if (mode) {
+                mode = mode.toLowerCase();
+
+                var svgAvailable = this.isRenderModeAvailable("svg"),
+                    vmlAvailable = this.isRenderModeAvailable("vml");
+
+                // now test we actually have the capability to do this.
+                if (mode === "svg") {
+                    if (svgAvailable) renderMode = "svg";
+                    else if (vmlAvailable) renderMode = "vml";
+                }
+                else if (vmlAvailable) renderMode = "vml";
+            }
+
+            return renderMode;
+        },
+        addClass: function (el, clazz) {
+            _each(el, function (e) {
+                _classManip(e, clazz);
+            });
+        },
+        hasClass: function (el, clazz) {
+            el = jsPlumb.getDOMElement(el);
+            if (el.classList) return el.classList.contains(clazz);
+            else {
+                return _getClassName(el).indexOf(clazz) != -1;
+            }
+        },
+        removeClass: function (el, clazz) {
+            _each(el, function (e) {
+                _classManip(e, null, clazz);
+            });
+        },
+        updateClasses: function (el, toAdd, toRemove) {
+            _each(el, function (e) {
+                _classManip(e, toAdd, toRemove);
+            });
+        },
+        setClass: function (el, clazz) {
+            _each(el, function (e) {
+                _setClassName(e, clazz);
+            });
+        },
+        setPosition: function (el, p) {
+            el.style.left = p.left + "px";
+            el.style.top = p.top + "px";
+        },
+        getPosition: function (el) {
+            var _one = function (prop) {
+                var v = el.style[prop];
+                return v ? v.substring(0, v.length - 2) : 0;
+            };
+            return {
+                left: _one("left"),
+                top: _one("top")
+            };
+        },
+        getStyle:function(el, prop) {
+            if (typeof window.getComputedStyle !== 'undefined') {
+                return getComputedStyle(el, null).getPropertyValue(prop);
+            } else {
+                return el.currentStyle[prop];
+            }
+        },
+
+        getSelector: function (ctx, spec) {
+            var sel = null;
+            if (arguments.length == 1) {
+                sel = ctx.nodeType != null ? ctx : document.querySelectorAll(ctx);
+            }
+            else
+                sel = ctx.querySelectorAll(spec);
+
+            return sel;
+        },
+        getOffset:function(el, relativeToRoot) {
+            el = jsPlumb.getDOMElement(el);
+            var container = this.getContainer();
+            var out = {
+                    left: el.offsetLeft,
+                    top: el.offsetTop
+                },
+                op = (relativeToRoot  || (container != null && el.offsetParent != container)) ?  el.offsetParent : null,
+                _maybeAdjustScroll = function(offsetParent) {
+                    if (offsetParent != null && (offsetParent.scrollTop > 0 || offsetParent.scrollLeft > 0)) {
+                        var p = this.getStyle(el, "position");
+                        if (p !== "fixed") {
+                            out.left -= offsetParent.scrollLeft;
+                            out.top -= offsetParent.scrollTop;
+                        }
+                    }
+                }.bind(this);
+
+            while (op != null) {
+                out.left += op.offsetLeft;
+                out.top += op.offsetTop;
+                if (!relativeToRoot) _maybeAdjustScroll(op);
+                op = relativeToRoot ? op.offsetParent :
+                        op.offsetParent == container ? null : op.offsetParent;
+            }
+
+            // if container is scrolled and the element (or its offset parent) is not absolute or fixed, adjust accordingly.
+            if (container != null && !relativeToRoot && (container.scrollTop > 0 || container.scrollLeft > 0)) {
+                var pp = el.offsetParent != null ? this.getStyle(el.offsetParent, "position") : "static",
+                    p = this.getStyle(el, "position");
+                if (p !== "absolute" && p !== "fixed" && pp !== "absolute" && pp != "fixed") {
+                    out.left -= container.scrollLeft;
+                    out.top -= container.scrollTop;
+                }
+            }
+            return out;
+        },
+        //
+        // return x+y proportion of the given element's size corresponding to the location of the given event.
+        //
+        getPositionOnElement: function (evt, el, zoom) {
+            var box = typeof el.getBoundingClientRect !== "undefined" ? el.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 },
+                body = document.body,
+                docElem = document.documentElement,
+                scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop,
+                scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft,
+                clientTop = docElem.clientTop || body.clientTop || 0,
+                clientLeft = docElem.clientLeft || body.clientLeft || 0,
+                pst = 0,
+                psl = 0,
+                top = box.top + scrollTop - clientTop + (pst * zoom),
+                left = box.left + scrollLeft - clientLeft + (psl * zoom),
+                cl = jsPlumb.pageLocation(evt),
+                w = box.width || (el.offsetWidth * zoom),
+                h = box.height || (el.offsetHeight * zoom),
+                x = (cl[0] - left) / w,
+                y = (cl[1] - top) / h;
+
+            return [ x, y ];
+        },
+
+        /**
+         * Gets the absolute position of some element as read from the left/top properties in its style.
+         * @method getAbsolutePosition
+         * @param {Element} el The element to retrieve the absolute coordinates from. **Note** this is a DOM element, not a selector from the underlying library.
+         * @return {Number[]} [left, top] pixel values.
+         */
+        getAbsolutePosition: function (el) {
+            var _one = function (s) {
+                var ss = el.style[s];
+                if (ss) return parseFloat(ss.substring(0, ss.length - 2));
+            };
+            return [ _one("left"), _one("top") ];
+        },
+
+        /**
+         * Sets the absolute position of some element by setting the left/top properties in its style.
+         * @method setAbsolutePosition
+         * @param {Element} el The element to set the absolute coordinates on. **Note** this is a DOM element, not a selector from the underlying library.
+         * @param {Number[]} xy x and y coordinates
+         * @param {Number[]} [animateFrom] Optional previous xy to animate from.
+         * @param {Object} [animateOptions] Options for the animation.
+         */
+        setAbsolutePosition: function (el, xy, animateFrom, animateOptions) {
+            if (animateFrom) {
+                this.animate(el, {
+                    left: "+=" + (xy[0] - animateFrom[0]),
+                    top: "+=" + (xy[1] - animateFrom[1])
+                }, animateOptions);
+            }
+            else {
+                el.style.left = xy[0] + "px";
+                el.style.top = xy[1] + "px";
+            }
+        },
+        /**
+         * gets the size for the element, in an array : [ width, height ].
+         */
+        getSize: function (el) {
+            return [ el.offsetWidth, el.offsetHeight ];
+        },
+        getWidth: function (el) {
+            return el.offsetWidth;
+        },
+        getHeight: function (el) {
+            return el.offsetHeight;
+        }
+
+    });
+}).call(this);
+
+/*
+ * jsPlumb
+ *
+ * Title:jsPlumb 1.7.5
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
@@ -6359,7 +6329,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -6375,7 +6345,7 @@
 (function () {
 
     "use strict";
-    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil, _ja = root.jsPlumbAdapter;
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil;
 
     // create the drag handler for a connection
     var _makeConnectionDragHandler = function (placeholder, _jsPlumb) {
@@ -6389,7 +6359,7 @@
                 var _ui = _jp.getUIPosition(arguments, _jsPlumb.getZoom());
 
                 if (placeholder.element) {
-                    _ja.setPosition(placeholder.element, _ui);
+                    jsPlumb.setPosition(placeholder.element, _ui);
                     _jsPlumb.repaint(placeholder.element, _ui);
                 }
             },
@@ -6399,14 +6369,11 @@
         };
     };
 
-    // creates a placeholder div for dragging purposes, adds it to the DOM, and pre-computes its offset.    
+    // creates a placeholder div for dragging purposes, adds it, and pre-computes its offset.
     var _makeDraggablePlaceholder = function (placeholder, _jsPlumb) {
-        var n = document.createElement("div");
-        n.style.position = "absolute";
-        var parent = _jsPlumb.getContainer() || document.body;
-        parent.appendChild(n);
+        var n = jsPlumb.createElement("div", { position : "absolute" });
+        _jsPlumb.appendElement(n);
         var id = _jsPlumb.getId(n);
-        //_jsPlumb.updateOffset( { elId : id });
         _jsPlumb.manage(id, n);
         // create and assign an id, and initialize the offset.
         placeholder.id = id;
@@ -6448,7 +6415,6 @@
 
     _jp.Endpoint = function (params) {
         var _jsPlumb = params._jsPlumb,
-            _gel = _jp.getElementObject,
             _newConnection = params.newConnection,
             _newEndpoint = params.newEndpoint;
 
@@ -6498,7 +6464,7 @@
             this.removeClass(oldAnchorClass);
             this.addClass(anchorClass);
             // add and remove at the same time to reduce the number of reflows.
-            _ja.updateClasses(this.element, anchorClass, oldAnchorClass);
+            jsPlumb.updateClasses(this.element, anchorClass, oldAnchorClass);
         }.bind(this);
 
         this.prepareAnchor = function(anchorParams) {
@@ -6888,6 +6854,7 @@
 
                     _jsPlumb.updateOffset({ elId: this.elementId });
                     inPlaceCopy = this.makeInPlaceCopy();
+                    inPlaceCopy.addClass(_jsPlumb.draggingClass);
                     inPlaceCopy.referenceEndpoint = this;
                     inPlaceCopy.paint();
 
@@ -6896,11 +6863,10 @@
                     // set the offset of this div to be where 'inPlaceCopy' is, to start with.
                     // TODO merge this code with the code in both Anchor and FloatingAnchor, because it
                     // does the same stuff.
-                    var ipcoel = _gel(inPlaceCopy.canvas),
-                        ipco = _ja.getOffset(ipcoel, this._jsPlumb.instance),
-                        canvasElement = _gel(this.canvas);
+                    var ipco = this._jsPlumb.instance.getOffset(inPlaceCopy.canvas),
+                        canvasElement = this.canvas;
 
-                    _ja.setPosition(placeholderInfo.element, ipco);
+                    jsPlumb.setPosition(placeholderInfo.element, ipco);
 
                     // when using makeSource and a parent, we first draw the source anchor on the source element, then
                     // move it to the parent.  note that this happens after drawing the placeholder for the
@@ -7103,7 +7069,6 @@
 
         var ep = params.endpoint || this._jsPlumb.instance.Defaults.Endpoint || _jp.Defaults.Endpoint;
         this.setEndpoint(ep, true);
-        //params.anchor || this._jsPlumb.instance.Defaults.Anchor || jsPlumb.Defaults.Anchor || "Top"
         var anchorParamsToUse = params.anchor ? params.anchor : params.anchors ? params.anchors : (_jsPlumb.Defaults.Anchor || "Top");
         this.setAnchor(anchorParamsToUse, true);
 
@@ -7116,7 +7081,6 @@
         // if marked as source or target at create time, init the dragging.
         if (this.isSource || this.isTarget || this.isTemporarySource)
             this.initDraggable();
-
 
         // pulled this out into a function so we can reuse it for the inPlaceCopy canvas; you can now drop detached connections
         // back onto the endpoint you detached it from.
@@ -7204,7 +7168,7 @@
         // Initialise the endpoint's canvas as a drop target. The drop handler will take care of the logic of whether
         // something can actually be dropped.
         if (!this.anchor.isFloating)
-            _initDropTarget(_gel(this.canvas), true, !(params._transient || this.anchor.isFloating), this, params.reference);
+            _initDropTarget(this.canvas, true, !(params._transient || this.anchor.isFloating), this, params.reference);
 
 
         return this;
@@ -7247,15 +7211,14 @@
         },
         cleanup: function () {
             var anchorClass = this._jsPlumb.instance.endpointAnchorClassPrefix + (this._jsPlumb.currentAnchorClass ? "_" + this._jsPlumb.currentAnchorClass : "");
-            _ja.removeClass(this.element, anchorClass);
+            jsPlumb.removeClass(this.element, anchorClass);
             this.anchor = null;
             this.endpoint.cleanup();
             this.endpoint.destroy();
             this.endpoint = null;
             // drag/drop
-            var i = _jp.getElementObject(this.canvas);
-            this._jsPlumb.instance.destroyDraggable(i, "internal");
-            this._jsPlumb.instance.destroyDroppable(i, "internal");
+            this._jsPlumb.instance.destroyDraggable(this.canvas, "internal");
+            this._jsPlumb.instance.destroyDroppable(this.canvas, "internal");
         },
         setHover: function (h) {
             if (this.endpoint && this._jsPlumb && !this._jsPlumb.instance.isConnectionBeingDragged())
@@ -7503,7 +7466,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -7814,9 +7777,12 @@
         setHover: function (state) {
             if (this.connector && this._jsPlumb && !this._jsPlumb.instance.isConnectionBeingDragged()) {
                 this.connector.setHover(state);
-                root.jsPlumbAdapter[state ? "addClass" : "removeClass"](this.source, this._jsPlumb.instance.hoverSourceClass);
-                root.jsPlumbAdapter[state ? "addClass" : "removeClass"](this.target, this._jsPlumb.instance.hoverTargetClass);
+                root.jsPlumb[state ? "addClass" : "removeClass"](this.source, this._jsPlumb.instance.hoverSourceClass);
+                root.jsPlumb[state ? "addClass" : "removeClass"](this.target, this._jsPlumb.instance.hoverTargetClass);
             }
+        },
+        getUuids:function() {
+            return [ this.endpoints[0].getUuid(), this.endpoints[1].getUuid() ];
         },
         getCost: function () {
             return this._jsPlumb.cost;
@@ -7901,8 +7867,8 @@
                     tIdx = swap ? 0 : 1, sIdx = swap ? 1 : 0;
 
                 if (timestamp == null || timestamp != this._jsPlumb.lastPaintedAt) {
-                    var sourceInfo = this._jsPlumb.instance.getOffset(sId),
-                        targetInfo = this._jsPlumb.instance.getOffset(tId),
+                    var sourceInfo = this._jsPlumb.instance.updateOffset({elId:sId}).o,
+                        targetInfo = this._jsPlumb.instance.updateOffset({elId:tId}).o,
                         sE = this.endpoints[sIdx], tE = this.endpoints[tIdx];
 
                     var sAnchorP = sE.anchor.getCurrentLocation({xy: [sourceInfo.left, sourceInfo.top], wh: [sourceInfo.width, sourceInfo.height], element: sE, timestamp: timestamp}),
@@ -8020,7 +7986,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -9166,7 +9132,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -10006,12 +9972,13 @@
             else return [0, 0, 0, 0];
         };
 
-        this.canvas = document.createElement("img");
-        this.canvas.style.margin = 0;
-        this.canvas.style.padding = 0;
-        this.canvas.style.outline = 0;
-        this.canvas.style.position = "absolute";
-        this.canvas.className = this._jsPlumb.instance.endpointClass + clazz;
+        this.canvas = jsPlumb.createElement("img", {
+            position:"absolute",
+            margin:0,
+            padding:0,
+            outline:0
+        }, this._jsPlumb.instance.endpointClass + clazz);
+
         if (this._jsPlumb.widthToUse) this.canvas.setAttribute("width", this._jsPlumb.widthToUse);
         if (this._jsPlumb.heightToUse) this.canvas.setAttribute("height", this._jsPlumb.heightToUse);
         this._jsPlumb.instance.appendElement(this.canvas);
@@ -10066,13 +10033,14 @@
 
         var clazz = params.cssClass ? " " + params.cssClass : "";
 
-        this.canvas = document.createElement("div");
-        this.canvas.style.display = "block";
-        this.canvas.style.width = "1px";
-        this.canvas.style.height = "1px";
-        this.canvas.style.background = "transparent";
-        this.canvas.style.position = "absolute";
-        this.canvas.className = this._jsPlumb.instance.endpointClass + clazz;
+        this.canvas = jsPlumb.createElement("div", {
+            display: "block",
+            width: "1px",
+            height: "1px",
+            background: "transparent",
+            position: "absolute"
+        }, this._jsPlumb.instance.endpointClass + clazz);
+
         this._jsPlumb.instance.appendElement(this.canvas);
 
         this.paint = function (style, anchor) {
@@ -10550,7 +10518,7 @@
         this.cssClass = this.labelStyle != null ? this.labelStyle.cssClass : null;
         var p = _jp.extend({
             create: function () {
-                return document.createElement("div");
+                return jsPlumb.createElement("div");
             }}, params);
         _jp.Overlays.Custom.call(this, p);
         this.type = "Label";
@@ -10625,7 +10593,7 @@
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
@@ -10676,7 +10644,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -11062,7 +11030,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -11241,7 +11209,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -11328,7 +11296,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -11377,22 +11345,18 @@
                 node.setAttribute(i, "" + attributes[i]);
         },
         _node = function (name, attributes) {
-            var n = document.createElementNS(ns.svg, name);
             attributes = attributes || {};
             attributes.version = "1.1";
             attributes.xmlns = ns.xhtml;
-            _attr(n, attributes);
-            return n;
+            return jsPlumb.createElementNS(ns.svg, name, null, null, attributes);
         },
         _pos = function (d) {
             return "position:absolute;left:" + d[0] + "px;top:" + d[1] + "px";
         },
         _clearGradient = function (parent) {
-            // TODO use querySelectorAll here instead?
-            for (var i = 0; i < parent.childNodes.length; i++) {
-                if (parent.childNodes[i].tagName == DEFS || parent.childNodes[i].tagName == LINEAR_GRADIENT || parent.childNodes[i].tagName == RADIAL_GRADIENT)
-                    parent.removeChild(parent.childNodes[i]);
-            }
+            var els = parent.querySelectorAll(" defs linearGradient radialGradient");
+            for (var i = 0; i < els.length; i++)
+                els[i].parentNode.removeChild(els[i]);
         },
         _updateGradient = function (parent, node, style, dimensions, uiComponent) {
             var id = JSPLUMB_GRADIENT + uiComponent._jsPlumb.instance.idstamp();
@@ -11474,12 +11438,6 @@
                 }
             }
         },
-        _decodeFont = function (f) {
-            var r = /([0-9].)(p[xt])\s(.*)/,
-                bits = f.match(r);
-
-            return {size: bits[1] + bits[2], font: bits[3]};
-        },
         _appendAtIndex = function (svg, path, idx) {
             if (svg.childNodes.length > idx) {
                 svg.insertBefore(path, svg.childNodes[idx]);
@@ -11522,8 +11480,7 @@
         this.svg = _node("svg", svgParams);
 
         if (params.useDivWrapper) {
-            this.canvas = document.createElement("div");
-            this.canvas.style.position = "absolute";
+            this.canvas = jsPlumb.createElement("div", { position : "absolute" });
             _ju.sizeElement(this.canvas, 0, 0, 1, 1);
             this.canvas.className = clazz;
         }
@@ -11535,8 +11492,6 @@
         params._jsPlumb.appendElement(this.canvas, params.originalArgs[0].parent);
         if (params.useDivWrapper) this.canvas.appendChild(this.svg);
 
-        // TODO this displayElement stuff is common between all components, across all
-        // renderers.  would be best moved to jsPlumbUIComponent.
         var displayElements = [ this.canvas ];
         this.getDisplayElements = function () {
             return displayElements;
@@ -11570,8 +11525,8 @@
 
                 _attr(this.svg, {
                     "style": p,
-                    "width": wh[0],
-                    "height": wh[1]
+                    "width": wh[0] || 0,
+                    "height": wh[1] || 0
                 });
             }
         };
@@ -11844,7 +11799,7 @@
             }
         };
         var makePath = function (d) {
-            return "M" + d.hxy.x + "," + d.hxy.y +
+            return (isNaN(d.cxy.x) || isNaN(d.cxy.y)) ? "" : "M" + d.hxy.x + "," + d.hxy.y +
                 " L" + d.tail[0].x + "," + d.tail[0].y +
                 " L" + d.cxy.x + "," + d.cxy.y +
                 " L" + d.tail[1].x + "," + d.tail[1].y +
@@ -11950,7 +11905,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -12469,7 +12424,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.4
+ * Title:jsPlumb 1.7.5
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -12487,7 +12442,7 @@
 
     "use strict";
     var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil,
-        _jk = root.Katavorio, _ja = root.jsPlumbAdapter, _jg = root.Biltong;
+        _jk = root.Katavorio, _jg = root.Biltong;
 
     var _getDragManager = function (instance, category) {
 
@@ -12502,15 +12457,15 @@
                 unbind: e.off,
                 getSize: jsPlumb.getSize,
                 getPosition: function (el) {
-                    var o = _ja.getOffset(el, instance);
+                    var o = instance.getOffset(el);
                     return [o.left, o.top];
                 },
                 setPosition: function (el, xy) {
                     el.style.left = xy[0] + "px";
                     el.style.top = xy[1] + "px";
                 },
-                addClass: _ja.addClass,
-                removeClass: _ja.removeClass,
+                addClass: jsPlumb.addClass,
+                removeClass: jsPlumb.removeClass,
                 intersects: _jg.intersects,
                 indexOf: _ju.indexOf,
                 css: {
@@ -12547,6 +12502,8 @@
 
     _jp.extend(root.jsPlumbInstance.prototype, {
 
+        animationSupported:true,
+
         scopeChange: function (el, elId, endpoints, scope, types) {
 
         },
@@ -12559,9 +12516,6 @@
             // will be passed in here.
             el = typeof el === "string" ? el : el.length != null && el.enctype == null ? el[0] : el;
             return typeof el === "string" ? document.getElementById(el) : el;
-        },
-        getElementObject: function (el) {
-            return el;
         },
         removeElement: function (element) {
             _getDragManager(this).elementRemoved(element);
@@ -12579,7 +12533,7 @@
         //
         doAnimate: function (el, properties, options) {
             options = options || {};
-            var o = _ja.getOffset(el, this),
+            var o = this.getOffset(el),
                 ap = _animProps(o, properties),
                 ldist = ap[0] - o.left,
                 tdist = ap[1] - o.top,
@@ -12589,7 +12543,7 @@
                 tinc = (step / d) * tdist,
                 idx = 0,
                 int = setInterval(function () {
-                    _ja.setPosition(el, {
+                    jsPlumb.setPosition(el, {
                         left: o.left + (linc * (idx + 1)),
                         top: o.top + (tinc * (idx + 1))
                     });
@@ -12600,16 +12554,6 @@
                         if (options.complete != null) options.complete();
                     }
                 }, step);
-        },
-        getSelector: function (ctx, spec) {
-            var sel = null;
-            if (arguments.length == 1) {
-                sel = ctx.nodeType != null ? ctx : document.querySelectorAll(ctx);
-            }
-            else
-                sel = ctx.querySelectorAll(spec);
-
-            return sel;
         },
         // DRAG/DROP
         destroyDraggable: function (el, category) {
