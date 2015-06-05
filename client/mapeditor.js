@@ -681,8 +681,8 @@ function initalizeJSPlumb() {
 		if (info.targetId.indexOf('jsPlumb') === 0) {
 			var n = new HTMLMapNode(mapContainer, null);
 			n.move({
-				'top' : e.clientY - mapContainer.offset().top - NODE_SIZE,
-				'left' : e.clientX - mapContainer.offset().left - NODE_SIZE
+				'top' : e.pageY - mapContainer.offset().top - NODE_SIZE,
+				'left' : e.pageX - mapContainer.offset().left - NODE_SIZE
 			}, true);
 			targetId = "" + n.nodeData.componentId;
 
