@@ -36,11 +36,6 @@ var selectedConnection = null;
 var updatePositionLock = false;
 
 function updateSelectionMenus(){
-	if(selectedNode || selectedConnection){
-		$('#deleteButton').removeClass('disabled');
-	} else {
-		$('#deleteButton').addClass('disabled');
-	}
 	if(selectedConnection != null && selectedConnection.scope == 'Actions'){
 		var connectionData = null;
 		for (var i = 0; i < map.connections.length; i++) {
@@ -144,7 +139,7 @@ function deleteSelection(){
 
 function addConnectionListener(c) {
 	if (c) {
-		c.bind("click", function(conn) {
+		c.bind("click", function(conn, event) {
 		    c = conn.component || conn;
 			if (selectedConnection == c) {
 				toggleConnectionSelectedStyle(selectedConnection, false);
@@ -169,8 +164,23 @@ function toggleConnectionSelectedStyle(c, enable) {
 		ps = jQuery.extend({}, ps);
 		if (enable) {
 			ps.lineWidth = 6;
+			var overlay = c.getOverlay("menu");
+            if (!overlay) {
+                c.addOverlay([
+                        "Custom",
+                        {
+                            create : function(component) {
+                                return $("<div><button onclick='deleteSelection()' class='btn btn-danger btn-xs'>Delete</button></div>");
+                            },
+                            location : 0.5,
+                            id : "menu"
+                        }]);
+            } else {
+                c.showOverlay("menu");
+            }
 		} else {
 			ps.lineWidth = 2;
+			c.hideOverlay("menu");
 		}
 		c.setPaintStyle(ps);
 	}
@@ -344,6 +354,9 @@ function HTMLMapNode(parentNode, nodeData) {
 	// create and append item to the canvas
 	self.internalNode = $('<div>').attr('id', self.nodeData.componentId)
 			.addClass('item');
+	
+	self.wheelnavid = 'wheelnav' + self.nodeData.componentId;
+	self.internalNode.append($('<div>').attr('id', self.wheelnavid));
 
 	// store the object for future use
 	$(self.internalNode).data('node', self);
@@ -452,6 +465,39 @@ function HTMLMapNode(parentNode, nodeData) {
 			endpoints[i].setPaintStyle(ps);
 		}
 		self.internalNode.addClass('itemSelected');
+		
+		
+		$('#' + self.wheelnavid).addClass('wheelnav');
+		self.myWheelnav = new wheelnav('wheelnav' + self.nodeData.componentId);
+
+		self.myWheelnav.wheelRadius = 100;
+		self.myWheelnav.clickModeRotate = false;
+		self.myWheelnav.navAngle = -15;
+
+		self.myWheelnav.titleFont= '100 12px Impact, Charcoal, sans-serif';
+		self.myWheelnav.colors = ['silver','orange'];
+
+		var custom = new slicePathCustomization();
+		custom.minRadiusPercent = 0.2;
+		custom.maxRadiusPercent = 1;
+		 
+		self.myWheelnav.slicePathFunction = function(helper, percent){ 
+		    return slicePath().DonutSlice( helper, percent, custom);
+		};
+
+		self.myWheelnav.createWheel(["edit","delete", null,null,null,null,null,null,null,null,null,null]);
+		
+		self.myWheelnav.navItems[0].navigateFunction = function(){
+		    $('#nodemenudialog').modal('show');  
+		};
+		// delete selection on click
+		self.myWheelnav.navItems[1].navigateFunction = function(){deleteSelection();};
+
+		self.myWheelnav.refreshWheel();
+		
+		//this throws exception but makes the trick
+		try{
+		self.myWheelnav.navigateWheel(-1);} catch(e){};
 	};
 
 	self.updatePositionData = function() {
@@ -482,6 +528,10 @@ function HTMLMapNode(parentNode, nodeData) {
 		}
 		selectedNode = null;
 		self.internalNode.removeClass('itemSelected');
+		var wheelnavId = self.myWheelnav.holderId;
+		delete self.myWheelnav;
+		$('#'+wheelnavId).empty();
+		$('#' + self.wheelnavid).removeClass('wheelnav');
 	};
 
 	self.internalNode.on("click", function(event) {

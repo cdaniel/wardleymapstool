@@ -5,7 +5,7 @@
     min-width: 800px;
     height: auto;
     position: relative;
-    z-index: 2;
+    z-index: 1;
 }
 
 .item {
@@ -18,17 +18,28 @@
     position: absolute;
     border-radius: 10px;
     position: absolute;
-     z-index: 2;
+    z-index: 2;
+}
+
+.wheelnav {
+	top: -94px;
+    left: -98px;
+    position: relative;
+    z-index: 23;
+    text-shadow: 1px 1px white;
+    width: 200px;
+    height: 200px;
 }
 
 .itemSelected {
     background-color: #FFFFCC !important ;
+    z-index : 9;
 }
 
 .itemCaption {
     top: -10px;
     left: 23px;
-    position: relative;
+    position: absolute;
     z-index: 2;
     text-shadow: 2px 2px white;
     width: 10px;

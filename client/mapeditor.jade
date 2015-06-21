@@ -24,6 +24,8 @@ html
         script(src='/3rd/jqBootstrapValidation.js')
         script(src='/3rd/dom.jsPlumb-1.7.5.js')
         script(src='/3rd/bootstrap-checkbox.js')
+        script(src='/3rd/raphael.min.js')
+        script(src='/3rd/wheelnav.js')
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.theme.min.css')
         link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css')
         link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css')
@@ -100,11 +102,10 @@ html
                 include ./mapeditor_includes/mapcreationassist.jade
             #menu.col-lg-2
                 include ./mapeditor_includes/actionmenu.jade
-                include ./mapeditor_includes/nodemenu.jade
-                button#deleteButton.btn.btn-danger.disabled(onclick="deleteSelection()") Delete
-           include mapeditor_includes/sharedialog.jade
+            include mapeditor_includes/sharedialog.jade
 //- pure none sense, but this is proper formatting
 include mapeditor_includes/mapanalysis.jade
+include ./mapeditor_includes/nodedialog.jade
         script(src='/mapeditor.js')
         script(src='/3rd/ZeroClipboard.min.js')
         script(src='/anonymousshare.js')

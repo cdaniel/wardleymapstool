@@ -1,0 +1,16 @@
+.modal.fade#nodemenudialog(tabindex="-1" role="dialog" aria-labelledby="nodemenudialog" aria-hidden="true")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+                h4.modal-title Component data
+            .modal-body
+                #nodeMenu(style="display:none")
+                    p#node_name
+                    p
+                        a#node_userneed(href="#" data-type="checklist")
+                    p This component is 
+                        a#node_external(href="#" data-type="select")
+                        | .
+            .modal-footer
+                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Save
