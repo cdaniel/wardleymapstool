@@ -80,13 +80,21 @@ function updateSelectionMenus(){
 	}
 	if(selectedNode){
 
-		$('#node_name').text(selectedNode.getText());
-
+	    $('#node_title').editable('destroy');
+	    $('#node_title').text(selectedNode.getText());
+        $('#node_title').editable({
+            value : selectedNode.getText(),
+            success : function(response, newValue) {
+                selectedNode.setText(newValue); //update backbone model
+                fireDirty();
+            },
+        });
+        $('#node_title').editable('setValue',selectedNode.getText());
 
 		$('#node_userneed').editable('destroy');
 		$('#node_userneed').editable({
-		    source: {'1': 'This is a user need'},
-		    emptytext: 'This is not a user need.',
+		    source: { '0' : 'No', '1': 'Yes'},
+		    emptytext: 'Not set!',
 		    success : function(data, value) {
 		    	selectedNode.setUserNeed(value == 1);
 				fireDirty();
@@ -95,13 +103,13 @@ function updateSelectionMenus(){
 		if(selectedNode.isUserNeed()){
 			$('#node_userneed').editable('setValue',1);
 		} else {
-			$('#node_userneed').editable('setValue',-1);
+			$('#node_userneed').editable('setValue',0);
 		}
 
 		$('#node_external').editable('destroy');
 		$('#node_external').editable({
-		    source: {'0': 'internal', '1' : 'external'},
-		    emptytext: 'This is not a user need.',
+		    source: {'0': 'inhouse', '1' : 'outsourced'},
+		    emptytext: 'Not set!',
 		    success : function(data, value) {
 		    	selectedNode.setExternal(value == 1);
 				fireDirty();
@@ -363,22 +371,10 @@ function HTMLMapNode(parentNode, nodeData) {
 	parentNode.append(self.internalNode);
 
 	//a placeholder for the text
-	self.caption = $('<a>').addClass("itemCaption").attr('id',
-			self.nodeData.componentId + 'itemCaption').attr('href', '#');
+	self.caption = $('<div>').addClass("itemCaption").attr('id',
+			self.nodeData.componentId + 'itemCaption');
 	self.internalNode.append(self.caption);
-	self.caption.attr('data-type', 'text');
-	self.caption.attr('data-title', 'Component Name');
 	self.caption.text(self.nodeData.name);
-	self.caption.editable({
-		value : self.nodeData.name,
-		success : function(response, newValue) {
-			self.nodeData.name = newValue; //update backbone model
-			fireDirty();
-			updateSelectionMenus(); // update selection if necessary
-		},
-		unsavedclass : null,
-		mode : 'popup'
-	});
 
 	jsPlumb.draggable(self.internalNode, {
 		containment : 'parent',

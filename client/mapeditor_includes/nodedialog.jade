@@ -5,12 +5,18 @@
                 button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
                 h4.modal-title Component data
             .modal-body
-                #nodeMenu(style="display:none")
-                    p#node_name
-                    p
-                        a#node_userneed(href="#" data-type="checklist")
-                    p This component is 
-                        a#node_external(href="#" data-type="select")
-                        | .
+                #nodeMenu(style="display:none").form-horizontal
+                    .form-group
+                        label.col-sm-4.control-label(for="node_title") Component name
+                        .col-sm-8
+                            a#node_title(data-type='text' href="#" data-title='Component Name')
+                    .form-group
+                        label.col-sm-4.control-label(for="node_userneed") User need
+                        .col-sm-8
+                            a#node_userneed(data-type='select' href="#" data-title='User need')
+                    .form-group
+                        label.col-sm-4.control-label(for="node_external") Control
+                        .col-sm-8
+                            a#node_external(data-type='select' href="#" data-title='Outsourcing')
             .modal-footer
-                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Save
+                button.btn.btn-primary.btn-default(type="button" data-dismiss="modal") Close
