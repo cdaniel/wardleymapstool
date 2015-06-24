@@ -158,7 +158,8 @@ var mapmodule = function(db) {
             historyEntry.serverDate = new Date();
             
 
-           for ( var node in historyEntry.nodes) {
+        for (var i = 0; i < historyEntry.nodes.length; i++ ) {
+               var node = historyEntry.nodes[i];
                 if (node.positionX < 0) {
                     node.positionX = 0;
                 } else if (node.positionX > 1) {
