@@ -484,7 +484,7 @@ function HTMLMapNode(parentNode, nodeData) {
 		self.myWheelnav.createWheel(["edit","delete", null,null,null,null,null,null,null,null,null,null]);
 		
 		self.myWheelnav.navItems[0].navigateFunction = function(){
-		    $('#nodemenudialog').modal('show');  
+		    $('#nodemenudialog').modal('show');
 		};
 		// delete selection on click
 		self.myWheelnav.navItems[1].navigateFunction = function(){deleteSelection();};
@@ -751,6 +751,8 @@ function initalizeJSPlumb() {
 			progressHelper.updateNodeAccordingToProgressState(n);
 			n.focus();
 			fireDirty();
+			updateSelectionMenus();
+			$('#nodemenudialog').modal('show');
 		}
 	});
 	//put scope into connection - no more guessing
