@@ -156,6 +156,20 @@ var mapmodule = function(db) {
             historyEntry._id = mapId;
             historyEntry.userId = userId;
             historyEntry.serverDate = new Date();
+            
+
+           for ( var node in historyEntry.nodes) {
+                if (node.positionX < 0) {
+                    node.positionX = 0;
+                } else if (node.positionX > 1) {
+                    node.positionX = 1;
+                }
+                if (node.positionY < 0) {
+                    node.positionY = 0;
+                } else if (node.positionY > 1) {
+                    node.positionY = 1;
+                }
+            }
 
             logger.debug('map', historyEntry);
 
