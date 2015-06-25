@@ -117,7 +117,7 @@ var draw = function(res, filename, map, config){
 
 
 			// scales
-			var x = d3.scale.linear().range([0, width]);
+			var x = d3.scale.linear().range([margin.left, width - margin.right]);
 			var y = d3.scale.linear().range([0, height]);
 			var line = d3.svg.line()
 				.x(_.compose(x, pick('positionX')))
@@ -126,17 +126,17 @@ var draw = function(res, filename, map, config){
 
 			// setup viz container
 			var mapViz = svgimg
-				.attr('width', width + margin.left + margin.right)
+				.attr('width', width + 2 * margin.left + 2 * margin.right)
 				.attr('height', height + margin.top + margin.bottom)
 				.append('g')
-				.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+				.attr('transform', 'translate(' + 0 + ',' + margin.top + ')');
 
 			// x legend
 			var legendItems = ['Genesis', 'Custom built', 'Product(or rental)', 'Commodity/Utility'];
 
 			var xLegend = d3.scale.ordinal()
 				.domain(legendItems)
-				.rangeBands([0, width], 0, 0.1);
+				.rangeBands([0, width], 0, 0);
 
 			mapViz.append('g')
 				.attr('class', 'x axis')
@@ -150,7 +150,7 @@ var draw = function(res, filename, map, config){
 						.enter()
 						.append('g')
 						.classed('label', true)
-						.attr('transform', function(d) { return 'translate(' + xLegend(d) + ',15)'; })
+						.attr('transform', function(d) { return 'translate(' + (xLegend(d)+0.07*width) + ',15)'; })
 						.append('text')
 						.text(_.identity);
 			});
@@ -161,7 +161,7 @@ var draw = function(res, filename, map, config){
 				.data(_.tail(legendItems))
 				.enter()
 				.append('path')
-				.attr('transform', function(d) { return 'translate(' + (xLegend(d) - 40) + ',0)'; })
+				.attr('transform', function(d) { return 'translate(' + (xLegend(d)-0.01*width) + ',0)'; })
 				.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]))
 				.style('stroke','grey').style('stroke-width', '1px').style('stroke-dasharray', '1,5');
 
