@@ -133,6 +133,11 @@ var WardleyMapsApp = function(configOptions) {
 				res) {
 			self.exportmap.createSVG(req, res, req.params.mapid, req.params.name);
 		};
+		
+		self.routes.get['/api/svgforcedownload/:mapid/:name'] = function(req,
+                res) {
+            self.exportmap.createSVG(req, res, req.params.mapid, req.params.name, true);
+        };
 
 		self.routes.get['/api/thumbnail/:mapid'] = function(req,
 				res) {

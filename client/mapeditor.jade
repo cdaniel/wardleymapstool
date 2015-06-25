@@ -66,7 +66,7 @@ html
                             a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
                         include ./mapeditor_includes/preferences.jade
                         li
-                            a#download(download="#{map.history[0].name}.svg" href="/api/svg/#{map._id}/#{map._id}.svg") Download
+                            a#download(download="#{map.history[0].name}.svg" href="/api/svgforcedownload/#{map._id}/#{map._id}.svg") Download
                         li
                             a#share(href="#" data-toggle="modal"  data-target="#sharedialog") Share...
                         //-li

@@ -237,7 +237,7 @@ var draw = function(res, filename, map, config){
 
 var export_module = function(db) {
     return {
-    createSVG : function(req, res, mapId, filename) {
+    createSVG : function(req, res, mapId, filename, forcedownload) {
         var userId = req.user.href;
         mapId = db.ObjectId(mapId);
         logger.debug("drawing svg", mapId, "for user", userId);
@@ -256,6 +256,9 @@ var export_module = function(db) {
                 res.statusCode = 500;
                 res.send(JSON.stringify(err));
             } else {
+                if(forcedownload){
+                    res.setHeader('Content-Disposition', 'attachment; filename="' + maps[0].history[0].name + '.svg"');
+                }
                 draw(res, mapId, maps[0].history[0], {legend:true});
             }
         });
