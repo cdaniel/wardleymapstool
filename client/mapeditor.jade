@@ -39,7 +39,7 @@ html
             var mapURL = '/api/map/#{map._id}';
             var partialUpdateURL = '/api/map/partial/#{map._id}';
             var progressURL = '/api/map/#{map._id}/progressstate';
-            var anonymousshareURL = '/api/map/#{map._id}/share/';
+            var shareURL = '/api/map/#{map._id}/share/';
             var map = {
                 name : "#{map.history[0].name}",
                 description : !{JSON.stringify(map.history[0].description)},
@@ -109,4 +109,4 @@ include mapeditor_includes/mapanalysis.jade
 include ./mapeditor_includes/nodedialog.jade
         script(src='/mapeditor.js')
         script(src='/3rd/ZeroClipboard.min.js')
-        script(src='/anonymousshare.js')
+        script(src='/share.js')

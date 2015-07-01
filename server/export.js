@@ -264,14 +264,15 @@ var export_module = function(db) {
         });
     },
 
-    createAnonymousSVG : function(req, res, mapId, filename) {
+    createSharedSVG : function(req, res, mapId, filename) {
         mapId = db.ObjectId(mapId);
         logger.debug("drawing anonymous svg", mapId);
 
         db.maps.find({
             "_id" : mapId,
             deleted : false,
-            anonymousShare : true
+            $or : [{anonymousShare : true},
+                 {preciseShare : req.user.email}]
         }, {
             history : {
                 $slice : -1

@@ -357,7 +357,7 @@ describe('Maps', function() {
         });
     });
 
-    it('share a map', function(done) {
+    it('share a map to all', function(done) {
         var req = {
             user : {
                 href : 'wardleymapper'
@@ -376,7 +376,11 @@ describe('Maps', function() {
                 var mapid = response[0]._id;
                 self.maps.share(req, mapid, 'anonymous', function(result) {
                     try {
-                        var req2 = {};
+                        var req2 = {
+                            user : {
+                                email : ''
+                            }
+                        };
                         var res2 = {
                             setHeader : function() {
                             },
@@ -385,7 +389,7 @@ describe('Maps', function() {
                             }
                         };
                         should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/anonymous/' + mapid + '/map.svg');
-                        self.exp.createAnonymousSVG(req2, res2, mapid, 'map.svg');
+                        self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
                     } catch (e) {
                         done(e);
                     }
@@ -398,7 +402,7 @@ describe('Maps', function() {
     });
     
     
-    it('unshare a map', function(done) {
+    it('unshare anonymous map', function(done) {
         var req = {
             user : {
                 href : 'wardleymapper'
@@ -411,9 +415,13 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = response[0]._id;
-                self.maps.share(req, mapid, 'none', function(result) {
+                self.maps.share(req, mapid, 'unshareanonymous', function(result) {
                     try {
-                        var req2 = {};
+                        var req2 = {
+                            user:{
+                                email : ''
+                            }
+                        };
                         var res2 = {
                             setHeader : function() {
                             },
@@ -425,7 +433,60 @@ describe('Maps', function() {
                             }
                         };
                         should(result).not.have.property('url');
-                        self.exp.createAnonymousSVG(req2, res2, mapid, 'map.svg');
+                        self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    it('share a map to b & c', function(done) {
+        var req = {
+            user : {
+                href : 'wardleymapper'
+            },
+            body : {},
+            headers : {
+                referer : 'http://127.0.0.1:8080',
+                host : '127.0.0.1:8080'
+            },
+            param : function(key){
+                if(key === 'to'){
+                    return ['b','c'];
+                }
+            }
+        };
+        self.maps.getMaps(req, function(response) {
+            try {
+                should(response.length).be.equal(1);
+                should(response[0]).have.property('_id');
+
+                var mapid = response[0]._id;
+                self.maps.share(req, mapid, 'precise', function(result) {
+                    try {
+                        var req2 = {
+                                user : {
+                                    href : 'b',
+                                    email:'b'
+                                },
+                        };
+                        var res2 = {
+                            setHeader : function() {
+                            },
+                            send : function() {
+                                done();
+                            },
+                            redirect : function(){
+                                sinon.assert.fail('should have access to the map here');
+                            }
+                        };
+                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/anonymous/' + mapid + '/map.svg');
+                        self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
                     } catch (e) {
                         done(e);
                     }

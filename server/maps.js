@@ -15,7 +15,11 @@ limitations under the License.*/
 
 var logger = require('./util/log.js').getLogger('maps');
 
-var constructSharingURL = function(req, mapId) {
+var constructSharingURL = function(req, mapId, precise) {
+    var mode = 'anonymous';
+    if (precise) {
+        mode = 'precise';
+    }
     var protocol;
     if(req.headers.referer){
         protocol = req.headers.referer.split(':')[0];
@@ -23,7 +27,7 @@ var constructSharingURL = function(req, mapId) {
         protocol = 'http';
     }
     var url_main = protocol + '://' + req.headers.host;
-    return url_main + '/anonymous/' + mapId + '/map.svg';
+    return url_main + '/' + mode + '/' + mapId + '/map.svg';
 };
 
 var mapmodule = function(db) {
@@ -448,25 +452,80 @@ var mapmodule = function(db) {
 
             var anonymousShare = mode === 'anonymous';
 
-            db.maps.findAndModify({
-                query : {
-                    "_id" : mapId,
-                    "userIdGoogle" : userId,
-                    deleted : false
-                },
-                update : {
-                    $set : {
-                        anonymousShare : anonymousShare
+            if (anonymousShare) {
+                db.maps.findAndModify({
+                    query : {
+                        "_id" : mapId,
+                        "userIdGoogle" : userId,
+                        deleted : false
+                    },
+                    update : {
+                        $set : {
+                            anonymousShare : true
+                        }
                     }
-                }
-            }, function(err, object) {
-                if (err) {
-                    logger.error(err);
-                }
-                callback(anonymousShare ? {
-                    url : constructSharingURL(req, mapId)
-                } : {});
-            });
+                }, function(err, object) {
+                    if (err) {
+                        logger.error(err);
+                    }
+                    callback({
+                        url : constructSharingURL(req, mapId)
+                    });
+                });
+                return;
+            }
+
+            var unshareanonymousShare = mode === 'unshareanonymous';
+            if (unshareanonymousShare) {
+                db.maps.findAndModify({
+                    query : {
+                        "_id" : mapId,
+                        "userIdGoogle" : userId,
+                        deleted : false
+                    },
+                    update : {
+                        $set : {
+                            anonymousShare : false
+                        }
+                    }
+                }, function(err, object) {
+                    if (err) {
+                        logger.error(err);
+                    }
+                    callback({});
+                });
+                return;
+            }
+
+            var to = decodeURI(req.param('to'));
+            to = to.split(',');
+            for (var i = 0; i < to.length; i++) {
+                to[i] = to[i].trim();
+            }
+            var preciseShare = mode === 'precise';
+
+            if (preciseShare) {
+                db.maps.findAndModify({
+                    query : {
+                        "_id" : mapId,
+                        "userIdGoogle" : userId,
+                        deleted : false
+                    },
+                    update : {
+                        $set : {
+                            preciseShare : to
+                        }
+                    }
+                }, function(err, object) {
+                    if (err) {
+                        logger.error(err);
+                    }
+                    callback({
+                        url : constructSharingURL(req, mapId, true)
+                    });
+                });
+                return;
+            }
         }
     };
 };

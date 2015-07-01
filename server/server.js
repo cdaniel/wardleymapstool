@@ -180,12 +180,16 @@ var WardleyMapsApp = function(configOptions) {
 				res.json(result);
 			});
 		};
-
+		
 		// help
 		self.routes.get['/help/:filename'] = function(req, res) {
 			res.render('help/'+req.params.filename);
 		};
-
+		
+		// precise share requires login
+		self.routes.get['/precise/:mapid/:filename'] = function(req, res) {
+		    self.exportmap.createSharedSVG(req, res, req.params.mapid, req.params.name);
+		};
 
 		// main entry point
 		self.routes.get['/'] = function(req, res) {
