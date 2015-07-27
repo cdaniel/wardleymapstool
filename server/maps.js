@@ -295,6 +295,9 @@ var mapmodule = function(db) {
                     } else {
                         maps[0].anonymousShareLink = constructSharingURL(req, mapId);
                     }
+                    if(!maps[0].preciseShare){
+                        maps[0].preciseShare = [];
+                    }
                     callback(maps[0]);
                 }
             });
