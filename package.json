@@ -34,14 +34,15 @@
     "async" : "1.0.0"
   },
   "optionalDependencies": {
-    "express-stormpath": "^0.6.6",
+    "express-stormpath": "^1.0.5",
     "mailchimp-api": "^2.0.7",
     "request": "^2.53.0"
   },
   "devDependencies": {
     "mocha": "*",
     "should": "*",
-    "sinon": "*"
+    "sinon": "*",
+    "bower" : "*"
   },
   "main": "server/server.js",
   "files": [
