@@ -34,7 +34,7 @@
     "async" : "1.0.0"
   },
   "optionalDependencies": {
-    "express-stormpath": "^1.0.5",
+    "express-stormpath": "^1.0.6",
     "mailchimp-api": "^2.0.7",
     "request": "^2.53.0"
   },
