@@ -224,7 +224,7 @@ var WardleyMapsApp = function(configOptions) {
 		}
 		
 		self.app.get('/anonymous/:mapid/:filename',function(req, res) {
-			self.exportmap.createAnonymousSVG(req, res, req.params.mapid, req.params.name);
+			self.exportmap.createSharedSVG(req, res, req.params.mapid, req.params.name);
 		});
 
 		for ( var r in self.routes.put) {
