@@ -173,19 +173,19 @@ var WardleyMapsApp = function(configOptions) {
 				res.json(progress);
 			});
 		};
-		
+
 		//share
 		self.routes.put['/api/map/:mapid/share/:mode'] = function(req, res) {
 			self.maps.share(req, req.params.mapid, req.params.mode, function(result) {
 				res.json(result);
 			});
 		};
-		
+
 		// help
 		self.routes.get['/help/:filename'] = function(req, res) {
 			res.render('help/'+req.params.filename);
 		};
-		
+
 		// precise share requires login
 		self.routes.get['/precise/:mapid/:filename'] = function(req, res) {
 		    self.exportmap.createSharedSVG(req, res, req.params.mapid, req.params.name);
