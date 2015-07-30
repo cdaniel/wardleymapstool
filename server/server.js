@@ -69,209 +69,62 @@ var WardleyMapsApp = function(configOptions) {
 				});
 	};
 
-	/* ================================================================ */
-	/* App server functions (main app logic here). */
-	/* ================================================================ */
-
-	/**
-	 * Create the routing table entries + handlers for the application.
-	 */
-	self.createRoutes = function() {
-		self.routes = {};
-		self.routes.get = {};
-		self.routes.post = {};
-		self.routes.put = {};
-		self.routes.del = {};
-
-		// redirect for yet not implemented
-		self.routes.get['/profile'] = function(req, res) {
-			res.redirect('/');
-		};
-
-		// api
-
-		// 1. create a map
-		self.routes.post['/api/map/'] = function(req, res) {
-			self.maps.createNewMap(req, res);
-		};
-
-		// 2a. update a map (partially)
-		self.routes.post['/api/map/partial/:mapid'] = function(req, res) {
-			self.maps.partialMapUpdate(req, res, req.params.mapid);
-		};
-
-		// 2b. update a map
-		self.routes.post['/api/map/:mapid'] = function(req, res) {
-			self.maps.updateMap(req, res, req.params.mapid);
-		};
-
-		// 4. delete a map
-		self.routes.del['/api/map/:mapid'] = function(req, res) {
-			self.maps.deleteMap(req, res, req.params.mapid);
-		};
-
-		// 4a. delete a map
-		// workaround for the lack of get from the link
-		// we operate with this as with a regular delete, and we perform
-		// redirection to home.
-		self.routes.get['/api/map/delete/:mapid'] = function(req, res) {
-			self.maps.deleteMap(req, res, req.params.mapid, "/");
-		};
-
-		// 5. map editor
-		self.routes.get['/map/:mapid'] = function(req, res) {
-			self.maps.getMap(req, req.params.mapid, function(map) {
-				res.render('mapeditor', {
-					map : map,
-					user : req.user
-				});
-			});
-		};
-
-		// 6. export
-		self.routes.get['/api/svg/:mapid/:name'] = function(req,
-				res) {
-			self.exportmap.createSVG(req, res, req.params.mapid, req.params.name);
-		};
-		
-		self.routes.get['/api/svgforcedownload/:mapid/:name'] = function(req,
-                res) {
-            self.exportmap.createSVG(req, res, req.params.mapid, req.params.name, true);
-        };
-
-		self.routes.get['/api/thumbnail/:mapid'] = function(req,
-				res) {
-			self.exportmap.createThumbnail(req, res, req.params.mapid);
-		};
-
-
-		self.routes.get['/api/map/:mapid'] = function(req, res) {
-			self.maps.getMap(req, req.params.mapid, res.send.bind(res));
-		};
-
-
-		// 6. analysis
-		self.routes.get['/api/map/:mapid/analysis'] = function(req, res) {
-			self.maps.getMap(req, req.params.mapid, function(map) {
-				//XXX: make this async
-				var result = self.analyzer.analyse(map);
-				res.render('analysis', {result:result});
-			});
-		};
-
-		// progress
-		self.routes.get['/api/map/:mapid/progressstate'] = function(req, res) {
-			self.maps.getProgressState(req, req.params.mapid, function(progress) {
-				res.json(progress);
-			});
-		};
-
-
-		// progress
-		self.routes.put['/api/map/:mapid/progressstate'] = function(req, res) {
-			self.maps.advanceProgressState(req, req.params.mapid, function(progress) {
-				res.json(progress);
-			});
-		};
-
-		//share
-		self.routes.put['/api/map/:mapid/share/:mode'] = function(req, res) {
-			self.maps.share(req, req.params.mapid, req.params.mode, function(result) {
-				res.json(result);
-			});
-		};
-
-		// help
-		self.routes.get['/help/:filename'] = function(req, res) {
-			res.render('help/'+req.params.filename);
-		};
-
-		// precise share requires login
-		self.routes.get['/precise/:mapid/:filename'] = function(req, res) {
-		    self.exportmap.createSharedSVG(req, res, req.params.mapid, req.params.name);
-		};
-
-		// main entry point
-		self.routes.get['/'] = function(req, res) {
-			self.maps.getMaps(req, function(response) {
-				res.render('index', {response : response, user : req.user});
-			});
-		};
-	};
-
-	/**
-	 * Initialize the server (express) and create the routes and register the
-	 * handlers.
-	 */
-	self.initializeServer = function() {
-
-		self.createRoutes();
-		self.app = express();
-		var clientDir = path.join(__dirname, '..', 'client');
-		self.app.use(express.cookieParser());
-		self.app.use(express.bodyParser());
-		self.app.use(express.static(clientDir));
-		self.app.use(express.session({
-			secret : 'modecommcd90le'
-		}));
-
-
-		var userProvider = require('./user-provider')(self.app);
-
-		// Add handlers for the app (from the routes).
-		for ( var r in self.routes.get) {
-			self.app.get(r, userProvider.loginRequired, self.routes.get[r]);
-		}
-		
-		self.app.get('/anonymous/:mapid/:filename',function(req, res) {
-			self.exportmap.createSharedSVG(req, res, req.params.mapid, req.params.name);
-		});
-
-		for ( var r in self.routes.put) {
-			self.app.put(r, userProvider.loginRequired, self.routes.put[r]);
-		}
-
-		for ( var r in self.routes.post) {
-			self.app.post(r, userProvider.loginRequired, self.routes.post[r]);
-		}
-
-		for ( var r in self.routes.del) {
-			self.app.del(r, userProvider.loginRequired, self.routes.del[r]);
-		}
-
-		self.app.set('views', clientDir);
-		self.app.set('view engine', 'jade');
-	};
-
 
 	self.start = function() {
+
+	    var app = express();
+
+	    var clientDir = path.join(__dirname, '..', 'client');
+	    app.use(require('cookie-parser')());
+	    app.use(require('body-parser').json());
+	    app.use(require('body-parser').urlencoded());
+	    app.use(express.static(clientDir));
+	    app.use(require('express-session')({
+	        secret : 'modecommcd90le',
+	        resave : false,
+	        saveUninitialized : false
+	    }));
+	    app.use(require('morgan')());
+	    app.use(require('errorhandler')());
+
+	    var userProvider = require('./user-provider')(app);
+
 		self.db = require('./db')(configOptions.databaseConnectionString);
-		
-		self.maps = new require('./maps')(self.db);
 		self.exportmap = new require('./export')(self.db);
-		self.analyzer = require('./analyzer');
+		self.maps = new require('./maps')(self.db, self.share);
+		
+		var share = require('./router/share.js')('/share', userProvider.loginRequired, self.maps, self.exportmap);
+		
+		app.use('/share', share.router);
+		app.use('/profile', userProvider.loginRequired, require('./router/profilerouter.js')().router);
+		app.use('/api', userProvider.loginRequired, require('./router/apirouter.js')(self.maps, self.exportmap).router);
+		app.use('/', userProvider.loginRequired, require('./router/mainrouter.js')(self.maps).router);
+		
+		
+		// jade configuration
+        app.set('views', clientDir);
+        app.set('view engine', 'jade');
 		
 		var _ = require('underscore');
 		self.ipaddress = configOptions.ipaddress || '0.0.0.0';
-		self.port = configOptions.port || configOptions.ssl ? 8443 : 8080;
+		self.port = configOptions.port || configOptions.ssl ? 8443 : 8081;
 		self.localmode = true;
 
 		self.setupTerminationHandlers();
-		self.initializeServer();
 
 		var onStart = _.partial(console.log, '%s: Node server started on %s:%d ...', Date(Date.now()), self.ipaddress, self.port);
 		var server;
 		if (configOptions.ssl) {
 			var https = require('https');
-			server = https.createServer(configOptions.ssl, self.app);
+			server = https.createServer(configOptions.ssl, app);
 		} else {
 			var http = require('http');
-			server = http.createServer(self.app);
+			server = http.createServer(app);
 		}
 		server.listen(self.port, self.ipaddress, onStart);
 	};
 };
-
+    
 
 
 function getConfig() {

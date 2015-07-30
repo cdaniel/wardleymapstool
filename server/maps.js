@@ -15,22 +15,7 @@ limitations under the License.*/
 
 var logger = require('./util/log.js').getLogger('maps');
 
-var constructSharingURL = function(req, mapId, precise) {
-    var mode = 'anonymous';
-    if (precise) {
-        mode = 'precise';
-    }
-    var protocol;
-    if(req.headers.referer){
-        protocol = req.headers.referer.split(':')[0];
-    } else {
-        protocol = 'http';
-    }
-    var url_main = protocol + '://' + req.headers.host;
-    return url_main + '/' + mode + '/' + mapId + '/map.svg';
-};
-
-var mapmodule = function(db) {
+var mapmodule = function(db, share) {
     return {
         createNewMap : function (req, res) {
 
@@ -293,7 +278,7 @@ var mapmodule = function(db) {
                     if (!maps[0].anonymousShare) {
                         maps[0].anonymousShare = false;
                     } else {
-                        maps[0].anonymousShareLink = constructSharingURL(req, mapId);
+                        maps[0].anonymousShareLink = share.constructSharingURL(req, mapId);
                     }
                     if(!maps[0].preciseShare){
                         maps[0].preciseShare = [];
@@ -472,7 +457,7 @@ var mapmodule = function(db) {
                         logger.error(err);
                     }
                     callback({
-                        url : constructSharingURL(req, mapId)
+                        url : share.constructSharingURL(req, mapId)
                     });
                 });
                 return;
@@ -524,7 +509,7 @@ var mapmodule = function(db) {
                         logger.error(err);
                     }
                     callback({
-                        url : constructSharingURL(req, mapId, true)
+                        url : share.constructSharingURL(req, mapId, true)
                     });
                 });
                 return;
