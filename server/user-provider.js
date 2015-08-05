@@ -61,7 +61,7 @@ module.exports = function(app) {
         }
         osUserMiddleware.loginRequired = function(req, res, next) {
             next();
-        }
+        };
         app.use(osUserMiddleware);
         return osUserMiddleware;
     }
@@ -69,4 +69,4 @@ module.exports = function(app) {
     var someOtherProvider = require(config.userProvider);
     app.use(someOtherProvider);
     return someOtherProvider;
-}
+};
