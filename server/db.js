@@ -21,9 +21,5 @@ module.exports = function (connectionString) {
 	var COLLECTIONS = ['users', 'maps', 'progress'];
 	var db = require('mongojs')(connectionString, COLLECTIONS);
 	
-	db.on('ready', function() {
-		logger.debug('connection to database established');
-	});
-	
 	return db;
 };
