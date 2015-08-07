@@ -33,7 +33,7 @@ module.exports = function(app) {
             apiKeySecret : stormpathconfig.getApiKeySecret(),
             secretKey : stormpathconfig.getSecretKey(),
             application : stormpathconfig.getApplication(),
-            postRegistrationHandler : function(account, res, next) {
+            postRegistrationHandler : function(account, req, res, next) {
                 user.processLoginInfo(account, res, next);
             },
             enableGoogle : true,
