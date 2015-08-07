@@ -265,6 +265,7 @@ var export_module = function(db) {
     },
 
     createSharedSVG : function(req, res, mapId, filename) {
+    	//TODO: move the access check logic to the share router
         mapId = db.ObjectId(mapId);
         logger.debug("drawing anonymous svg", mapId);
 

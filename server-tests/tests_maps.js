@@ -22,6 +22,7 @@ describe('Maps', function() {
         self.db = new require('../server/db')("127.0.0.1:27017/tests");
         self.maps = new require('../server/maps')(self.db);
         self.exp = new require('../server/export')(self.db);
+        self.share = new require('../server/router/share.js')('/share/map',self.db,function(a,b,c){c();},self.maps,self.exp);
     });
     
     it('request without any parameters', function(done){
@@ -374,7 +375,7 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = response[0]._id;
-                self.maps.share(req, mapid, 'anonymous', function(result) {
+                self.share.share(req, req.user.href, self.db.ObjectId(mapid), 'anonymous', function(result) {
                     try {
                         var req2 = {
                             user : {
@@ -388,7 +389,7 @@ describe('Maps', function() {
                                 done()
                             }
                         };
-                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/anonymous/' + mapid + '/map.svg');
+                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/anonymous/' + mapid + '/map.svg');
                         self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
                     } catch (e) {
                         done(e);
@@ -415,7 +416,7 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = response[0]._id;
-                self.maps.share(req, mapid, 'unshareanonymous', function(result) {
+                self.share.share(req, req.user.href, self.db.ObjectId(mapid), 'unshareanonymous', function(result){
                     try {
                         var req2 = {
                             user:{
@@ -467,14 +468,14 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = response[0]._id;
-                self.maps.share(req, mapid, 'precise', function(result) {
+                var req2 = {
+                        user : {
+                            href : 'b',
+                            email:'b'
+                        }
+                };
+                self.share.share(req, req.user.href, self.db.ObjectId(mapid), 'precise', function(result) {
                     try {
-                        var req2 = {
-                                user : {
-                                    href : 'b',
-                                    email:'b'
-                                },
-                        };
                         var res2 = {
                             setHeader : function() {
                             },
@@ -485,7 +486,7 @@ describe('Maps', function() {
                                 sinon.assert.fail('should have access to the map here');
                             }
                         };
-                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/anonymous/' + mapid + '/map.svg');
+                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/precise/' + mapid + '/map.svg');
                         self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
                     } catch (e) {
                         done(e);

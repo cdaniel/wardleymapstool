@@ -39,7 +39,7 @@ html
             var mapURL = '/api/map/#{map._id}';
             var partialUpdateURL = '/api/map/partial/#{map._id}';
             var progressURL = '/api/map/#{map._id}/progressstate';
-            var shareURL = '/api/map/#{map._id}/share/';
+            var shareURL = '/share/map/#{map._id}/';
             var map = {
                 name : "#{map.history[0].name}",
                 description : !{JSON.stringify(map.history[0].description)},
