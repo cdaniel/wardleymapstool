@@ -93,7 +93,7 @@ var WardleyMapsApp = function(configOptions) {
 		self.exportmap = new require('./export')(self.db);
 		self.maps = new require('./maps')(self.db, self.share);
 		
-		var share = require('./router/share.js')('/share', userProvider.loginRequired, self.maps, self.exportmap);
+		var share = require('./router/share.js')('/share', self.db, userProvider.loginRequired, self.maps, self.exportmap);
 		
 		app.use('/share', share.router);
 		app.use('/profile', userProvider.loginRequired, require('./router/profilerouter.js')().router);
