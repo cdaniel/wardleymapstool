@@ -1,0 +1,99 @@
+extends base
+
+block vars
+  - var title = 'Log In'
+  - var description = 'Log into your account!'
+  - var bodytag = 'login'
+
+block body
+  .container.custom-container
+    .va-wrapper
+      .view.login-view.container
+        .box.row
+          if app.get('stormpathEnableFacebook') || app.get('stormpathEnableGoogle')
+            - var cls = 'small col-sm-8'
+          else
+            - var cls = 'large col-sm-12'
+
+          div(class='email-password-area col-xs-12 #{cls}')
+            .header
+              if app.get('stormpathEnableRegistration')
+                span.
+                  Log In or <a href="#{app.get('stormpathRegistrationUrl')}">Create Account</a>
+              else
+                span.
+                  Log In
+
+            if error
+              .alert.alert-danger.bad-login
+                p #{error}
+
+            if formErrors
+              .alert.alert-danger.bad-login
+                each error in formErrors
+                  p #{error.error}
+
+            form.login-form.form-horizontal(method='post', role='form')
+              input(name='_csrf', type='hidden', value=csrfToken)
+
+              .form-group.group-email
+                if app.get('stormpathEnableFacebook') || app.get('stormpathEnableGoogle')
+                  - var cls = 'col-sm-12'
+                else
+                  - var cls = 'col-sm-4'
+
+                if app.get('stormpathEnableUsername')
+                  label(class='#{cls}') Username or Email
+                else
+                  label(class='#{cls}') Email
+
+                if app.get('stormpathEnableFacebook') || app.get('stormpathEnableGoogle')
+                  - var cls = 'col-sm-12'
+                else
+                  - var cls = 'col-sm-8'
+
+                div(class='#{cls}')
+                  - var value = form.data ? form.data.login : '';
+                  if app.get('stormpathEnableUsername')
+                    input.form-control(autofocus='true', placeholder='Username or Email', required=true, name='login', type='text', value=value)
+                  else
+                    input.form-control(autofocus='true', placeholder='Email', required=true, name='login', type='text', value=value)
+
+              if app.get('stormpathEnableFacebook') || app.get('stormpathEnableGoogle')
+                - var cls = 'col-sm-12'
+              else
+                - var cls = 'col-sm-4'
+
+              .form-group.group-password
+                label(class='#{cls}') Password
+
+                if app.get('stormpathEnableFacebook') || app.get('stormpathEnableGoogle')
+                  - var cls = 'col-sm-12'
+                else
+                  - var cls = 'col-sm-8'
+
+                div(class='#{cls}')
+                  input.form-control(placeholder='Password', required=true, type='password', name='password')
+
+              div
+                button.login.btn.btn-login.btn-sp-green(type='submit') Log In
+
+          if app.get('stormpathEnableFacebook') || app.get('stormpathEnableGoogle')
+            .social-area.col-xs-12.col-sm-4
+              .header &nbsp;
+              label Easy 1-click login:
+              if app.get('stormpathEnableFacebook')
+                include facebook_login_form.jade
+              if app.get('stormpathEnableGoogle')
+                include google_login_form.jade
+        if toc
+            .row 
+               .col-sm-12.small(style="margin: 0 auto;") By logging on and using this service, you accept&nbsp;
+                a.small(href="#{toc}"  target="_blank") Terms &amp; Conditions
+                | &nbsp;(last update #{tocupdate}).
+        if app.get('stormpathEnableAccountVerification')
+          a.forgot(style="float:left", href="#{app.get('stormpathResendAccountVerificationEmailUrl')}") Resend Verification Email?
+        if app.get('stormpathEnableForgotPassword')
+          a.forgot(style="float:right", href="#{app.get('stormpathForgotPasswordUrl')}") Forgot Password?
+        
+                

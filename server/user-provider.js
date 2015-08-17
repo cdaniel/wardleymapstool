@@ -44,7 +44,13 @@ module.exports = function(app) {
                 },
             },
             expandProviderData : true,
-            expandCustomData : true
+            expandCustomData : true,
+            registrationView: __dirname + '/../client/views/register.jade',
+            loginView: __dirname + '/../client/views/login.jade',
+            templateContext : {
+                toc : config.toc ? config.toc : false,
+                tocupdate : config.tocupdate
+            }
         }));
 
         return stormpath;
