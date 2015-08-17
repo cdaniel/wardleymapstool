@@ -17,6 +17,8 @@ var listId = process.env.WM_MAILCHIMP_LIST_ID || "";
 
 var enabled = (apiKey !== "") && (listId !== "");
 
+console.log('mailchimp integration enabled:', enabled);
+
 exports.mailchimpconfig = {
 		enabled : enabled,
 		apiKey : apiKey,
