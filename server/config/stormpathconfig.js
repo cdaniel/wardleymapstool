@@ -1,4 +1,4 @@
-/* Copyright 2014 Krzysztof Daniel
+/* Copyright 2015 Krzysztof Daniel
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,13 +13,15 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 /**
- * This module holds Google API Keys useful required to obtain permissions
- * from Google+.
+ * This module obtains key necessary to store user data in stormpath.
+ * Listed variables should be set in the bash environment.
+ * 
+ * TODO: make it configurable through config.json
  */
 function stormpathconfig() {
 	
 	this.getApiKeyId = function (){
-		var result = "";
+		var result = process.env.WM_STORMPATH_API_KEY_ID || "";
 		if(result === ""){
 			console.error("please obtain stormpath account");
 		}
@@ -27,7 +29,7 @@ function stormpathconfig() {
 	};
 	
 	this.getApiKeySecret = function (){
-		var result = "";
+		var result = process.env.WM_STORMPATH_API_KEY_SECRET || "";
 		if(result === ""){
 			console.error("please obtain stormpath account");
 		}
@@ -35,7 +37,7 @@ function stormpathconfig() {
 	};
 	
 	this.getSecretKey = function (){
-		var result = "";
+		var result = process.env.WM_STORMPATH_SECRET_KEY || "";
 		if(result === ""){
 			console.error("please obtain stormpath account");
 		}
@@ -43,7 +45,7 @@ function stormpathconfig() {
 	};
 	
 	this.getApplication = function (){
-		var result = "https://api.stormpath.com/v1/applications/26uUGYkQ4sJYlS34i50yEm";
+	    var result = process.env.WM_STORMPATH_APPLICATION || "";
 		if(result === ""){
 			console.error("please obtain stormpath account");
 		}
