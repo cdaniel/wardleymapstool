@@ -107,7 +107,7 @@ var WardleyMapsApp = function(configOptions) {
 		
 		var _ = require('underscore');
 		self.ipaddress = configOptions.ipaddress || '0.0.0.0';
-		self.port = configOptions.port || configOptions.ssl ? 8443 : 8081;
+		self.port = configOptions.port || configOptions.ssl ? 8443 : 8080;
 		self.localmode = true;
 
 		self.setupTerminationHandlers();
