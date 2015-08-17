@@ -12,8 +12,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+var apiKey = process.env.WM_MAILCHIMP_API_KEY || "";
+var listId = process.env.WM_MAILCHIMP_LIST_ID || "";
+
+var enabled = (apiKey !== "") && (listId !== "");
+
 exports.mailchimpconfig = {
-		enabled : false,
-		apiKey : "",
-		listId : ""
+		enabled : enabled,
+		apiKey : apiKey,
+		listId : listId
 };
