@@ -203,19 +203,37 @@ function saveMap() {
 		async : 'true',
         contentType: 'application/json',
 		data : JSON.stringify(map),
-		success : function(result) {
-			if (result.status) {
-				console.log('something went wrong');
-			} else {
-				console.log('do something with this one');
-			}
-			saving = false;
-			lastSavedIndex = dirtyIndexCopy;
-		},
+		dataType : 'json',
 		error : function(request, error) {
-			console.log('An error while getting map list!', error);
+		    if(request.status == 401){
+		        // served by status code
+		        return;
+		    }
+			console.log('An error while saving a map!', error);
 			console.log('error ' + dirtyIndexCopy);
 			saving = false;
+			$("#servernotresponding").show();
+            setTimeout(function() {
+                window.location.href = "/";
+            }, 5000);
+		},
+		statusCode : {
+		    200 : function(){
+		        saving = false;
+	            lastSavedIndex = dirtyIndexCopy;
+		    },
+		    302 : function() {
+		        $("#lostsession").show();
+                setTimeout(function() {
+                    window.location.href = "/";
+                }, 5000);
+		    },
+		    401 : function() {
+                $("#lostsession").show();
+                setTimeout(function() {
+                    window.location.href = "/";
+                }, 5000);
+            }
 		}
 	});
 }

@@ -10,6 +10,10 @@
     padding-right: 1%;
 }
 
+.errormessage {
+	display : none;
+}
+
 .item {
     border: 1px solid black;
     background-color: silver;

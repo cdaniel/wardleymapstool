@@ -16,8 +16,8 @@ html
     head
         meta(charset='utf-8')
         title Wardley Maps Tool - #{map.history[0].name}
-        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js')
-        script(src='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js')
+        script(src='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js')
         script(src='/3rd/jquery.form.js')
         script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js')
@@ -27,7 +27,7 @@ html
         script(src='/3rd/raphael.min.js')
         script(src='/3rd/wheelnav.js')
         script(src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js')
-        link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.theme.min.css')
+        link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css')
         link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css')
         link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css')
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css')
@@ -83,6 +83,12 @@ html
                                     span.glyphicon.glyphicon-log-out Logout
             p Description:
                 a#description(href="#" data-type="text" data-title="Description" value=map.history[0].description data-pk="description" data-url='/api/map/partial/#{map._id}')=map.history[0].description
+            #lostsession.errormessage.alert.alert-warning
+                strong Session lost!&nbsp;
+                | The server requires authorization. You will be redirected in 5 seconds.
+            #servernotresponding.errormessage.alert.alert-warning
+                strong Server is not responding correctly!&nbsp;
+                | You will be redirected in 5 seconds.
             //- canvas
             #map-container.col-lg-10
                 .axis-support#support-1

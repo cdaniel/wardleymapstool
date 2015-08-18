@@ -68,6 +68,9 @@ module.exports = function(app) {
         osUserMiddleware.loginRequired = function(req, res, next) {
             next();
         };
+        osUserMiddleware.authenticationRequired = function(req, res, next) {
+            next();
+        };
         app.use(osUserMiddleware);
         return osUserMiddleware;
     }
