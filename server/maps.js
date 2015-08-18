@@ -182,9 +182,8 @@ var mapmodule = function(db, share) {
                     res.statusCode = 500;
                     res.send(JSON.stringify(err));
                 } else {
-                    res.writeHead(200, {
-                        'content-type' : 'text/html'
-                    });
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({}));
                     res.end();
                 }
             });
@@ -237,9 +236,8 @@ var mapmodule = function(db, share) {
                             res.statusCode = 500;
                             res.send(JSON.stringify(err));
                         } else {
-                            res.writeHead(200, {
-                                'content-type' : 'text/html'
-                            });
+                            res.setHeader('Content-Type', 'application/json');
+                            res.send(JSON.stringify({}));
                             res.end();
                         }
                     });
@@ -278,7 +276,7 @@ var mapmodule = function(db, share) {
                     if (!maps[0].anonymousShare) {
                         maps[0].anonymousShare = false;
                     } else {
-                        maps[0].anonymousShareLink = share.constructSharingURL(req, mapId);
+                        maps[0].anonymousShareLink = share[0].constructSharingURL(req, mapId);
                     }
                     if(!maps[0].preciseShare){
                         maps[0].preciseShare = [];
