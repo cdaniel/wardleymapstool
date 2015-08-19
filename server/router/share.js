@@ -42,7 +42,7 @@ module.exports = function(context, db, authmiddleware, mapsmodule, exporter) {
 	};
 	
 	module.share = function(req, userId, mapId, mode, callback){
-		logger.log('sharing map ', mapId, ' as ', mode);
+		logger.debug('sharing map ', mapId, ' as ', mode);
 		var anonymousShare = mode === 'anonymous';
 
 		if (anonymousShare) {
@@ -145,7 +145,7 @@ module.exports = function(context, db, authmiddleware, mapsmodule, exporter) {
 						req.params.name);
 			});
 
-	module.router.put('/:mapid/:mode', authmiddleware, function(req, res) {
+	module.router.put('/map/:mapid/:mode', authmiddleware, function(req, res) {
 
 		var userId = req.user.href;
 		//TODO: validation of params
