@@ -37,7 +37,11 @@
     "body-parser": "~1.13.3",
     "multer": "~1.0.1",
     "morgan": "~1.6.1",
-    "errorhandler": "~1.4.2"
+    "errorhandler": "~1.4.2",
+    "phantom": "~0.7.2",
+    "atob": "~1.1.2",
+    "temporary": "0.0.8",
+    "phantomjs": "~1.9.18"
   },
   "optionalDependencies": {
     "express-stormpath": "^1.0.6",

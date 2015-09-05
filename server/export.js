@@ -228,8 +228,61 @@ var draw = function(res, filename, map, config){
 			mapViz.selectAll('.userneed > circle').style('stroke-width', '4px');
 			mapViz.selectAll('.external > circle').style('fill', 'white');
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el);
-			res.setHeader('Content-Type', 'image/svg+xml');
-			res.send('<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + svgXML);
+			console.log(config);
+			if(config.format === 'svg'){
+    			res.setHeader('Content-Type', 'image/svg+xml');
+    			res.send('<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + svgXML);
+			} else {
+                try {
+                    var phantom = require('phantom');
+                    var atob = require('atob');
+                    var tmp = require('temporary');
+                    var file = new tmp.File({
+                        generator : function() {
+                        }
+                    });
+                    file.renameSync('' + Date.now() + Math.random() + '.png');
+
+                    console.log(file.path);
+
+                    var fileSystem = require('fs');
+
+                    phantom.create(function(ph) {
+                        ph.createPage(function(page) {
+                            console.log('page created');
+                            page.set('content', '<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + svgXML);
+                            page.set('viewportSize', {
+                                width : 800,
+                                height : 600
+                            });
+                            console.log('rendering');
+                            page.render('' + file.path, {
+                                mode : 'viewport',
+                                onlyViewport : true
+                            }, function(cb) {
+                                ph.exit();
+                            });
+                        });
+                    }, {
+                        onExit : function() {
+                            console.log('cleaned up');
+                            res.statusCode = 200;
+                            res.headers = {
+                                'Cache' : 'no-cache',
+                                'Content-Type' : 'image/png'
+                            };
+                            res.sendFile(file.path, function() {
+                                file.unlink(function() {
+                                });
+                            });
+                        }
+                    });
+                } catch (e) {
+                    console.log(e);
+                    res.statusCode = 500;
+                    res.close();
+                }
+			}
 		}
 	});
 
@@ -237,7 +290,13 @@ var draw = function(res, filename, map, config){
 
 var export_module = function(db) {
     return {
-    createSVG : function(req, res, mapId, filename, forcedownload) {
+    createSVG : function(req, res, mapId, filename, params) {
+        var forcedownload = params.forcedownload;
+        var format = params.format;
+        if(!format){
+            format = 'svg';
+        }
+        
         var userId = req.user.href;
         mapId = db.ObjectId(mapId);
         logger.debug("drawing svg", mapId, "for user", userId);
@@ -257,9 +316,9 @@ var export_module = function(db) {
                 res.send(JSON.stringify(err));
             } else {
                 if(forcedownload){
-                    res.setHeader('Content-Disposition', 'attachment; filename="' + maps[0].history[0].name + '.svg"');
+                    res.setHeader('Content-Disposition', 'attachment; filename="' + maps[0].history[0].name + '.' + format + '"');
                 }
-                draw(res, mapId, maps[0].history[0], {legend:true});
+                draw(res, mapId, maps[0].history[0], {legend:true, format:format});
             }
         });
     },
@@ -289,7 +348,7 @@ var export_module = function(db) {
                 if (maps.length === 0) {
                     res.redirect('/favicon.svg');
                 } else {
-                    draw(res, mapId, maps[0].history[0], {legend:true});
+                    draw(res, mapId, maps[0].history[0], {legend:true, format:'svg'});
                 }
             }
         });
@@ -318,7 +377,7 @@ var export_module = function(db) {
                 if (maps[0].history[0].nodes.length === 0) {
                     res.redirect('/favicon.svg');
                 } else {
-                    draw(res, mapId, maps[0].history[0]);
+                    draw(res, mapId, maps[0].history[0],{format:'svg'});
                 }
             }
         });

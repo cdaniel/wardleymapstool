@@ -69,12 +69,17 @@ module.exports = function(maps, exportmap){
 	// 6. export
 	module.router.get('/svg/:mapid/:name', function(req,
 			res) {
-		exportmap.createSVG(req, res, req.params.mapid, req.params.name);
+		exportmap.createSVG(req, res, req.params.mapid, req.params.name, {format:'svg'});
 	});
 	
 	module.router.get('/svgforcedownload/:mapid/:name', function(req,
             res) {
-        exportmap.createSVG(req, res, req.params.mapid, req.params.name, true);
+        exportmap.createSVG(req, res, req.params.mapid, req.params.name, {forcedownload:true, format:'svg'});
+    });
+	
+	module.router.get('/pngforcedownload/:mapid/:name', function(req,
+            res) {
+        exportmap.createSVG(req, res, req.params.mapid, req.params.name, {forcedownload:true, format:'png'});
     });
 
 	module.router.get('/thumbnail/:mapid', function(req,

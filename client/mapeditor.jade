@@ -65,12 +65,18 @@ html
                         li
                             a#name(href="#" data-type="text" data-title="Map name" value=map.history[0].name data-pk="name" data-url='/api/map/partial/#{map._id}')=map.history[0].name
                         include ./mapeditor_includes/preferences.jade
-                        li
-                            a#download(download="#{map.history[0].name}.svg" href="/api/svgforcedownload/#{map._id}/#{map._id}.svg") Download
+                        li.dropdown
+                                a.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false")
+                                    span.glyphicon.glyphicon-download-alt &nbsp;Download
+                                    span.caret
+                                ul.dropdown-menu(aria-labelledby="dropdownMenu1")
+                                    li
+                                        a#download(download="#{map.history[0].name}.svg" href="/api/svgforcedownload/#{map._id}/#{map._id}.svg") As SVG
+                                    li
+                                        a#download(download="#{map.history[0].name}.png" href="/api/pngforcedownload/#{map._id}/#{map._id}.png") As PNG&nbsp;
+                                            span.badge beta
                         li
                             a#share(href="#" data-toggle="modal"  data-target="#sharedialog") Share...
-                        //-li
-                        //-    a(href="/api/map/#{map._id}/analysis" data-toggle="modal"  data-target="#analysisModal") Analysis
                         li
                             a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
                                                         data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
