@@ -57,8 +57,21 @@ module.exports = function(app) {
                 customData: true,
                 providerData:true
             },
-            registrationView: __dirname + '/../client/views/register.jade',
-            loginView: __dirname + '/../client/views/login.jade',
+            web : {
+                login : {
+                    view : __dirname + '/../client/views/login.jade'
+                },
+                register : {
+                    view : __dirname + '/../client/views/register.jade',
+                    enable: true,   // Explicit enable, if not using { website: true }
+                    nextUri: '/profile',    // Where to send the user to, if auto login is enabled
+                    fields: {
+                      /* see next section for documentation */
+                    },
+                    fieldOrder:  ["givenName", "surname", "email", "password", "passwordConfirm" ]
+                }
+            },
+            enableGoogle : true,
             templateContext : {
                 toc : config.toc ? config.toc : false,
                 tocupdate : config.tocupdate
