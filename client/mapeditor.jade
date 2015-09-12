@@ -15,7 +15,7 @@ doctype html
 html
     head
         meta(charset='utf-8')
-        title Wardley Maps Tool - #{map.history[0].name}
+        title Atlas, the mapping tool - #{map.history[0].name}
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js')
         script(src='/3rd/jquery.form.js')
@@ -34,6 +34,10 @@ html
         link(rel='stylesheet', href='/3rd/bootstrap-checkbox.css')
         link(rel='stylesheet', href='/mapeditor.css')
         link(rel='shortcut icon', href='/favicon.ico', type="favicon.ico")
+        link(rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png")
+        link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
+        link(rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png")
+        link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
         script(src='/progresshelper.js')
         script.
             var mapURL = '/api/map/#{map._id}';
@@ -59,7 +63,7 @@ html
                         span.icon-bar
                         span.icon-bar
                     a.navbar-brand(href="/")
-                        img(src="/favicon.ico" alt="Home" style="height: 30px;margin-top: -5px;")
+                        img(src="/logo.png" alt="Home" style="height: 30px;margin-top: -5px;")
                 #navbarCollapse.collapse.navbar-collapse
                     ul.nav.navbar-nav
                         li

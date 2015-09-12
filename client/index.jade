@@ -15,7 +15,7 @@ doctype html
 html
     head
         meta(charset='utf-8')
-        title Wardley Maps Tool
+        title Atlas, the mapping tool
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js')
         script(src='/3rd/jquery.form.js')
@@ -26,6 +26,10 @@ html
         link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
         link(rel='stylesheet', href='index.css')
         link(rel='shortcut icon', href='/favicon.ico', type="favicon.ico")
+        link(rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png")
+        link(rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png")
+        link(rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png")
+        link(rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png")
     body
         //- actual content
         #content
@@ -38,7 +42,7 @@ html
                             span.icon-bar
                             span.icon-bar
                         a.navbar-brand(href="/")
-                            img(src="/favicon.ico" alt="Home" style="height: 30px;margin-top: -5px;")
+                            img(src="/logo.png" alt="Home" style="height: 30px;margin-top: -5px;")
                     #navbarCollapse.collapse.navbar-collapse
                         ul.nav.navbar-nav
                             li.active
@@ -81,13 +85,6 @@ html
                                                 a(role="menuitem" tabindex="-1" href="/api/map/delete/"+map._id)
                                                     span.glyphicon.glyphicon-remove
                                                     | &nbsp;Delete!
-        //- disclaimer stating it is not affiliated with Simon Wardley
-        div(class="container")
-            div(class="panel panel-default")
-                div(class="panel-body")
-                    p(class="text-info") Don't forget to tell&nbsp;
-                        a(href="https://twitter.com/intent/tweet?screen_name=wardleymaps" target="_blank") @wardleymaps&nbsp;
-                        | how do you like the tool. Your opinion <b>really</b> matters.
         //- new business line dialog
         #basicModal(class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true")
             div(class="modal-dialog")
