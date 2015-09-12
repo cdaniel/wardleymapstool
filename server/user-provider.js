@@ -29,34 +29,22 @@ module.exports = function(app) {
         var user = new require('./user')();
 
         app.use(stormpath.init(app, {
-            client : {
-                apiKey : {
-                    id : stormpathconfig.getApiKeyId(),
-                    secret : stormpathconfig.getApiKeySecret()
-                }
-            },
-            application : {
-                href : stormpathconfig.getApplication()
-            },
+            apiKeyId : stormpathconfig.getApiKeyId(),
+            apiKeySecret : stormpathconfig.getApiKeySecret(),
             secretKey : stormpathconfig.getSecretKey(),
-            website : true,
-            api : true,
+            application : stormpathconfig.getApplication(),
             postRegistrationHandler : function(account, req, res, next) {
                 user.processLoginInfo(account, res, next);
             },
-            postLoginHandler : function(account, req, res, next) {
-                next();
-            },
+            enableGoogle : true,
             social : {
                 google : {
                     clientId : googleauth.getClientID(),
-                    clientSecret : googleauth.getClientSecret()
+                    clientSecret : googleauth.getClientSecret(),
                 },
             },
-            expand: {
-                customData: true,
-                providerData:true
-            },
+            expandProviderData : true,
+            expandCustomData : true,
             registrationView: __dirname + '/../client/views/register.jade',
             loginView: __dirname + '/../client/views/login.jade',
             templateContext : {
