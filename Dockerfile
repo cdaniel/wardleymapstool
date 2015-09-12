@@ -16,18 +16,20 @@ RUN apt-get install nodejs -y --force-yes
 RUN apt-get install -y --force-yes mongodb
 RUN mkdir -p /data/db
 
-
 #supervisor
 RUN apt-get install -y --force-yes supervisor
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+#phantomjs
+RUN apt-get install -y --force-yes phantomjs
 
 ADD . /srv
 WORKDIR /srv
 # install the dependencies
 RUN npm install
  
-EXPOSE 8080
 
+EXPOSE 8080
 CMD ["/usr/bin/supervisord"]
 
