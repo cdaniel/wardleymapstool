@@ -90,10 +90,17 @@ var draw = function(res, filename, map, config){
 			var svgimg = d3.select(el);
 
 
-			svgimg.append("text").text(map.name)
-			.style('font-weight', 'bold')
-			.attr('y', 20)
-			.attr('x', 40);
+			svgimg.append("text")
+			    .text(map.name)
+			    .attr('id', 'maptitle')
+			    .attr('y', "1%")
+			    .attr('x', "2%");
+			
+			svgimg.append("text")
+                .text("created at wardleymaps.com")
+                .attr('id', 'createdAt')
+                .attr('y', "1%")
+                .attr('x', "98%");
 
 			var nodes = _.groupBy(map.nodes, 'componentId');
 
@@ -143,8 +150,7 @@ var draw = function(res, filename, map, config){
 				.attr('transform', 'translate(0,' + height + ')')
 				.call(function(el) {
 					el.append('path')
-						.attr('d', line([{positionX:0, positionY:0}, {positionX:1, positionY:0}]))
-						.style('stroke','grey').style('stroke-width', '2px').style('marker-end', 'url(#arrow)');
+						.attr('d', line([{positionX:0, positionY:0}, {positionX:1, positionY:0}]));
 					el.selectAll('g.label')
 						.data(legendItems)
 						.enter()
@@ -162,16 +168,14 @@ var draw = function(res, filename, map, config){
 				.enter()
 				.append('path')
 				.attr('transform', function(d) { return 'translate(' + (xLegend(d)-0.01*width) + ',0)'; })
-				.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]))
-				.style('stroke','grey').style('stroke-width', '1px').style('stroke-dasharray', '1,5');
+				.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]));
 
 			// y legend
 			mapViz.append('g')
 				.attr('class', 'y axis')
 				.call(function(el) {
 					el.append('path')
-					.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]))
-					.style('stroke','grey').style('stroke-width', '2px').style('marker-end', 'url(#arrow)');
+					.attr('d', line([{positionX:0, positionY:1}, {positionX:0, positionY:0}]));
 			});
 
 			//action connections
@@ -181,10 +185,7 @@ var draw = function(res, filename, map, config){
 				.enter()
 				.append('path')
 				.classed('action', true)
-				.attr('d', line)
-				.style('stroke','green')
-				.style('stroke-width', '2px')
-				.style('marker-end', 'url(#actionarrow)');
+				.attr('d', line);
 
 			// regular dependencies
 			mapViz
@@ -193,8 +194,7 @@ var draw = function(res, filename, map, config){
 				.enter()
 				.append('path')
 				.classed('connection', true)
-				.attr('d', line)
-				.style('stroke','grey').style('stroke-width', '2px');
+				.attr('d', line);
 
 			// nodes
 			mapViz
@@ -212,23 +212,21 @@ var draw = function(res, filename, map, config){
 
 					gnode
 						.append('circle')
-						.attr({ r: '10px', 'cx': moveX, 'cy': moveY })
-						.style('fill','silver').style('stroke','black').style('stroke-width', '2px');
+						.attr({ r: '10px', 'cx': moveX, 'cy': moveY });
 
 					gnode.append('text')
-						.style('filter', 'url(#glow);fill:#FFFFFF')
+						.classed('nodeTextShadow', true)
 						.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 						.text(pick('name'));
 			
 			        gnode.append('text')
+			            .classed('nodeTex', true)
 			            .attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 			            .text(pick('name'));
                     });
 
-			mapViz.selectAll('.userneed > circle').style('stroke-width', '4px');
-			mapViz.selectAll('.external > circle').style('fill', 'white');
+			
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el);
-			console.log(config);
 			if(config.format === 'svg'){
     			res.setHeader('Content-Type', 'image/svg+xml');
     			res.send('<?xml version="1.0" encoding="UTF-8" standalone="no"?>' + svgXML);

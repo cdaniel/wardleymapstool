@@ -9,8 +9,53 @@
                     .map {
                         font-family : sans-serif;
                     }
+                    #maptitle {
+                        font-weight: bold;
+                        alignment-baseline: hanging
+                    }
+                    #createdAt {
+                        text-anchor: end;
+                        font-size: 11px;
+                        alignment-baseline: hanging
+                    }
                     .node {
                         font-size : 11px;
+                        stroke-width : 2px;
+                    }
+                    .nodeTextShadow {
+                        fill : white;
+                        filter : url(#glow);
+                    }
+                    .nodeText {
+                    }
+                    .node > circle {
+                        fill : silver;
+                        stroke : black;
+                    }
+                    .userneed > circle {
+                        stroke-width: 4px;
+                    }
+                    .external > circle {
+                        fill : white;
+                    }
+                    .connection {
+                        stroke : grey;
+                        stroke-width : 2px;
+                    }
+                    .action {
+                        marker-end : url(#actionarrow);
+                        stroke : green;
+                        stroke-width : 2px;
+                    }
+                    .axis > path {
+                        stroke : grey;
+                        stroke-width : 2px;
+                        marker-end : url(#arrow);
+                    }
+                    .evolution-marker {
+                        stroke : grey;
+                        stroke-width : 1px;
+                        stroke-dasharray: 1,5;
                     }
                 </style>
             <defs>
@@ -34,7 +79,6 @@
             </defs>
             <!-- white background -->
             <rect x="0" y="0" width="100%" height="100%" fill="white" style="stroke-width: 0px;" />
-            <text text-anchor="right" style="" y="20" x="1000">created at wardleymaps.com</text>
         </svg>
 	</div>
 </body>
