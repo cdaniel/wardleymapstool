@@ -360,7 +360,7 @@ var actionEndpointOptions = {
 };
 
 
-var passivePaintStyle = {fillStyle:"silver", outlineColor:"white"};
+var passivePaintStyle = {fillStyle: 'transparent', outlineColor:'transparent'};
 
 function HTMLMapNode(parentNode, nodeData) {
 	var self = this;
@@ -417,6 +417,7 @@ function HTMLMapNode(parentNode, nodeData) {
 			scope : jsPlumb.getDefaultScope(),
 			tolerance : 'touch'
 		},
+		paintStyle:passivePaintStyle,
 		deleteEndpointsOnDetach : false,
 		uuid : self.nodeData.componentId + jsPlumb.getDefaultScope() + "i"
 	});
@@ -443,6 +444,7 @@ function HTMLMapNode(parentNode, nodeData) {
 					scope : "Actions",
 					tolerance : 'touch'
 				},
+				paintStyle:passivePaintStyle,
 				deleteEndpointsOnDetach : false,
 				uuid : self.nodeData.componentId + "Actions" + "i"
 			});
