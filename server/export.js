@@ -344,7 +344,7 @@ var export_module = function(db) {
             } else {
                 // empty map
                 if (maps.length === 0) {
-                    res.redirect('/favicon.svg');
+                    res.redirect('/android-icon-192x192.png');
                 } else {
                     draw(res, mapId, maps[0].history[0], {legend:true, format:'svg'});
                 }
@@ -371,12 +371,7 @@ var export_module = function(db) {
                 res.statusCode = 500;
                 res.send(JSON.stringify(err));
             } else {
-                // empty map
-                if (maps[0].history[0].nodes.length === 0) {
-                    res.redirect('/favicon.svg');
-                } else {
-                    draw(res, mapId, maps[0].history[0],{format:'svg'});
-                }
+                draw(res, mapId, maps[0].history[0],{format:'svg'});
             }
         });
     }
