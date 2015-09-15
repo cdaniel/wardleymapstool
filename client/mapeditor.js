@@ -782,6 +782,12 @@ function initalizeJSPlumb() {
             established : false
         };
     });
+	jsPlumb.bind("beforeStartDetach", function(a, b) {
+        return {
+            scope : a.endpoint.scope,
+            established : false
+        };
+    });
 	init();
 }
 
