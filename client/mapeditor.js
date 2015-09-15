@@ -773,7 +773,8 @@ function initalizeJSPlumb() {
 			fireDirty();
 			updateSelectionMenus();
 			$('#nodemenudialog').modal('show');
-		}
+		};
+		jsPlumb.repaintEverything();
 	});
 	//put scope into connection - no more guessing
 	jsPlumb.bind("beforeDrag", function(a, b) {
