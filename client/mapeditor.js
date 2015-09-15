@@ -278,9 +278,10 @@ function drawMap() {
 			if(elem.label != null){
 				connection.setLabel({label:elem.label,cssClass:'connectionlabel'});
 			}
-			// workaround, id is internal and can't be edited,
-			// so we must change the model each time we load it.
-			elem.connectionId = connection.id;
+			// restore previously saved id
+			connection.id = elem.connectionId;
+			jsPlumb.setIdChanged(connection.id, elem.connectionId);
+			
 			addConnectionListener(connection);
 		});
 	};
