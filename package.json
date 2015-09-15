@@ -41,7 +41,8 @@
     "phantom": "~0.7.2",
     "atob": "~1.1.2",
     "temporary": "0.0.8",
-    "phantomjs": "~1.9.18"
+    "phantomjs": "~1.9.18",
+    "q": "~1.4.1"
   },
   "optionalDependencies": {
     "express-stormpath": "1.0.6",

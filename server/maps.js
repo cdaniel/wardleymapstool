@@ -15,74 +15,118 @@ limitations under the License.*/
 
 var logger = require('./util/log.js').getLogger('maps');
 
+var Q = require('q');
+Q.longStackSupport = true;
+
+/**
+ * validates necessary fields.
+ * binds the request to the user sending the request.
+ */
+var preprocessNewMapRequest = function(req, res, callback){
+    var deferred = Q.defer();
+    var userId = req.user.href;
+    logger.debug("new map creation requested for user", userId);
+
+    var name = "";
+    if (typeof req.body.name !== 'undefined') {
+        name = req.body.name;
+    }
+    var description = "";
+    if (typeof req.body.description !== 'undefined') {
+        description = req.body.description;
+    }
+
+    var date = null;
+    if (typeof req.body.description !== 'undefined') {
+        date = req.body.date;
+    }
+
+    var stub = {
+        name : name,
+        description : description,
+        userDate : date,
+        serverDate : new Date(),
+        nodes : [],
+        connections : []
+    };
+
+    var meta = {
+        deleted : false,
+        userIdGoogle : userId,
+        history : [ stub ]
+    };
+
+    deferred.resolve({
+        req : req,
+        res : res,
+        meta : meta
+    });
+    return deferred.promise.nodeify(callback);
+};
+
 var mapmodule = function(db, share) {
+    
+    /**
+     * params = {req,res,meta},
+     * output = {req,res,meta,_id}
+     */
+    var _saveMetaMap = function(params, callback){
+        var deferred = Q.defer();
+        db.maps.save(params.meta, function(err, saved) {
+            if (err !== null) {
+                deferred.reject(err);
+            }
+            if (saved) {
+                logger.debug("new map", saved._id, "created");
+                params._id = '' + saved._id;
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    };
+    /**
+     * params = {req,res,meta,_id},
+     * output = {req,res,meta,_id,progress}
+     */
+    var _initProgress = function(params, callback){
+        var deferred = Q.defer();
+        db.collection('progress').save({
+            mapid : params._id,
+            progress : 0
+        }, function(err, saved) {
+            if (err !== null) {
+                deferred.reject(err);
+            }
+            if (saved) {
+                params.progress = 0;
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    };
+    
+    var _redirectToMapID = function (params, callback){
+        var deferred = Q.defer();
+        params.res.redirect('/map/' + params._id);
+        deferred.resolve(params);
+        return deferred.promise.nodeify(callback);
+    };
+    
     return {
         createNewMap : function (req, res) {
 
-            var userId = req.user.href;
-            logger.debug("new map creation requested for user", userId);
-
-            var name = "";
-            if (typeof req.body.name !== 'undefined') {
-                name = req.body.name;
-            }
-            var description = "";
-            if (typeof req.body.description !== 'undefined') {
-                description = req.body.description;
-            }
-
-            var date = null;
-            if (typeof req.body.description !== 'undefined') {
-                date = req.body.date;
-            }
-
-            var stub = {
-                name : name,
-                description : description,
-                userDate : date,
-                serverDate : new Date(),
-                nodes : [],
-                connections : []
-            };
-
-            var meta = {
-                deleted : false,
-                userIdGoogle : userId,
-                history : [ stub ]
-            };
-
-            logger.debug("creating map", meta);
-
-            db.maps.save(meta, function(err, saved) {
-                if (err !== null) {
-                    logger.error(err);
+            preprocessNewMapRequest(req,res)
+                .then(_saveMetaMap)
+                .then(_initProgress)
+                .then(_redirectToMapID)
+                .catch(function(err){
+                    logger.error.bind(logger)(err);
                     res.setHeader('Content-Type', 'application/json');
                     res.statusCode = 500;
                     res.send(JSON.stringify(err));
                     res.end();
-                }
-                if (saved) {
-                    logger.debug("new map", saved._id, "created for user", userId);
-                    var mapid = '' + saved._id;
-                    db.collection('progress').save({
-                        mapid : mapid,
-                        progress : 0
-                    }, function(err, savedprogress) {
-                        if (err !== null) {
-                            logger.error(err);
-                            res.setHeader('Content-Type', 'application/json');
-                            res.statusCode = 500;
-                            res.send(JSON.stringify(err));
-                            res.end();
-                        }
-                        if (savedprogress) {
-                            logger.debug("progress created for map", saved._id);
-                            // tell the client where is the map
-                            res.redirect('/map/' + saved._id);
-                        }
-                    });
-                }
-            });
+                })
+                .done();
         },
 
         deleteMap : function(req, res, mapId, redirect) {
