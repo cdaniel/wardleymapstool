@@ -136,9 +136,10 @@ describe('Maps', function() {
         };
 
         var mapid = '54cfb4302f93942dca8ce8f5';
-        self.maps.getProgressState(req, mapid, function(r) {
+        self.maps.getProgressState(req, mapid, function(r,err) {
             try {
-                should(r.progress).be.equal(-1);
+                should.exist(err);
+                should.not.exist(r);
             } catch (e) {
                 done(e);
                 return;
@@ -166,7 +167,8 @@ describe('Maps', function() {
                 var mapid = '' + response[0]._id;
                 self.maps.getProgressState(req2, mapid, function(r,err){
                     try{
-                        should(r.progress).be.equal(-1);
+                        should.exist(err);
+                        should.not.exist(r);
                     } catch (e) {
                         done(e);
                         return;

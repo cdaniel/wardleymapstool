@@ -54,8 +54,12 @@ module.exports = function(maps, exportmap){
 
 	// progress
 	module.router.get('/map/:mapid/progressstate', function(req, res) {
-		maps.getProgressState(req, req.params.mapid, function(progress) {
-			res.json(progress);
+		maps.getProgressState(req, req.params.mapid, function(progress,err) {
+		    if(err){
+                res.json({progress:-1});
+            } else {
+                res.json(progress);
+            }
 		});
 	});
 

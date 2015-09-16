@@ -155,6 +155,27 @@ var mapmodule = function(db, share) {
      * input {mapId, progress}
      * output {mapId, progress}
      */
+    var _getProgressNoAccessCheck = function(params, callback){
+        var deferred = Q.defer();
+        var mapId = '' + params.mapId; //ensure mapid is a string
+        db.progress.findOne({
+            mapid : mapId
+        }, function(err, state) {
+            if (err !== null) {
+                deferred.reject(err);
+            }
+            if (state) {
+                params.progress = state.progress; //object progress contains state before save
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    };
+    
+    /**
+     * input {mapId, progress}
+     * output {mapId, progress}
+     */
     var _advanceProgressNoAccessCheck = function(params, callback){
         var deferred = Q.defer();
         var mapId = '' + params.mapId; //ensure mapid is a string
@@ -478,57 +499,17 @@ var mapmodule = function(db, share) {
         },
 
         getProgressState : function(req, mapId, finalCallback) {
-            var async = require('async');
-            async.waterfall([ function(clbck) {
-                var userId = req.user.href;
-
-                var objectIdmapId = db.ObjectId(mapId);
-
-                db.maps.find({
-                    "userIdGoogle" : userId,
-                    "_id" : objectIdmapId,
-                    deleted : false
-                /* don't return deleted maps */
-                }).toArray(function(err, maps) {
-                    if (err || !maps || maps.length !== 1) {
-                        clbck(err, false);
-                        return;
-                    }
-                    if (maps.length === 1) {
-                        clbck(err, true);
-                        return;
-                    }
-                });
-            }, function(allowed, clbck) {
-                if (!allowed) {
-                    clbck(null, {
-                        progress : -1
-                    });
-                    return;
-                }
-                db.progress.findOne({
-                    mapid : mapId
-                }, function(err, state) {
-                    if (state) {
-                        clbck(err, {
-                            progress : state.progress
-                        });
-                    } else {
-                        clbck(err, {
-                            progress : -1
-                        });
-                    }
-                });
-            } ], function(err, result) {
-                if (err) {
-                    logger.error(err);
-                    finalCallback({
-                        progress : -1
-                    });
-                } else {
-                    finalCallback(result);
-                }
-            });
+            var userId = req.user.href;
+            var mapId = db.ObjectId(mapId);
+            var params = {userId : userId, mapId : mapId};
+            
+            _writeAccessCheck(params)
+                .then(_getProgressNoAccessCheck)
+                .then(finalCallback)
+                .catch(function(err){
+                    finalCallback(null,err);
+                })
+                .done();
         },
 
         advanceProgressState : function(req, mapId, finalCallback) {
