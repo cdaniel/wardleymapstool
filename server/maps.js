@@ -229,6 +229,47 @@ var mapmodule = function(db, share) {
         return deferred.promise.nodeify(callback);
     };
     
+    var _getRawMapsWithoutHistory = function(params, callback){
+        var deferred = Q.defer();
+        db.maps.find({
+            "userIdGoogle" : params.userId,
+            deleted : false
+        /* don't return deleted maps */
+        }, {
+            history : {
+                $slice : -1
+            }
+        }).toArray(function(err, maps) {
+            if (err !== null) {
+                deferred.reject(err);
+            } else {
+                params.mapsNoHistory = maps;
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    };
+    
+    /*
+     * This should prepare maps to be easily displayable as a list (without nodes and connections, just metadata).
+     */
+    var _prepareRawMapsForDisplay = function(params, callback){
+        var deferred = Q.defer();
+        var maps = params.mapsNoHistory;
+        var response = [];
+        for (var i = 0; i < maps.length; i++) {
+            var singleMap = {};
+            singleMap._id = maps[i]._id;
+            singleMap.name = maps[i].history[0].name;
+            singleMap.description = maps[i].history[0].description;
+            singleMap.serverDate = maps[i].history[0].serverDate;
+            response.push(singleMap);
+        }
+        params.mapsForDisplay = response;
+        deferred.resolve(params);
+        return deferred.promise.nodeify(callback);
+    }
+    
     return {
         createNewMap : function (req, res) {
 
@@ -269,10 +310,6 @@ var mapmodule = function(db, share) {
             mapId = db.ObjectId(mapId);
             logger.debug("deleting map", mapId, "for user", userId);
 
-            var userDate = null; // TODO: if I will ever care what time was
-                                    // in
-            // the client when a map was deleted.
-
             db.maps.findAndModify({
                 query : {
                     userIdGoogle : userId,
@@ -286,7 +323,6 @@ var mapmodule = function(db, share) {
                     $push : {
                         // null object in the history
                         history : {
-                            userDate : userDate,
                             serverDate : new Date()
                         }
                     }
@@ -465,37 +501,22 @@ var mapmodule = function(db, share) {
 
         },
 
-        getMaps : function (req, next) {
+        getMaps : function (req, callback) {
             var userId = req.user.href;
 
             logger.debug("getting maps for user", userId);
+            
+            var params = {userId : userId};
 
-            db.maps.find({
-                "userIdGoogle" : userId,
-                deleted : false
-            /* don't return deleted maps */
-            }, {
-                history : {
-                    $slice : -1
-                }
-            }).toArray(function(err, maps) {
-                if (err !== null) {
-                    logger.error(err);
-                } else {
-                    // limit what goes with generic maps
-                    var response = [];
-                    for (var i = 0; i < maps.length; i++) {
-                        var singleMap = {};
-                        singleMap._id = maps[i]._id;
-                        singleMap.name = maps[i].history[0].name;
-                        singleMap.description = maps[i].history[0].description;
-                        singleMap.userDate = maps[i].history[0].userDate;
-                        singleMap.serverDate = maps[i].history[0].serverDate;
-                        response.push(singleMap);
-                    }
-                    next(response);
-                }
-            });
+            _getRawMapsWithoutHistory(params)
+                .then(_prepareRawMapsForDisplay)
+                .then(function(p){
+                    callback(p.mapsForDisplay);
+                })
+                .catch(function(err){
+                    console.log(err);
+                })
+                .done();
         },
 
         getProgressState : function(req, mapId, finalCallback) {
