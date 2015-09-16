@@ -22,7 +22,7 @@ Q.longStackSupport = true;
  * validates necessary fields.
  * binds the request to the user sending the request.
  */
-var preprocessNewMapRequest = function(req, res, callback){
+function preprocessNewMapRequest(req, res, callback){
     var deferred = Q.defer();
     var userId = req.user.href;
     logger.debug("new map creation requested for user", userId);
@@ -44,6 +44,52 @@ var preprocessNewMapRequest = function(req, res, callback){
     var stub = {
         name : name,
         description : description,
+        userDate : date,
+        serverDate : new Date(),
+        nodes : [],
+        connections : []
+    };
+
+    var meta = {
+        deleted : false,
+        userIdGoogle : userId,
+        history : [ stub ]
+    };
+
+    deferred.resolve({
+        req : req,
+        res : res,
+        meta : meta
+    });
+    return deferred.promise.nodeify(callback);
+};
+
+/**
+ * validates necessary fields.
+ * binds the request to the user sending the request.
+ */
+function preprocessNewSubMapRequest(req, res, callback){
+    var deferred = Q.defer();
+    var userId = req.user.href;
+    logger.debug("new submap creation requested for user", userId);
+    
+    var parentmapid = "";
+    if (typeof req.body.parentmapid !== 'undefined') {
+        parentmapid = req.body.parentmapid;
+    }
+    
+    var parentcomponentid = "";
+    if (typeof req.body.parentcomponentid !== 'undefined') {
+        parentcomponentid = req.body.parentcomponentid;
+    }
+
+    var date = null;
+    if (typeof req.body.description !== 'undefined') {
+        date = req.body.date;
+    }
+
+    var stub = {
+        parentid : parentid,
         userDate : date,
         serverDate : new Date(),
         nodes : [],
@@ -105,6 +151,56 @@ var mapmodule = function(db, share) {
         return deferred.promise.nodeify(callback);
     };
     
+    /**
+     * input {mapId, progress}
+     * output {mapId, progress}
+     */
+    var _advanceProgressNoAccessCheck = function(params, callback){
+        var deferred = Q.defer();
+        var mapId = '' + params.mapId; //ensure mapid is a string
+        db.progress.findAndModify({
+            query : {
+                mapid : mapId
+            },
+            update : {
+                $inc : {
+                    progress : 1
+                }
+            }
+        }, function(err, object) {
+            console.debug(err, object);
+            if (err !== null) {
+                deferred.reject(err);
+            }
+            if (object) {
+                params.progress = object.progress + 1; //object progress contains state before save
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    };
+    
+    /**
+     * params {req, res, mapId,userId }
+     * returns {code:403} if not authorized
+     */
+    var _writeAccessCheck = function(params, callback){
+        var deferred = Q.defer();
+        db.maps.find({
+            "userIdGoogle" : params.userId, /* only if user id matches */
+            "_id" : params.mapId, /* only if map id matches */
+            deleted : false /* don't return deleted maps */
+        }).toArray(function(err, maps) {
+            if (err || !maps || maps.length !== 1) {
+                deferred.reject(err || {code:403});
+            }
+            if (maps.length === 1) {
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    }
+    
     var _redirectToMapID = function (params, callback){
         var deferred = Q.defer();
         params.res.redirect('/map/' + params._id);
@@ -116,6 +212,22 @@ var mapmodule = function(db, share) {
         createNewMap : function (req, res) {
 
             preprocessNewMapRequest(req,res)
+                .then(_saveMetaMap)
+                .then(_initProgress)
+                .then(_redirectToMapID)
+                .catch(function(err){
+                    logger.error.bind(logger)(err);
+                    res.setHeader('Content-Type', 'application/json');
+                    res.statusCode = 500;
+                    res.send(JSON.stringify(err));
+                    res.end();
+                })
+                .done();
+        },
+        
+        createNewSubMap : function (req, res) {
+
+            preprocessNewSubMapRequest(req,res)
                 .then(_saveMetaMap)
                 .then(_initProgress)
                 .then(_redirectToMapID)
@@ -235,8 +347,9 @@ var mapmodule = function(db, share) {
 
         partialMapUpdate : function (req, res, mapId) {
             var userId = req.user.href;
-
-            mapId = db.ObjectId(mapId);
+            var mapId = db.ObjectId(mapId);
+            var parms = {userId : userId, mapId : mapId};
+            
             var load = req.body;
             logger.debug("updating map partially", mapId, "for user", userId, " request" + JSON.stringify(load));
 
@@ -418,60 +531,18 @@ var mapmodule = function(db, share) {
             });
         },
 
-        advanceProgressState : function(req, mapid, finalCallback) {
-            var async = require('async');
-            async.waterfall([ function(clbck) {
-                var userId = req.user.href;
-
-                var objectIdmapId = db.ObjectId(mapid);
-
-                db.maps.find({
-                    "userIdGoogle" : userId,
-                    "_id" : objectIdmapId,
-                    deleted : false
-                /* don't return deleted maps */
-                }).toArray(function(err, maps) {
-                    if (err || !maps || maps.length !== 1) {
-                        clbck(err, false);
-                        return;
-                    }
-                    if (maps.length === 1) {
-                        clbck(err, true);
-                        return;
-                    }
-                });
-            }, function(allowed, clbck) {
-                if (!allowed) {
-                    clbck(null, {
-                        progress : -1
-                    });
-                    return;
-                }
-                db.progress.findAndModify({
-                    query : {
-                        mapid : mapid
-                    },
-                    update : {
-                        $inc : {
-                            progress : 1
-                        }
-                    }
-                }, function(err, object) {
-                    clbck(err, {
-                        // this is updated in db
-                        progress : object.progress + 1
-                    });
-                });
-            } ], function(err, result) {
-                if (err) {
-                    logger.error(err);
-                    finalCallback({
-                        progress : -1
-                    });
-                } else {
-                    finalCallback(result);
-                }
-            });
+        advanceProgressState : function(req, mapId, finalCallback) {
+            var userId = req.user.href;
+            var mapId = db.ObjectId(mapId);
+            var params = {userId : userId, mapId : mapId};
+            
+            _writeAccessCheck(params)
+                .then(_advanceProgressNoAccessCheck)
+                .then(finalCallback)
+                .catch(function(err){
+                    finalCallback(null,err);
+                })
+                .done();
         }
     };
 };

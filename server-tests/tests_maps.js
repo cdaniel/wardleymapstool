@@ -164,7 +164,7 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = '' + response[0]._id;
-                self.maps.getProgressState(req2, mapid, function(r){
+                self.maps.getProgressState(req2, mapid, function(r,err){
                     try{
                         should(r.progress).be.equal(-1);
                     } catch (e) {
@@ -197,9 +197,10 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req2, mapid, function(r){
+                self.maps.advanceProgressState(req2, mapid, function(r,err){
                     try{
-                        should(r.progress).be.equal(-1);
+                        should.exist(err);
+                        should.not.exist(r);
                     } catch (e) {
                         done(e);
                         return;
@@ -225,8 +226,9 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r){
+                self.maps.advanceProgressState(req, mapid, function(r,err){
                     try{
+                        should.not.exist(err);
                         should(r.progress).be.equal(1);
                     } catch (e) {
                         done(e);
@@ -253,8 +255,9 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r){
+                self.maps.advanceProgressState(req, mapid, function(r,err){
                     try{
+                        should.not.exist(err);
                         should(r.progress).be.equal(2);
                     } catch (e) {
                         done(e);
@@ -286,9 +289,10 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req2, mapid, function(r){
+                self.maps.advanceProgressState(req2, mapid, function(r,err){
                     try{
-                        should(r.progress).be.equal(-1);
+                        should.exist(err);
+                        should.not.exist(r);
                     } catch (e) {
                         done(e);
                         return;
@@ -314,8 +318,9 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r){
+                self.maps.advanceProgressState(req, mapid, function(r,err){
                     try{
+                        should.not.exist(err);
                         should(r.progress).be.equal(3);
                     } catch (e) {
                         done(e);
@@ -342,8 +347,9 @@ describe('Maps', function() {
                 should(response[0]).have.property('_id');
 
                 var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r){
+                self.maps.advanceProgressState(req, mapid, function(r,err){
                     try{
+                        should.not.exist(err);
                         should(r.progress).be.equal(4);
                     } catch (e) {
                         done(e);
