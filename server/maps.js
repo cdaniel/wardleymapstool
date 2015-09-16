@@ -229,13 +229,20 @@ var mapmodule = function(db, share) {
         return deferred.promise.nodeify(callback);
     };
     
+    /**
+     * Retrieves maps that were not yet deleted and belong to the user.
+     * If mapid is specified, retrieves only one map.
+     */
     var _getRawMapsWithoutHistory = function(params, callback){
         var deferred = Q.defer();
-        db.maps.find({
-            "userIdGoogle" : params.userId,
-            deleted : false
-        /* don't return deleted maps */
-        }, {
+        var query = {
+                "userIdGoogle" : params.userId,
+                deleted : false /* don't return deleted maps */
+        };
+        if(params.mapId) {
+            query.mapId = params.mapId;
+        };
+        db.maps.find(query, {
             history : {
                 $slice : -1
             }
@@ -266,6 +273,31 @@ var mapmodule = function(db, share) {
             response.push(singleMap);
         }
         params.mapsForDisplay = response;
+        deferred.resolve(params);
+        return deferred.promise.nodeify(callback);
+    }
+    
+    var _prepareMapToFullDisplay = function(params, callback){
+        var deferred = Q.defer();
+        var maps = params.mapsNoHistory;
+
+        if (!maps[0].history[0].nodes) {
+                maps[0].history[0].nodes = [];
+            }
+            if (!maps[0].history[0].connections) {
+                maps[0].history[0].connections = [];
+            }
+            if (!maps[0].anonymousShare) {
+                maps[0].anonymousShare = false;
+            } else {
+                //TODO: remove this dependency
+                maps[0].anonymousShareLink = share[0].constructSharingURL(params.req, params.mapId);
+            }
+            if(!maps[0].preciseShare){
+                maps[0].preciseShare = [];
+            }
+        
+        params.mapToDisplay = maps[0];
         deferred.resolve(params);
         return deferred.promise.nodeify(callback);
     }
@@ -462,43 +494,20 @@ var mapmodule = function(db, share) {
         getMap : function (req, mapId, callback) {
 
             var userId = req.user.href;
-
             mapId = db.ObjectId(mapId);
+            
+            var params = {userId : userId, 
+                            mapId : mapId,
+                            req : req};
             logger.debug("getting map", mapId, "for user", userId);
 
-            db.maps.find({
-                "userIdGoogle" : userId,
-                "_id" : mapId,
-                deleted : false
-            /* don't return deleted maps */
-            }, {
-                history : {
-                    $slice : -1
-                }
-            }).toArray(function(err, maps) {
-                if (err) {
-                    logger.error(err);
-                } else if (maps.length === 0) {
-                    logger.warn('no map ' + mapId + ' for user ' + userId + ' found!');
-                } else {
-                    if (!maps[0].history[0].nodes) {
-                        maps[0].history[0].nodes = [];
-                    }
-                    if (!maps[0].history[0].connections) {
-                        maps[0].history[0].connections = [];
-                    }
-                    if (!maps[0].anonymousShare) {
-                        maps[0].anonymousShare = false;
-                    } else {
-                        maps[0].anonymousShareLink = share[0].constructSharingURL(req, mapId);
-                    }
-                    if(!maps[0].preciseShare){
-                        maps[0].preciseShare = [];
-                    }
-                    callback(maps[0]);
-                }
-            });
-
+            _getRawMapsWithoutHistory(params)
+                .then(_prepareMapToFullDisplay)
+                .then(function(p){
+                    callback(p.mapToDisplay);
+                })
+                .catch(logger.error.bind(logger))
+                .done();
         },
 
         getMaps : function (req, callback) {
