@@ -384,7 +384,7 @@ var mapmodule = function(db, share) {
             var userId = req.user.href;
             var mapId = db.ObjectId(mapId);
             
-            var params = {userId : userId, mapId : mapId, progress : -1, res:res};
+            var params = {userId : userId, mapId : mapId, progress : -1, res:res, req:req};
             
             logger.debug("cloning map", mapId, "for user", userId);
             
