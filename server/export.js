@@ -91,7 +91,7 @@ var draw = function(res, filename, map, config){
 
 
 			svgimg.append("text")
-			    .text(map.name)
+			    .text(decodeURIComponent(map.name))
 			    .attr('id', 'maptitle')
 			    .attr('y', "1%")
 			    .attr('x', "2%");
