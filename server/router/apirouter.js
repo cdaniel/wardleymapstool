@@ -29,6 +29,11 @@ module.exports = function(maps, exportmap){
     	maps.partialMapUpdate(req, res, req.params.mapid);
     });
     
+    //clone a map
+    module.router.get('/map/clone/:mapid' , function(req, res) {
+        maps.cloneMap(req, res, req.params.mapid);
+    });
+    
 	// 2b. update a map
     module.router.post('/map/:mapid', function(req, res) {
 		maps.updateMap(req, res, req.params.mapid);

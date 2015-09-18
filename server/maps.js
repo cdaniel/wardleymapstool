@@ -59,10 +59,11 @@ function preprocessNewMapRequest(req, res, callback){
     deferred.resolve({
         req : req,
         res : res,
-        meta : meta
+        meta : meta,
+        progress : 0 //init progress here
     });
     return deferred.promise.nodeify(callback);
-};
+}
 
 /**
  * validates necessary fields.
@@ -112,6 +113,20 @@ function preprocessNewSubMapRequest(req, res, callback){
 
 var mapmodule = function(db, share) {
     
+    var _prepareMetadataToClone = function(params, callback){
+        var deferred = Q.defer();
+        var map = params.mapsNoHistory[0]; //just one map
+        
+        //strip the id
+        delete map._id;
+        map.history[0].name = "Clone of \"" + map.history[0].name + "\""; 
+        
+        params.meta = map;
+        
+        deferred.resolve(params);
+        return deferred.promise.nodeify(callback);
+    };
+    
     /**
      * params = {req,res,meta},
      * output = {req,res,meta,_id}
@@ -136,15 +151,19 @@ var mapmodule = function(db, share) {
      */
     var _initProgress = function(params, callback){
         var deferred = Q.defer();
+        var defaultProgress = -1;
+        if(params.progress) {
+            defaultProgress = params.progress;
+        }
         db.collection('progress').save({
             mapid : params._id,
-            progress : 0
+            progress : params.progress
         }, function(err, saved) {
             if (err !== null) {
                 deferred.reject(err);
             }
             if (saved) {
-                params.progress = 0;
+                params.progress = params.progress;
                 deferred.resolve(params);
             }
         });
@@ -348,6 +367,29 @@ var mapmodule = function(db, share) {
         createNewMap : function (req, res) {
 
             preprocessNewMapRequest(req,res)
+                .then(_saveMetaMap)
+                .then(_initProgress)
+                .then(_redirectToMapID)
+                .catch(function(err){
+                    logger.error.bind(logger)(err);
+                    res.setHeader('Content-Type', 'application/json');
+                    res.statusCode = 500;
+                    res.send(JSON.stringify(err));
+                    res.end();
+                })
+                .done();
+        },
+        
+        cloneMap : function (req, res, mapId) {
+            var userId = req.user.href;
+            var mapId = db.ObjectId(mapId);
+            
+            var params = {userId : userId, mapId : mapId, progress : -1, res:res};
+            
+            logger.debug("cloning map", mapId, "for user", userId);
+            
+            _getRawMapsWithoutHistory(params)
+                .then(_prepareMetadataToClone)
                 .then(_saveMetaMap)
                 .then(_initProgress)
                 .then(_redirectToMapID)

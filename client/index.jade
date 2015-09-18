@@ -19,11 +19,11 @@ html
         script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js')
         script(src='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js')
         script(src='/3rd/jquery.form.js')
-        script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js')
+        script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js')
         script(src='/3rd/jqBootstrapValidation.js')
         link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.css')
-        link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css')
-        link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css')
+        link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
+        link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css')
         link(rel='stylesheet', href='index.css')
         link(rel='shortcut icon', href='/favicon.ico', type="favicon.ico")
         link(rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png")
@@ -82,7 +82,11 @@ html
                                             span.caret
                                         ul.dropdown-menu.dropdown-menu-right(role="menu" aria-labelledby="ddm"+map._id)
                                             li(role="presentation")
-                                                a(role="menuitem" tabindex="-1" href="/api/map/delete/"+map._id)
+                                                a(role="menuitem" tabindex="-1" href="/api/map/clone/" + map._id)
+                                                    span.glyphicon.glyphicon-duplicate
+                                                    | &nbsp;Clone
+                                            li(role="presentation")
+                                                a(role="menuitem" tabindex="-1" href="/api/map/delete/" + map._id)
                                                     span.glyphicon.glyphicon-remove
                                                     | &nbsp;Delete!
         //- new business line dialog
