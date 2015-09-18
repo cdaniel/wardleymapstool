@@ -240,8 +240,8 @@ var mapmodule = function(db, share) {
                 deleted : false /* don't return deleted maps */
         };
         if(params.mapId) {
-            query.mapId = params.mapId;
-        };
+            query._id = params.mapId;
+        }
         db.maps.find(query, {
             history : {
                 $slice : -1
@@ -275,7 +275,7 @@ var mapmodule = function(db, share) {
         params.mapsForDisplay = response;
         deferred.resolve(params);
         return deferred.promise.nodeify(callback);
-    }
+    };
     
     var _prepareMapToFullDisplay = function(params, callback){
         var deferred = Q.defer();
@@ -283,22 +283,64 @@ var mapmodule = function(db, share) {
 
         if (!maps[0].history[0].nodes) {
                 maps[0].history[0].nodes = [];
-            }
-            if (!maps[0].history[0].connections) {
-                maps[0].history[0].connections = [];
-            }
-            if (!maps[0].anonymousShare) {
-                maps[0].anonymousShare = false;
-            } else {
+        }
+        if (!maps[0].history[0].connections) {
+            maps[0].history[0].connections = [];
+        }
+        if (!maps[0].anonymousShare) {
+            maps[0].anonymousShare = false;
+        } else {
                 //TODO: remove this dependency
-                maps[0].anonymousShareLink = share[0].constructSharingURL(params.req, params.mapId);
-            }
-            if(!maps[0].preciseShare){
-                maps[0].preciseShare = [];
-            }
+            maps[0].anonymousShareLink = share[0].constructSharingURL(params.req, params.mapId);
+        }
+        if(!maps[0].preciseShare){
+            maps[0].preciseShare = [];
+        }
         
         params.mapToDisplay = maps[0];
         deferred.resolve(params);
+        return deferred.promise.nodeify(callback);
+    };
+    
+    var _preparePartialUpdateHistoryEntry = function(params, callback){
+        var deferred = Q.defer();
+        var map = params.mapsNoHistory[0];
+
+        // clone last history entry
+        var historyEntry = (JSON.parse(JSON.stringify(map.history[0])));
+        historyEntry.serverDate = new Date();
+        historyEntry[params.load.pk] = params.load.value;
+        
+        params.historyEntry = historyEntry;
+        deferred.resolve(params);
+        return deferred.promise.nodeify(callback);
+    };
+    
+    var _saveHistoryEntry = function(params, callback){
+        var deferred = Q.defer();
+        var map = params.mapsNoHistory[0];
+
+        db.maps.findAndModify({
+            query : {
+                userIdGoogle : params.userId,
+                _id : params.mapId,
+                deleted : false
+            /* don't modify deleted maps */
+            },
+            update : {
+                $push : {
+                    history : params.historyEntry
+                }
+            },
+        }, function(err, object) {
+            if (err !== null) {
+                logger.error(err);
+                deferred.reject(err);
+            } else {
+                deferred.resolve(params);
+            }
+        });
+        
         return deferred.promise.nodeify(callback);
     }
     
@@ -319,7 +361,7 @@ var mapmodule = function(db, share) {
                 .done();
         },
         
-        createNewSubMap : function (req, res) {
+/*        createNewSubMap : function (req, res) {
 
             preprocessNewSubMapRequest(req,res)
                 .then(_saveMetaMap)
@@ -333,7 +375,7 @@ var mapmodule = function(db, share) {
                     res.end();
                 })
                 .done();
-        },
+        },*/
 
         deleteMap : function(req, res, mapId, redirect) {
 
@@ -437,58 +479,26 @@ var mapmodule = function(db, share) {
         partialMapUpdate : function (req, res, mapId) {
             var userId = req.user.href;
             var mapId = db.ObjectId(mapId);
-            var parms = {userId : userId, mapId : mapId};
-            
             var load = req.body;
+            var params = {userId : userId, mapId : mapId, load : load};
+            
             logger.debug("updating map partially", mapId, "for user", userId, " request" + JSON.stringify(load));
-
-            db.maps.find({
-                "userIdGoogle" : userId,
-                "_id" : mapId,
-                deleted : false
-            /* don't return deleted maps */
-            }, {
-                history : {
-                    $slice : -1
-                }
-            }).toArray(function(err, map) {
-                res.setHeader('Content-Type', 'application/json');
-                if (err !== null) {
+            
+            _getRawMapsWithoutHistory(params)
+                .then(_preparePartialUpdateHistoryEntry)
+                .then(_saveHistoryEntry)
+                .then(function(p){
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({}));
+                    res.end();
+                })
+                .catch(function(err){
                     logger.error(err);
+                    res.setHeader('Content-Type', 'application/json');
                     res.statusCode = 500;
                     res.send(JSON.stringify(err));
-                } else {
-                    // clone last history entry
-                    var historyEntry = (JSON.parse(JSON.stringify(map[0].history[0])));
-                    historyEntry.serverDate = new Date();
-                    historyEntry[load.pk] = load.value;
-
-                    db.maps.findAndModify({
-                        query : {
-                            userIdGoogle : userId,
-                            _id : mapId,
-                            deleted : false
-                        /* don't modify deleted maps */
-                        },
-                        update : {
-                            $push : {
-                                history : historyEntry
-                            }
-                        },
-                    }, function(err, object) {
-                        if (err !== null) {
-                            logger.error(err);
-                            res.setHeader('Content-Type', 'application/json');
-                            res.statusCode = 500;
-                            res.send(JSON.stringify(err));
-                        } else {
-                            res.setHeader('Content-Type', 'application/json');
-                            res.send(JSON.stringify({}));
-                            res.end();
-                        }
-                    });
-                }
-            });
+                })
+                .done();
         },
 
         getMap : function (req, mapId, callback) {
