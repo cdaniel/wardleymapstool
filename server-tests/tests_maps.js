@@ -508,7 +508,7 @@ describe('Maps', function() {
     });
 
     after(function() {
-        self.db.collection('maps').drop();
+        self.db.dropDatabase();
     });
 
 });
