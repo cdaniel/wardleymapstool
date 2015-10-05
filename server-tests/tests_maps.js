@@ -506,7 +506,111 @@ describe('Maps', function() {
             }
         });
     });
+    
+    
+    it('clone a map', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                },
+                body : {}
+        };
+        var req2 = {
+                user : {
+                    href : 'wardleymapper'
+                }
+        };
+        var res2 = {
+                redirect : function(url){
+                    // the last arg /map/561013b770184042513e307c
+                    var clonedMapId = url.split('/')[2];
+                    done();
+                }
+        };
+        self.maps.getMaps(req, function(response){
+            try{
+                var mapid = response[0]._id;
+                self.maps.cloneMap(req2, res2, mapid);
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
 
+    it('find related maps', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                },
+                body : {}
+        };
+        self.maps.getMaps(req, function(response){
+            try{
+                var mapid = response[0]._id;
+                var mapid2 = response[1]._id;
+                var req2 = {
+                        user : {
+                            href : 'wardleymapper'
+                        },
+                        params : {
+                            mapid : mapid
+                        }
+                };
+                var res2 = {
+                        json : function(data){
+                            var relation = data[0];
+                            should(relation).have.property('type').which.is.equal('clone');
+                            should(relation).have.property('clonedSource').which.is.equal(''+mapid);
+                            should(relation).have.property('clonedTarget').which.is.equal(''+mapid2);
+                            done();
+                        }
+                };
+                self.maps.findRelatedMaps(req2, res2);
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    it('find related maps - reversed', function(done){
+        var req = {
+                user : {
+                    href : 'wardleymapper'
+                },
+                body : {}
+        };
+        self.maps.getMaps(req, function(response){
+            try{
+                var mapid = response[0]._id;
+                var mapid2 = response[1]._id;
+                var req2 = {
+                        user : {
+                            href : 'wardleymapper'
+                        },
+                        params : {
+                            mapid : mapid2 // <- this is the only difference with the previous test
+                        }
+                };
+                var res2 = {
+                        json : function(data){
+                            var relation = data[0];
+                            should(relation).have.property('type').which.is.equal('clone');
+                            should(relation).have.property('clonedSource').which.is.equal(''+mapid);
+                            should(relation).have.property('clonedTarget').which.is.equal(''+mapid2);
+                            done();
+                        }
+                };
+                self.maps.findRelatedMaps(req2, res2);
+            } catch (e) {
+                done(e);
+                return;
+            }
+        });
+    });
+    
+    
     after(function() {
         self.db.dropDatabase();
     });

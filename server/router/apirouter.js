@@ -34,6 +34,11 @@ module.exports = function(maps, exportmap){
         maps.cloneMap(req, res, req.params.mapid);
     });
     
+    //get related maps
+    module.router.get('/map/related/:mapid' , function(req, res) {
+        maps.findRelatedMaps(req, res);
+    });
+    
 	// 2b. update a map
     module.router.post('/map/:mapid', function(req, res) {
 		maps.updateMap(req, res, req.params.mapid);

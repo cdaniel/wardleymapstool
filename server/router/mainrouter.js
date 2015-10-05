@@ -29,10 +29,17 @@ module.exports = function(maps){
     //deserves own module
     module.router.get('/map/:mapid', function(req, res) {
         maps.getMap(req, req.params.mapid, function(map) {
-            res.render('mapeditor', {
-                map : map,
-                user : req.user
-            });
+            var res2 = {
+                    json : function(arg){
+                        //TODO: this is a hack, as related maps should be loaded async (lazy) from the client
+                        res.render('mapeditor', {
+                            map : map,
+                            user : req.user,
+                            related: arg
+                        });
+                    }
+            };
+            maps.findRelatedMaps(req, res2);
         });
     });
     

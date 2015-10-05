@@ -109,7 +109,7 @@ function preprocessNewSubMapRequest(req, res, callback){
         meta : meta
     });
     return deferred.promise.nodeify(callback);
-};
+}
 
 var mapmodule = function(db, share) {
     
@@ -361,7 +361,56 @@ var mapmodule = function(db, share) {
         });
         
         return deferred.promise.nodeify(callback);
-    }
+    };
+    
+    var  _storeParentMap = function(params, callback){
+        var deferred = Q.defer();
+        
+        var parentMapId = '' + params.mapId;
+        var newMapId = '' + params._id;
+        
+        var relation = {
+                type : 'clone',
+                clonedSource : parentMapId,
+                clonedTarget : newMapId
+        };
+        db.maprelations.save(relation, function(err, saved) {
+            if (err !== null) {
+                deferred.reject(err);
+            }
+            if (saved) {
+                logger.debug("new relation", saved._id, "created");
+                params.relationid = '' + saved._id;
+//                console.log(saved);
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    };
+    
+    var _findRelatedMaps = function(params, callback){
+        var deferred = Q.defer();
+        var mapId = params.req.params.mapid;
+
+        var query = {
+                type : 'clone',
+                $or : [
+                       {clonedSource : '' + mapId},
+                       {clonedTarget : '' + mapId}
+                       ]
+        };
+//        console.log(query);
+        db.maprelations.find(query).toArray(function(err, relations) {
+//            console.log(relations);
+            if (err !== null) {
+                deferred.reject(err);
+            } else {
+                params.relatedMaps = relations;
+                deferred.resolve(params);
+            }
+        });
+        return deferred.promise.nodeify(callback);
+    };
     
     return {
         createNewMap : function (req, res) {
@@ -393,6 +442,30 @@ var mapmodule = function(db, share) {
                 .then(_saveMetaMap)
                 .then(_initProgress)
                 .then(_redirectToMapID)
+                .then(_storeParentMap)
+                .catch(function(err){
+                    logger.error.bind(logger)(err);
+                    res.setHeader('Content-Type', 'application/json');
+                    res.statusCode = 500;
+                    res.send(JSON.stringify(err));
+                    res.end();
+                })
+                .done();
+        },
+        
+        findRelatedMaps : function (req, res) {
+            var userId = req.user.href;
+            var mapId = req.params.mapid;
+            
+            var params = {res:res, req:req, mapId : mapId};
+            
+            logger.debug("finding related maps for map", mapId);
+            
+            _findRelatedMaps(params)
+            .then(function(params){
+//                console.log(params);
+                res.json(params.relatedMaps);
+            })
                 .catch(function(err){
                     logger.error.bind(logger)(err);
                     res.setHeader('Content-Type', 'application/json');

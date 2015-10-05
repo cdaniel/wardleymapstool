@@ -81,6 +81,19 @@ html
                                             span.badge beta
                         li
                             a#share(href="#" data-toggle="modal"  data-target="#sharedialog") Share...
+                        if related.length > 0
+                            li.dropdown
+                                    a.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false")
+                                        span Related maps...
+                                        span.caret
+                                    ul.dropdown-menu(aria-labelledby="dropdownMenu2")
+                                        each val in related
+                                            if map._id == val.clonedSource
+                                                li
+                                                    a.mapidtoupdate(href="/map/#{val.clonedTarget}" id="#{val.clonedTarget}") Child map
+                                            else
+                                                li
+                                                    a(href="/map/#{val.clonedSource}") Parent map
                         li
                             a.twitter-mention-button(href="https://twitter.com/intent/tweet?screen_name=wardleymaps"
                                                         data-size="large" data-related="wardleymaps" target="_blank") Support &amp; Complaints
@@ -126,3 +139,5 @@ include ./mapeditor_includes/nodedialog.jade
         script(src='/mapeditor.js')
         script(src='/3rd/ZeroClipboard.min.js')
         script(src='/share.js')
+        script(src='/related.js')
+        

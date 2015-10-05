@@ -1,4 +1,4 @@
-/* Copyright 2014, 2015 Krzysztof Daniel
+/* Copyright 2015 Krzysztof Daniel
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,14 +12,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+var idsToUpdate = $('a.mapidtoupdate');
 
-module.exports = function (connectionString) {
-    var logger = require('./util/log.js').getLogger("db");
-	logger.setLevel('ALL');
-	logger.debug('connecting to ', connectionString);
-	
-	var COLLECTIONS = ['users', 'maps', 'progress', 'maprelations'];
-	var db = require('mongojs')(connectionString, COLLECTIONS);
-	
-	return db;
-};
+$.each(idsToUpdate, function(index, value){
+    var id = value.id;
+    $.ajax({
+        type : 'GET',
+        url : '/api/map/'+id,
+        dataType : 'json',
+        success : function(data) {
+            var map = data;
+            var mapname = data.history[data.history.length-1].name;
+            $('#'+id).text(mapname);
+        }
+    });
+});

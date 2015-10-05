@@ -396,9 +396,10 @@ function HTMLMapNode(parentNode, nodeData) {
 	self.caption.text(self.nodeData.name);
 
 	jsPlumb.draggable(self.internalNode, {
-		containment : 'parent',
+		containment : true,
+		axis: 'x',
 		distance : 5,
-		drag : function() {
+		drag : function(event) {
 			self.updatePositionData();
 			fireDirty();
 		}
@@ -489,10 +490,10 @@ function HTMLMapNode(parentNode, nodeData) {
 
 		self.myWheelnav.wheelRadius = 100;
 		self.myWheelnav.clickModeRotate = false;
-		self.myWheelnav.navAngle = -15;
+		self.myWheelnav.navAngle = -30;
 
 		self.myWheelnav.titleFont= '100 12px Impact, Charcoal, sans-serif';
-		self.myWheelnav.colors = ['silver','orange'];
+		self.myWheelnav.colors = ['silver','silver','#d9534f'];
 
 		var custom = new slicePathCustomization();
 		custom.minRadiusPercent = 0.2;
@@ -502,17 +503,21 @@ function HTMLMapNode(parentNode, nodeData) {
 		    return slicePath().DonutSlice( helper, percent, custom);
 		};
 
-		self.myWheelnav.createWheel(["edit","delete", null,null,null,null,null,null,null,null,null,null]);
+		self.myWheelnav.createWheel(["edit","submap","delete",null,null,null,null,null,null,null,null,null]);
 		
 		self.myWheelnav.navItems[0].navigateFunction = function(){
 		    $('#nodemenudialog').modal('show');
 		};
+		
+		self.myWheelnav.navItems[1].navigateFunction = function(){
+//            $('#nodemenudialog').modal('show');
+        };
 		// delete selection on click
-		self.myWheelnav.navItems[1].navigateFunction = function(){deleteSelection();};
+		self.myWheelnav.navItems[2].navigateFunction = function(){deleteSelection();};
 
 		self.myWheelnav.refreshWheel();
 		
-		//this throws exception but makes the trick
+		//this throws exception but does the trick
 		try{
 		self.myWheelnav.navigateWheel(-1);} catch(e){};
 	};
