@@ -418,6 +418,27 @@ var mapmodule = function(db, share) {
         return deferred.promise.nodeify(callback);
     };
     
+    var _deleteRelatedMapsEntries = function(params, callback){
+        var deferred = Q.defer();
+        var mapId = params.req.params.mapid;
+
+        var query = {
+                type : 'clone',
+                $or : [
+                       {clonedSource : '' + mapId},
+                       {clonedTarget : '' + mapId}
+                       ]
+        };
+       db.maprelations.remove(query, false, function(err, result){
+           if(err){
+               deferred.reject(err);
+               return;
+           }
+           deferred.resolve(params);
+       });
+        return deferred.promise.nodeify(callback);
+    };
+    
     return {
         createNewMap : function (req, res) {
 
@@ -500,6 +521,14 @@ var mapmodule = function(db, share) {
 
         deleteMap : function(req, res, mapId, redirect) {
 
+            var params = {
+                    req : {
+                        params : {
+                            mapid : '' + mapId
+                        }
+                    }
+            }; 
+            
             var userId = req.user.href;
 
             mapId = db.ObjectId(mapId);
@@ -530,6 +559,7 @@ var mapmodule = function(db, share) {
                     res.statusCode = 500;
                     res.send(JSON.stringify(err));
                 } else {
+                    _deleteRelatedMapsEntries(params).done();
                     if (!redirect) {
                         res.writeHead(200, {
                             'content-type' : 'text/html'

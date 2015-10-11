@@ -655,7 +655,7 @@ describe('Maps', function() {
     });
     
     
-    it('clone a map', function(done){
+    it('map cloning', function(done){
         _createMap(null)
         .then(_findMaps)
         .then(function(params){
@@ -736,6 +736,61 @@ describe('Maps', function() {
                 }catch(e){
                     reject(e);
                 }
+            });
+        })
+        
+         //delete a map
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try{
+                    var res = {
+                        send : function(arg){
+                            sinon.assert.fail('error while deleting a map');
+                        },
+                        writeHead : function(){
+                            //noop
+                        },
+                        end : function(){
+                            //deletion successful
+                            resolve(params);
+                        }
+                    };
+                    self.maps.deleteMap(params.req, res, params.clonedMapId);
+                    params.req.params = {mapid:params.clonedMapId}; //set the map to query
+                    var res = {
+                            json : function(data){
+                                var relation = data[0];
+                                should(relation).have.property('type').which.is.equal('clone');
+                                should(relation).have.property('clonedSource').which.is.equal(''+params.mapid);
+                                should(relation).have.property('clonedTarget').which.is.equal(''+params.clonedMapId);
+                                resolve(params);
+                            }
+                    };
+                    self.maps.findRelatedMaps(params.req, res);
+                }catch(e){
+                    reject(e);
+                }
+            });
+        })
+         // verify there is no relation
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                    params.req.params = {mapid:params.mapid}; // set the map
+                                                                // to query
+                    var res = {
+                            json : function(data){
+                                try{
+                                should(data).have.property('length').which.is.equal(0);
+                                resolve(params);
+                                }catch(e){
+                                    reject(e);
+                                }
+                            },
+                            setHeader : function(arg){
+                                 // reject(new Error(arg); //this happens only in case of error
+                            }
+                    };
+                    self.maps.findRelatedMaps(params.req, res);
             });
         })
         
