@@ -20,7 +20,6 @@ module.exports = function(maps){
     module.router = require('express').Router();
 
     module.router.get('/' , function(req, res) {
-        console.debug('test');
         maps.getMaps(req, function(response) {
             res.render('index', {response : response, user : req.user});
         });

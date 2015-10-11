@@ -14,6 +14,10 @@ limitations under the License.*/
 
 var should = require('should');
 var sinon = require('sinon');
+var Q = require('q');
+Q.longStackSupport = true;
+
+
 
 describe('Maps', function() {
     var self = this;
@@ -25,107 +29,243 @@ describe('Maps', function() {
         self.share = new require('../server/router/share.js')('/share/map',self.db,function(a,b,c){c();},self.maps,self.exp);
     });
     
-    it('request without any parameters', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                },
-                body : {}
-        };
+    function _createMap(params, callback){
+        var deferred = Q.defer();
+        var req = null;
+        if(params && params.req){
+            req = params.req;
+        } else {
+            req = {
+                    user : {
+                        href : 'wardleymapper'
+                    },
+                    body : {}
+            };
+            if(!params) {
+                params = {};
+            }
+            params.req = req;
+        }
         var res = {
                 mapid : "",
                 redirect : function(arg) {
                     if(arg.substr(0,5) !== '/map/'){
-                        done('wrong redirect ' + arg);
+                        deferred.reject(new Error('wrong redirect ' + arg));
                     }
                     res.mapid = arg.substr(5);
-                    if(res.mapid.length != 24) {
-                        done('weird mapi length ' + res.mapid);
+                    if(res.mapid.length !== 24) {
+                        deferred.reject(new Error('weird mapi length ' + res.mapid));
                     }
                     if(res.mapid.indexOf('/') !== -1) {
-                        done('mapid contains // ' + res.mapid);
+                        deferred.reject(new Error('mapid contains // ' + res.mapid));
                     }
-                    done();
+                    params.mapid = res.mapid;
+                    deferred.resolve(params);
                 }
-        }
+        };
         self.maps.createNewMap(req, res);
-    });
+        return deferred.promise.nodeify(callback);
+    }
     
-    it('get a map', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                },
-                body : {}
-        };
+    function _findMaps(params, callback){
+        var deferred = Q.defer();
+        var req = null;
+        if(params && params.req){
+            req = params.req;
+        } else {
+            req = {
+                    user : {
+                        href : 'wardleymapper'
+                    },
+                    body : {}
+            };
+            if(!params) {
+                params = {};
+            }
+            params.req = req;
+        }
         self.maps.getMaps(req, function(response){
-            try{
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-                
-                var mapid = response[0]._id;
-                self.maps.getMap(req, mapid, function(map){
-                    try{
-                        should(map).have.property('history');
-                        should(map.history[0]).have.property('nodes');
-                        should(map.history[0]).have.property('connections');
-                        map.should.have.property('anonymousShare').which.is.equal(false);
-                    }catch(e) {
-                        done(e);
-                    }
-                });
-            } catch (e) {
-                done(e);
+            params.maps = response;
+            deferred.resolve(params);
+        });
+        return deferred.promise.nodeify(callback);
+    }
+    
+    function _getMap(params, callback){
+        var deferred = Q.defer();
+        var req = null;
+        if(params && params.req){
+            req = params.req;
+        } else {
+            req = {
+                    user : {
+                        href : 'wardleymapper'
+                    },
+                    body : {}
+            };
+            if(!params) {
+                params = {};
+            }
+            params.req = req;
+        }
+        self.maps.getMap(req, params.mapid, function(map){
+            if(map.code === 404){
+                deferred.reject(map);
+                return deferred.promise.nodeify(callback);
+            }
+          try{
+              should(map).have.property('history');
+              should(map.history[0]).have.property('nodes');
+              should(map.history[0]).have.property('connections');
+              map.should.have.property('anonymousShare').which.is.equal(false);
+          }catch(e) {
+              deferred.reject(e);
+          }
+          params.map = map;
+          deferred.resolve(params);
+        });
+        return deferred.promise.nodeify(callback);
+    }
+    
+    function _getProgress(params, callback){
+        var deferred = Q.defer();
+        var req = null;
+        if(params && params.req){
+            req = params.req;
+        } else {
+            req = {
+                    user : {
+                        href : 'wardleymapper'
+                    },
+                    body : {}
+            };
+            if(!params) {
+                params = {};
+            }
+            params.req = req;
+        }
+        self.maps.getProgressState(req, params.mapid, function(r,err){
+            if(err){
+                var err2 = new Error();
+                err2.code = err.code;
+                deferred.reject(err2);
                 return;
             }
-            done();
+            params.progress = r.progress;
+            deferred.resolve(params);
         });
-    });
+        return deferred.promise.nodeify(callback);
+    }
     
-    it('get a map without privileges', function(done){
-        var req = {
-                user : {
-                    href : 'notawardleymapper'
-                },
-                body : {}
-        };
-        self.maps.getMaps(req, function(response){
-            try{
-                should(response.length).be.equal(0);
-            } catch (e) {
-                done(e);
+    function _advanceProgress(params, callback){
+        var deferred = Q.defer();
+        var req = null;
+        if(params && params.req){
+            req = params.req;
+        } else {
+            req = {
+                    user : {
+                        href : 'wardleymapper'
+                    },
+                    body : {}
+            };
+            if(!params) {
+                params = {};
+            }
+            params.req = req;
+        }
+        self.maps.advanceProgressState(req, params.mapid, function(r,err){
+            if(err){
+                var err2 = new Error();
+                err2.code = err.code;
+                deferred.reject(err2);
                 return;
             }
-            done();
+            params.progress = r.progress;
+            deferred.resolve(params);
         });
-    });
+        return deferred.promise.nodeify(callback);
+    }
     
-    it('get initial progress state', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
+    var _assertProgress = function(expectedProgress) {
+        return function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try {
+                    should(params.progress).be.equal(expectedProgress);
+                } catch (e){
+                    reject(e);
                 }
+                resolve(params);
+            });
         };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = '' + response[0]._id;
-                self.maps.getProgressState(req, mapid, function(r){
-                    try{
-                        should(r.progress).be.equal(0);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
+    }
+    
+    it('create a map', function(done){
+        _createMap(null)
+            .then (function (v) { done();  })
+            .catch(function (e) { done(e); })
+            .done();
+    });
+    
+    it('verify map creation (create/list/get))', function(done){
+        _createMap(null)
+            .then(_findMaps)
+            .then(function(params){
+                return Q.Promise(function(resolve, reject, notify) {
+                    var maps = params.maps;
+                    should(maps.length).be.equal(1);
+                    should(maps[0]).have.property('_id');
+                    params.mapid = maps[0]._id;
+                    resolve(params);
                 });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
+            })
+            .then(_getMap)
+            .then (function (v) { done();  })
+            .catch(function (e) { done(e); })
+            .done();
+    });
+    
+    it('list a map of another user', function(done){
+        _createMap(null)
+            .then(function(params){
+                return Q.Promise(function(resolve, reject, notify) {
+                    params.req.user.href = 'notawardleymapper';
+                    resolve(params);
+                });
+            })
+            .then(_findMaps)
+            .then(function(params){
+                return Q.Promise(function(resolve, reject, notify) {
+                    var maps = params.maps;
+                    should(maps.length).be.equal(0);
+                    resolve(params);
+                });
+            })
+            .then (function (v) { done();  })
+            .catch(function (e) { done(e); })
+            .done();
+    });
+    
+    it('get a map of another user', function(done){
+        _createMap(null)
+            .then(function(params){
+                return Q.Promise(function(resolve, reject, notify) {
+                    params.req.user.href = 'notawardleymapper';
+                    resolve(params);
+                });
+            })
+            .then(_getMap)
+            .then (function (v) { 
+                done(new Error('CAN GET A MAP OF ANOTHER USER'));
+             })
+            .catch(function (e) { 
+                if(e.code === 404){
+                    done();
+                } else {
+                    done(e);
+                }
+            })
+            .done();
     });
     
     it('get initial progress state for legacy map without progress', function(done) {
@@ -148,225 +288,127 @@ describe('Maps', function() {
         });
     });
     
-    it('get initial progress state without privileges', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                }
-        };
-        var req2 = {
-                user : {
-                    href : 'notawardleymapper'
-                }
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = '' + response[0]._id;
-                self.maps.getProgressState(req2, mapid, function(r,err){
-                    try{
-                        should.exist(err);
-                        should.not.exist(r);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
+    it('get initial progress state', function(done){
+        _createMap(null)
+            .then(_findMaps)
+            .then(function(params){
+                return Q.Promise(function(resolve, reject, notify) {
+                    var maps = params.maps;
+                    should(maps.length).be.equal(1);
+                    should(maps[0]).have.property('_id');
+                    params.mapid = maps[0]._id;
+                    resolve(params);
                 });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
-    });
-
-    it('advance progress state without privileges', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                }
-        };
-        var req2 = {
-                user : {
-                    href : 'notawardleymapper'
-                }
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req2, mapid, function(r,err){
-                    try{
-                        should.exist(err);
-                        should.not.exist(r);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
+            })
+            .then(_getProgress)
+            .then(_assertProgress(0))
+            .then (function (v) { done();  })
+            .catch(function (e) { done(e); })
+            .done();
     });
     
-    it('advance progress state nr 1', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                }
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
 
-                var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r,err){
-                    try{
-                        should.not.exist(err);
-                        should(r.progress).be.equal(1);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
+    it('get initial progress state of another user map', function(done){
+        _createMap(null)
+        .then(_findMaps)
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                var maps = params.maps;
+                should(maps.length).be.equal(1);
+                should(maps[0]).have.property('_id');
+                params.mapid = maps[0]._id;
+                resolve(params);
+            });
+        })
+        .then(function(params){
+                return Q.Promise(function(resolve, reject, notify) {
+                    params.req.user.href = 'notawardleymapper';
+                    resolve(params);
                 });
-            } catch (e) {
+            })
+        .then(_getProgress)
+        .then(_assertProgress(0))
+        .then (function (v) { done(new Error('CAN GET A MAP PROGRESS OF ANOTHER USER'));  })
+        .catch(function (e) { 
+            if(e.code === 403){
+                done();
+            } else {
                 done(e);
-                return;
-            }
-        });
+            }})
+        .done();
+    });
+
+    it('advance progress of other user map', function(done){
+        _createMap(null)
+        .then(_findMaps)
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                var maps = params.maps;
+                should(maps.length).be.equal(1);
+                should(maps[0]).have.property('_id');
+                params.mapid = maps[0]._id;
+                resolve(params);
+            });
+        })
+        .then(function(params){
+                return Q.Promise(function(resolve, reject, notify) {
+                    params.req.user.href = 'notawardleymapper';
+                    resolve(params);
+                });
+            })
+        .then(_advanceProgress)
+        .then (function (v) { done(new Error('CAN UPDATE A MAP PROGRESS OF ANOTHER USER'));  })
+        .catch(function (e) { 
+            if(e.code === 403){
+                done();
+            } else {
+                done(e);
+            }})
+        .done();
     });
     
-    it('advance progress state nr 2', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                }
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r,err){
-                    try{
-                        should.not.exist(err);
-                        should(r.progress).be.equal(2);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
-    });
     
-    it('advance progress state without privileges', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                }
-        };
-        var req2 = {
-                user : {
-                    href : 'notawardleymapper'
-                }
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req2, mapid, function(r,err){
-                    try{
-                        should.exist(err);
-                        should.not.exist(r);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
-    });
     
-    it('advance progress state nr 3', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                }
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r,err){
-                    try{
-                        should.not.exist(err);
-                        should(r.progress).be.equal(3);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
-    });
-    
-    it('advance progress state nr 4', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                }
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = '' + response[0]._id;
-                self.maps.advanceProgressState(req, mapid, function(r,err){
-                    try{
-                        should.not.exist(err);
-                        should(r.progress).be.equal(4);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
+    it('test advancing progress state', function(done){
+        _createMap(null)
+        .then(_findMaps)
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                var maps = params.maps;
+                should(maps.length).be.equal(1);
+                should(maps[0]).have.property('_id');
+                params.mapid = maps[0]._id;
+                resolve(params);
+            });
+        })
+        .then(_getProgress)
+        .then(_assertProgress(0))
+        
+        .then(_advanceProgress)
+        .then(_getProgress)
+        .then(_assertProgress(1))
+        
+        .then(_advanceProgress)
+        .then(_getProgress)
+        .then(_assertProgress(2))
+        
+        .then(_advanceProgress)
+        .then(_getProgress)
+        .then(_assertProgress(3))
+        
+        
+        .then(_advanceProgress)
+        .then(_getProgress)
+        .then(_assertProgress(4))
+        
+        .then (function (v) { done();  })
+        .catch(function (e) { done(e); })
+        
+        .done();
     });
 
-    it('share a map to all', function(done) {
+
+    it('anonymous sharing', function(done) {
         var req = {
             user : {
                 href : 'wardleymapper'
@@ -377,84 +419,104 @@ describe('Maps', function() {
                 host : '127.0.0.1:8080'
             }
         };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = response[0]._id;
-                self.share.share(req, req.user.href, self.db.ObjectId(mapid), 'anonymous', function(result) {
-                    try {
-                        var req2 = {
+        var params = {req:req};
+        
+        _createMap(params)
+        .then(_findMaps)
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                var maps = params.maps;
+                should(maps.length).be.equal(1);
+                should(maps[0]).have.property('_id');
+                params.mapid = maps[0]._id;
+                resolve(params);
+            });
+        })
+        //share anonymous
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                self.share.share(params.req, params.req.user.href, self.db.ObjectId(params.mapid), 'anonymous', function(result) {
+                    params.shareResult = result;
+                    resolve(params);
+                });
+            });
+        })
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try {
+                    var req2 = {
                             user : {
                                 email : ''
                             }
                         };
                         var res2 = {
-                            setHeader : function() {
+                            setHeader : function(header,value) {
+                                //TODO: verify that each header is set just once.
+                                params.svgShareHeader = {header:header,value:value};
                             },
-                            send : function() {
-                                done()
+                            send : function(arg) {
+//                                console.log(arg); TODO: verify
+                                params.svgShareSent = arg;
+                                resolve(params);
                             }
                         };
-                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/anonymous/' + mapid + '/map.svg');
-                        self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
-                    } catch (e) {
-                        done(e);
-                    }
+                    should(params.shareResult).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/anonymous/' + params.mapid + '/map.svg');
+                    self.exp.createSharedSVG(req2, res2, params.mapid, 'map.svg');
+                } catch(e){
+                    reject(e);
+                }
+            });
+        })
+        
+        //unshare anonymous
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                self.share.share(params.req, params.req.user.href, self.db.ObjectId(params.mapid), 'unshareanonymous', function(result) {
+                    params.shareResult = result;
+                    resolve(params);
                 });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
-    });
-    
-    
-    it('unshare anonymous map', function(done) {
-        var req = {
-            user : {
-                href : 'wardleymapper'
-            },
-            body : {}
-        };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = response[0]._id;
-                self.share.share(req, req.user.href, self.db.ObjectId(mapid), 'unshareanonymous', function(result){
-                    try {
-                        var req2 = {
-                            user:{
+            });
+        })
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try {
+                    var req2 = {
+                            user : {
                                 email : ''
                             }
                         };
                         var res2 = {
-                            setHeader : function() {
+                            setHeader : function(header,value) {
+                                //TODO: verify that each header is set just once.
+//                                params.svgShareHeader = {header:header,value:value};
                             },
-                            send : function() {
-                                done('map should not be rendered');
+                            send : function(arg) {
+//                                console.log(arg); TODO: verify
+//                                params.svgShareSent = arg;
+                                reject(new Error('Map should not be rendered when it is not shared'));
                             },
-                            redirect : function() {
-                                done();
+                            redirect : function(target) {
+//                                console.log(target);
+                                resolve(params);
                             }
                         };
-                        should(result).not.have.property('url');
-                        self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
-                    } catch (e) {
-                        done(e);
-                    }
-                });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
+                    should(params.shareResult).not.have.property('url');
+                    self.exp.createSharedSVG(req2, res2, params.mapid, 'map.svg');
+                } catch(e){
+                    reject(e);
+                }
+            });
+        })
+        
+        .then (function (v) { done();  })
+        .catch(function (e) { done(e); })
+        
+        .done();
+ 
     });
+
     
-    it('share a map to b & c', function(done) {
+    it('precise share', function(done) {
         var req = {
             user : {
                 href : 'wardleymapper'
@@ -470,147 +532,225 @@ describe('Maps', function() {
                 }
             }
         };
-        self.maps.getMaps(req, function(response) {
-            try {
-                should(response.length).be.equal(1);
-                should(response[0]).have.property('_id');
-
-                var mapid = response[0]._id;
-                var req2 = {
-                        user : {
-                            href : 'b',
-                            email:'b'
-                        }
-                };
-                self.share.share(req, req.user.href, self.db.ObjectId(mapid), 'precise', function(result) {
-                    try {
-                        var res2 = {
-                            setHeader : function() {
-                            },
-                            send : function() {
-                                done();
-                            },
-                            redirect : function(){
-                                sinon.assert.fail('should have access to the map here');
-                            }
-                        };
-                        should(result).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/precise/' + mapid + '/map.svg');
-                        self.exp.createSharedSVG(req2, res2, mapid, 'map.svg');
-                    } catch (e) {
-                        done(e);
-                    }
+        var params = {req:req};
+        
+        _createMap(params)
+        .then(_findMaps)
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                var maps = params.maps;
+                should(maps.length).be.equal(1);
+                should(maps[0]).have.property('_id');
+                params.mapid = maps[0]._id;
+                resolve(params);
+            });
+        })
+        //share to b & c
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                self.share.share(params.req, params.req.user.href, self.db.ObjectId(params.mapid), 'precise', function(result) {
+                    params.shareResult = result;
+                    resolve(params);
                 });
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
+            });
+        })
+        // verify b has access
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try {
+                    var req2 = {
+                            user : {
+                                href : 'b',
+                                email:'b'
+                            }
+                    };
+                    var res2 = {
+                         setHeader : function(header,value) {
+                               //TODO: verify that each header is set just once.
+                                params.svgShareHeader = {header:header,value:value};
+                         },
+                         send : function(arg) {
+//                                console.log(arg); TODO: verify
+                                params.svgShareSent = arg;
+                                resolve(params);
+                         },
+                         redirect : function(){
+                             sinon.assert.fail('should have access to the map here');
+                         }
+                    };
+                    should(params.shareResult).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/precise/' + params.mapid + '/map.svg');
+                    self.exp.createSharedSVG(req2, res2, params.mapid, 'map.svg');
+                } catch(e){
+                    reject(e);
+                }
+            });
+        })
+        
+        // verify c has access
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try {
+                    var req2 = {
+                            user : {
+                                href : 'c',
+                                email:'c'
+                            }
+                    };
+                    var res2 = {
+                         setHeader : function(header,value) {
+                               //TODO: verify that each header is set just once.
+                                params.svgShareHeader = {header:header,value:value};
+                         },
+                         send : function(arg) {
+//                                console.log(arg); TODO: verify
+                                params.svgShareSent = arg;
+                                resolve(params);
+                         },
+                         redirect : function(){
+                             sinon.assert.fail('should have access to the map here');
+                         }
+                    };
+                    should(params.shareResult).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/precise/' + params.mapid + '/map.svg');
+                    self.exp.createSharedSVG(req2, res2, params.mapid, 'map.svg');
+                } catch(e){
+                    reject(e);
+                }
+            });
+        })
+        
+        // verify d has no access
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try {
+                    var req2 = {
+                            user : {
+                                href : 'd',
+                                email:'d'
+                            }
+                    };
+                    var res2 = {
+                         setHeader : function(header,value) {
+                               //TODO: verify that each header is set just once.
+                                params.svgShareHeader = {header:header,value:value};
+                         },
+                         send : function(arg) {
+                                sinon.assert.fail('should have access to the map here');
+                         },
+                         redirect : function(){
+                             resolve(params);
+                         }
+                    };
+                    should(params.shareResult).have.property('url').which.is.equal('http://127.0.0.1:8080/share/map/precise/' + params.mapid + '/map.svg');
+                    self.exp.createSharedSVG(req2, res2, params.mapid, 'map.svg');
+                } catch(e){
+                    reject(e);
+                }
+            });
+        })
+        
+        .then (function (v) { done();  })
+        .catch(function (e) { done(e); })
+        
+        .done();
     });
     
     
     it('clone a map', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                },
-                body : {}
-        };
-        var req2 = {
-                user : {
-                    href : 'wardleymapper'
+        _createMap(null)
+        .then(_findMaps)
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                var maps = params.maps;
+                should(maps.length).be.equal(1);
+                should(maps[0]).have.property('_id');
+                params.mapid = maps[0]._id;
+                resolve(params);
+            });
+        })
+        //clone the map
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                var res = {
+                        redirect : function(url){
+                            // the last arg /map/561013b770184042513e307c
+                            var clonedMapId = url.split('/')[2];
+                            params.clonedMapId = clonedMapId;
+                            resolve(params);
+                        }
+                };
+                self.maps.cloneMap(params.req, res, params.mapid);
+            });
+        })
+        
+        .then(_findMaps)
+        // verify there are two maps
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try{
+                    var maps = params.maps;
+                    should(maps.length).be.equal(2);
+                    should(maps[0]).have.property('_id');
+                    should(maps[1]).have.property('_id');
+                    resolve(params);
+                }catch(e){
+                    reject(e);
                 }
-        };
-        var res2 = {
-                redirect : function(url){
-                    // the last arg /map/561013b770184042513e307c
-                    var clonedMapId = url.split('/')[2];
-                    done();
+            });
+        })
+        
+        //verify maps are related
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try{
+                    params.req.params = {mapid:params.mapid}; //set the map to query
+                    var res = {
+                            json : function(data){
+                                var relation = data[0];
+                                should(relation).have.property('type').which.is.equal('clone');
+                                should(relation).have.property('clonedSource').which.is.equal(''+params.mapid);
+                                should(relation).have.property('clonedTarget').which.is.equal(''+params.clonedMapId);
+                                resolve(params);
+                            }
+                    };
+                    self.maps.findRelatedMaps(params.req, res);
+                }catch(e){
+                    reject(e);
                 }
-        };
-        self.maps.getMaps(req, function(response){
-            try{
-                var mapid = response[0]._id;
-                self.maps.cloneMap(req2, res2, mapid);
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
-    });
+            });
+        })
+        //verify maps are related both ways
+        .then(function(params){
+            return Q.Promise(function(resolve, reject, notify) {
+                try{
+                    params.req.params = {mapid:params.clonedMapId}; //set the map to query
+                    var res = {
+                            json : function(data){
+                                var relation = data[0];
+                                should(relation).have.property('type').which.is.equal('clone');
+                                should(relation).have.property('clonedSource').which.is.equal(''+params.mapid);
+                                should(relation).have.property('clonedTarget').which.is.equal(''+params.clonedMapId);
+                                resolve(params);
+                            }
+                    };
+                    self.maps.findRelatedMaps(params.req, res);
+                }catch(e){
+                    reject(e);
+                }
+            });
+        })
+        
+        .then (function (v) { done();  })
+        .catch(function (e) { done(e); })
+        
+        .done();
 
-    it('find related maps', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                },
-                body : {}
-        };
-        self.maps.getMaps(req, function(response){
-            try{
-                var mapid = response[0]._id;
-                var mapid2 = response[1]._id;
-                var req2 = {
-                        user : {
-                            href : 'wardleymapper'
-                        },
-                        params : {
-                            mapid : mapid
-                        }
-                };
-                var res2 = {
-                        json : function(data){
-                            var relation = data[0];
-                            should(relation).have.property('type').which.is.equal('clone');
-                            should(relation).have.property('clonedSource').which.is.equal(''+mapid);
-                            should(relation).have.property('clonedTarget').which.is.equal(''+mapid2);
-                            done();
-                        }
-                };
-                self.maps.findRelatedMaps(req2, res2);
-            } catch (e) {
-                done(e);
-                return;
-            }
-        });
     });
     
-    it('find related maps - reversed', function(done){
-        var req = {
-                user : {
-                    href : 'wardleymapper'
-                },
-                body : {}
-        };
-        self.maps.getMaps(req, function(response){
-            try{
-                var mapid = response[0]._id;
-                var mapid2 = response[1]._id;
-                var req2 = {
-                        user : {
-                            href : 'wardleymapper'
-                        },
-                        params : {
-                            mapid : mapid2 // <- this is the only difference with the previous test
-                        }
-                };
-                var res2 = {
-                        json : function(data){
-                            var relation = data[0];
-                            should(relation).have.property('type').which.is.equal('clone');
-                            should(relation).have.property('clonedSource').which.is.equal(''+mapid);
-                            should(relation).have.property('clonedTarget').which.is.equal(''+mapid2);
-                            done();
-                        }
-                };
-                self.maps.findRelatedMaps(req2, res2);
-            } catch (e) {
-                done(e);
-                return;
-            }
+    afterEach(function(done){
+        self.db.dropDatabase(function(){
+            done();
         });
     });
-    
-    
     after(function() {
         self.db.dropDatabase();
     });

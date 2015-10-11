@@ -299,7 +299,13 @@ var mapmodule = function(db, share) {
     var _prepareMapToFullDisplay = function(params, callback){
         var deferred = Q.defer();
         var maps = params.mapsNoHistory;
-
+        
+        if(maps.length === 0){
+            var err = new Error('no map to display');
+            err.code = 404;
+            deferred.reject(err);
+            return deferred.promise.nodeify(callback);
+        }
         if (!maps[0].history[0].nodes) {
                 maps[0].history[0].nodes = [];
         }
@@ -631,7 +637,12 @@ var mapmodule = function(db, share) {
                 .then(function(p){
                     callback(p.mapToDisplay);
                 })
-                .catch(logger.error.bind(logger))
+                .catch(function(e){
+                    if(e.code == 404){
+                        callback(e);
+                    }
+                    logger.error.bind(logger);
+                })
                 .done();
         },
 

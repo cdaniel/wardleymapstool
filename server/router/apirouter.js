@@ -58,7 +58,16 @@ module.exports = function(maps, exportmap){
 	});
 
 	module.router.get('/map/:mapid', function(req, res) {
-		maps.getMap(req, req.params.mapid, res.send.bind(res));
+		maps.getMap(req, req.params.mapid, function(arg){
+		    if(arg instanceof Error){
+		        if(arg.code === 404){
+		            res.sendStatus(404);
+		        } else {
+		            res.sendStatus(500);
+		        }
+		    }
+		    res.send.bind(res)(arg);
+		});
 	});
 
 
