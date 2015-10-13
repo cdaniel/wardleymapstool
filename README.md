@@ -10,7 +10,7 @@ There are people who understand the difference between a professional and a "pro
 
 ![Dilbert strategy picture](https://pbs.twimg.com/media/CFOKU-7WEAEl6WZ.jpg:large)
 
-If the table below does not ring a bell, you should check [my mapping portal](http://wardleymaps.com/learn.html) in order to gather the
+If the table below does not ring a bell with you, go and check [my mapping portal](http://wardleymaps.com/learn.html) in order to gather the
 minimal required knowledge (for free).
 
 
@@ -24,7 +24,7 @@ minimal required knowledge (for free).
 
 
 
-Now, if you know what a Wardley Map is, I have a good news for you - I wrote a tool that makes map creation much easier.
+However, if you know what a Wardley Map is, I have a good news for you - I wrote a tool that makes map creation much easier.
 You can now easily create map, share it with someone, download as png, or create variants and evaluate them.
  
 If you still are not sure whether this tool is for you, check [the Atlas live instance](https://atlas.wardleymaps.com).
@@ -38,5 +38,6 @@ Support, questions and similar:
 -----------------
 Via twitter [@wardleymaps](https://twitter.com/wardleymaps). Don't hesistate to ask, I will do what I can to help you.
 
-~Logo usage:~
-Please note that logos identifying wardleymaps.com are protected and therefore should not be used if the tool is used commercially outside of wardleymaps.com.
+**Logo usage guide:**
+
+Logos visually identifying Atlas and wardleymaps.com are protected and should not be used if Atlas is used to offer commercial services.
