@@ -53,9 +53,7 @@
     "mocha": "*",
     "should": "*",
     "sinon": "*",
-    "bower": "*",
-    "coveralls": "~2.11.4",
-    "mocha-lcov-reporter": "~1.0.0"
+    "bower": "*"
   },
   "main": "server/server.js",
   "files": [
