@@ -2,6 +2,7 @@ Atlas, the Wardley Mapping Tool
 ===============
 
 [![Build Status](https://travis-ci.org/cdaniel/wardleymapstool.svg?branch=master)](https://travis-ci.org/cdaniel/wardleymapstool)
+[![Coverage Status](https://coveralls.io/repos/cdaniel/wardleymapstool/badge.svg?branch=master&service=github)](https://coveralls.io/github/cdaniel/wardleymapstool?branch=master)
 
 Preface
 -------------
