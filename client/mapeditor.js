@@ -658,6 +658,7 @@ function initalizeJSPlumb() {
                 }, true);
                 progressHelper.updateNodeAccordingToProgressState(n);
                 n.focus();
+                fireDirty();
             } else {
                 if (selectedConnection) {
                     toggleConnectionSelectedStyle(selectedConnection, false);
@@ -669,7 +670,6 @@ function initalizeJSPlumb() {
                 }
             }
 			updateSelectionMenus();
-			fireDirty();
 		}
 	});
 	// programatically created connections have menu created during creation,
