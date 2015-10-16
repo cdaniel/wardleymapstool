@@ -53,7 +53,7 @@
     "mocha": "*",
     "should": "*",
     "sinon": "*",
-    "bower": "*"
+    "bower": "1.6.3"
   },
   "main": "server/server.js",
   "files": [
