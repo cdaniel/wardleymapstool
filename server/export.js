@@ -262,6 +262,7 @@ var draw = function(res, filename, map, config){
                             });
                         });
                     }, {
+						dnodeOpts: {weak: false},
                         onExit : function() {
                             console.log('cleaned up');
                             res.statusCode = 200;

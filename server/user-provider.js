@@ -29,10 +29,17 @@ module.exports = function(app) {
         var user = new require('./user')();
 
         app.use(stormpath.init(app, {
-            apiKeyId : stormpathconfig.getApiKeyId(),
-            apiKeySecret : stormpathconfig.getApiKeySecret(),
-            secretKey : stormpathconfig.getSecretKey(),
-            application : stormpathconfig.getApplication(),
+            client: {
+                apiKey: {
+                  id: stormpathconfig.getApiKeyId(),
+                  secret: stormpathconfig.getApiKeySecret()
+                }
+             },
+            application: {
+                href: stormpathconfig.getApplication()
+            },
+            website : true,
+            api : true,
             postRegistrationHandler : function(account, req, res, next) {
                 user.processLoginInfo(account, res, next);
             },
@@ -43,10 +50,37 @@ module.exports = function(app) {
                     clientSecret : googleauth.getClientSecret(),
                 },
             },
-            expandProviderData : true,
-            expandCustomData : true,
-            registrationView: __dirname + '/../client/views/register.jade',
-            loginView: __dirname + '/../client/views/login.jade',
+            expand: {
+                customData: true,
+                providerData : true
+            },
+            web : {
+                login: {
+                    view: __dirname + '/../client/views/' + 'login.jade'
+                },
+                register : {
+                    enable: true,
+                    view: __dirname + '/../client/views/' + 'register.jade',
+                    fields: {
+                        email : {
+                            required: true
+                        },
+                        password : {
+                            required: true
+                        },
+                        passwordConfirm : {
+                            required: true
+                        },
+                        "tc" : {
+                            required: true,
+                            type: 'checkbox',
+                            name:"tc",
+                            placeholder:"I hereby accept terms and conditions"
+                        },
+                    },
+                    fieldOrder: [ "email", "password", "passwordConfirm" ]
+                }
+            },
             templateContext : {
                 toc : config.toc ? config.toc : false,
                 tocupdate : config.tocupdate

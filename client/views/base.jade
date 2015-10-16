@@ -125,6 +125,22 @@ html(class='no-js', lang='en')
         -ms-filter: "progid:DXImageTransform.Microsoft.gradient (GradientType=0, startColorstr=#e8503c, endColorstr=#ea604e)";
       }
 
+      .btn-linkedin {
+        background: -webkit-linear-gradient(#007cbc 50%, #0077B5 50%);
+        background: linear-gradient(#007cbc 50%, #0077B5 50%);
+        filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#007cbc, endColorstr=#0077B5);
+        -ms-filter: "progid:DXImageTransform.Microsoft.gradient (GradientType=0, startColorstr=#007cbc, endColorstr=#0077B5)";
+      }
+
+      .btn-linkedin:hover,
+      .btn-linkedin:focus {
+        color: #fff;
+        background: -webkit-linear-gradient(#007cbc 50%, #0077B5 50%);
+        background: linear-gradient(#007cbc 50%, #0077B5 50%);
+        filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#007cbc, endColorstr=#0077B5);
+        -ms-filter: "progid:DXImageTransform.Microsoft.gradient (GradientType=0, startColorstr=#007cbc, endColorstr=#0077B5)";
+      }
+
       .btn-register {
         font-size: 16px;
       }
@@ -165,7 +181,22 @@ html(class='no-js', lang='en')
       }
 
       .view input[type="text"],
-      .view input[type="password"] {
+      .view input[type="checkbox"],
+      .view input[type="password"],
+      .view input[type="email"],
+      .view input[type="color"],
+      .view input[type="date"],
+      .view input[type="datetime"]
+      .view input[type="datetime-local"],
+      .view input[type="email"],
+      .view input[type="month"],
+      .view input[type="number"],
+      .view input[type="range"],
+      .view input[type="search"],
+      .view input[type="tel"],
+      .view input[type="time"],
+      .view input[type="url"],
+      .view input[type="week"]{
         background-color: #f6f6f6;
         height: 45px;
       }
