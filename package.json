@@ -34,7 +34,7 @@
     "cookie-parser": "~1.4.0",
     "express-session": "~1.12.1",
     "body-parser": "~1.14.1",
-    "multer": "~1.0.6",
+    "multer": "~1.1.0",
     "morgan": "~1.6.1",
     "errorhandler": "~1.4.2",
     "phantom": "~0.8.0",
