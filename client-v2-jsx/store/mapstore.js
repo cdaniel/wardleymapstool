@@ -28,8 +28,12 @@ function normalize(params){
     normalizedNode.id = node.id;
     normalizedNode.positionX = (node.drop.left - params.left) / params.width;
     normalizedNode.positionY = (node.drop.top - params.top) / params.height;
-    _nodes.push(normalizedNode);
-    changed = true;
+    // accept only nodes that are within map canvas
+    if( (normalizedNode.positionX > 0 && normalizedNode.positionX < 1)
+        && (normalizedNode.positionY > 0 && normalizedNode.positionY < 1) ){
+      _nodes.push(normalizedNode);
+      changed = true;
+    }
   }
   return changed;
 }

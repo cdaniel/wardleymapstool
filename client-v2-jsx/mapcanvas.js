@@ -22,7 +22,7 @@ var MapCanvas = React.createClass({
   componentDidMount: function() {
     this.props.store.addChangeListener(this._onChange);
     this.props.store.addChangeListener(this._normalizeDrop, MapConstants.DROP_EVENT);
-    //TODO: react to resize
+    //TODO: maybe react to resize
     this.setState(
       {offset : {
         top : this.refs.root.offsetTop,
@@ -80,6 +80,7 @@ var MapCanvas = React.createClass({
       var left = this.state.offset.left;
       var width = jquery(this.refs.root).width();
       var height = jquery(this.refs.root).height();
+      var root = this.refs.root;
       setTimeout(function(){
         MapActions.normalize({
           left : left,

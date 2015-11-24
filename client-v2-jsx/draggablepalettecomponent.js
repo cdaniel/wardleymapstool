@@ -23,13 +23,13 @@ var DraggablePaletteComponent = React.createClass({
                           stop : function(param){
                               //TODO: check whether drop has a valid target
                               var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-                              var target = {'top' : param.pos[1], 'left' : param.pos[0], target : param.e.target, id: id};
+                              var target = {'top' : param.pos[1], 'left' : param.pos[0], id: id};
                               MapActions.createNodeFromDrop(target);
                           }
                       });
                     }
                   }>
-                    <MapComponent inline  store={store}/>&nbsp; {this.props.name}
+                  <MapComponent inline  store={store}/>&nbsp; {this.props.name}
                 </div>
             </Button>
 
