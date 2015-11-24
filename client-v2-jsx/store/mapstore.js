@@ -1,41 +1,65 @@
- var MapDispatcher = require('../dispatcher/mapdispatcher');
+var MapDispatcher = require('../dispatcher/mapdispatcher');
 var EventEmitter = require('events').EventEmitter;
 var MapConstants = require('../constants/mapconstants');
 var assign = require('object-assign');
 
-var CHANGE_EVENT = 'change';
-var DROP_EVENT = 'drop';
 
 var _nodes = [];
-var drag = false;
+var _nodesToCreate = [];
+
+var mapMode = null;
 
 function createFromDrop(drop) {
   // Hand waving here -- not showing how this interacts with XHR or persistent
   // server-side storage.
   // Using the current timestamp + random number in place of a real id.
   var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-  _nodes.push({
+  _nodesToCreate.push({
     id: id,
     drop: drop
   });
 }
 
+function normalize(params){
+  var changed = false;
+  var node;
+  while( node = _nodesToCreate.pop() ) {
+    var normalizedNode = {};
+    normalizedNode.id = node.id;
+    normalizedNode.positionX = (node.drop.left - params.left) / params.width;
+    normalizedNode.positionY = (node.drop.top - params.top) / params.height;
+    _nodes.push(normalizedNode);
+    changed = true;
+  }
+  return changed;
+}
+
 var MapStore = assign({}, EventEmitter.prototype, {
 
   getAll: function() {
-    return {nodes:_nodes, drag:drag};
+    return {nodes:_nodes, tocreate:_nodesToCreate, mapMode:mapMode};
   },
 
   emitChange: function() {
-    this.emit(CHANGE_EVENT);
+    this.emit(MapConstants.CHANGE_EVENT);
   },
 
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
+  emitDrop: function(){
+    this.emit(MapConstants.DROP_EVENT);
   },
 
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
+  addChangeListener: function(callback, event) {
+    if(!event) {
+        event = MapConstants.CHANGE_EVENT;
+    }
+    this.on(event, callback);
+  },
+
+  removeChangeListener: function(callback, event) {
+    if(!event) {
+        event = MapConstants.CHANGE_EVENT;
+    }
+    this.removeListener(event, callback);
   }
 });
 
@@ -45,11 +69,20 @@ MapDispatcher.register(function(action) {
     case MapConstants.MAP_CREATE_NODE_FROM_DROP:
       if (action.drop !== null) {
         createFromDrop(action.drop);
-        MapStore.emitChange();
+        MapStore.emitDrop();
       }
       break;
-   case MapConstants.MAP_EDITOR_TOGGLE_DRAG:
-          drag = !drag;
+   case MapConstants.MAP_NEW_NODE:
+      if( normalize(action.params) ){
+          MapStore.emitChange();
+      }
+      break;
+   case MapConstants.MAP_EDITOR_DRAG_MODE:
+          if( mapMode === action.targetAction){
+            mapMode = null;
+          } else {
+            mapMode = action.targetAction;
+          }
           MapStore.emitChange();
         break;
     default:

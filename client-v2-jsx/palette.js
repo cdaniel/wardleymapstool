@@ -3,8 +3,10 @@ var React = require('react');
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
 var Button = require('react-bootstrap').Button;
 var MapComponent = require('./mapcomponent');
-var PaletteComponent = require('./palettecomponent');
+var ActionPaletteComponent = require('./actionpalettecomponent');
+var DraggablePaletteComponent = require('./draggablepalettecomponent');
 var MapActions = require('./actions/mapactions');
+var MapConstants = require('./constants/mapconstants');
 
 var paletteStyle = {
   minWidth : 150,
@@ -26,14 +28,14 @@ render: function() {
   var store = this.props.store;
   var components = this.state.items.map(
     function(component){
-      return <PaletteComponent name={component.name}  store={store}/>;
+      return <DraggablePaletteComponent name={component.name}  store={store}/>;
     }
   );
   return (
     <div style={paletteStyle}>
       <ButtonGroup vertical block>
         {components}
-        <PaletteComponent name="Move" toggle="toggle" store={store}/>
+        <ActionPaletteComponent name="Move" toggle={MapConstants.MAP_EDITOR_DRAG_MODE} store={store}/>
       </ButtonGroup>
     </div>
   );

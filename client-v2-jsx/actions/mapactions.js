@@ -10,9 +10,17 @@ var MapActions = {
    });
  },
 
- toggleDrop : function() {
+ normalize: function(params){
    MapDispatcher.dispatch({
-    actionType: MapConstants.MAP_EDITOR_TOGGLE_DRAG
+     actionType: MapConstants.MAP_NEW_NODE,
+     params : params
+   });
+ },
+
+ toggleMode : function(targetAction) {
+   MapDispatcher.dispatch({
+    actionType: MapConstants.MAP_EDITOR_DRAG_MODE,
+    targetAction : targetAction
   });
  }
 

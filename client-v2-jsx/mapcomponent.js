@@ -1,6 +1,9 @@
 /** @jsx React.DOM */
+/** globals jsPlumb: false */
+
 var React = require('react');
 var _ = require('underscore');
+var MapConstants = require('./constants/mapconstants');
 
 var mapComponentStyle = {
   border: '1 solid black',
@@ -24,22 +27,25 @@ var nonInlinedStyle = {
 var counter = 0;
 var offset = {top: 0, left : 0};
 
+
 var MapComponent = React.createClass({
   id : null,
 
   componentDidUpdate : function ( prevProps,  prevState){
-    jsPlumb.draggable(this.id, {
-      ignoreZoom:true,
-      containment:true
-    });
-    jsPlumb.setDraggable(this.id, this.props.drag);
+    if(this.props.mapMode === MapConstants.MAP_EDITOR_DRAG_MODE){
+      jsPlumb.draggable(this.id, {
+        ignoreZoom:true,
+        containment:true
+      });
+      jsPlumb.setDraggable(this.id, true);
+    } else {
+      jsPlumb.setDraggable(this.id, false);
+    }
   },
 
   render: function() {
     var that = this;
     var drag = this.props.drag;
-    console.log(drag);
-    console.log(this.props);
     if(drag === null){
       drag = false;
     }
@@ -51,24 +57,18 @@ var MapComponent = React.createClass({
     if(this.props.offset){
       offset = this.props.offset;
     }
-    if(this.props.drop){
-      mapComponentStyle.left = this.props.drop.left - offset.left;
-      mapComponentStyle.top = this.props.drop.top - offset.top;
+    if(this.props.position){
+      mapComponentStyle.left =
+        this.props.position.positionX * this.props.canvasSize.width;
+      mapComponentStyle.top =
+        this.props.position.positionY * this.props.canvasSize.height;
     }
-    if(!this.props.id){
-      this.props.id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-    }
+    that.id = this.props.id;
     return (
       <div
         style={mapComponentStyle}
         id={this.props.id}
-        ref={
-          function(c){
-            if(c){
-              that.id = c.id;
-            }
-          }
-        }>
+        >
       </div>
     );
   }

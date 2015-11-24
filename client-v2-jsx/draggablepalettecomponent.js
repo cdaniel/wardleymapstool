@@ -8,33 +8,28 @@ var outerStyle = {
     position: 'relative'
 };
 
-var PaletteComponent = React.createClass({
-  handleClickMove : function(event){
-    MapActions.toggleDrop();
-  },
+var DraggablePaletteComponent = React.createClass({
     render: function() {
-      var toggle = this.props.toggle;
-      if(toggle){
-        toggle = this.handleClickMove;
-      }
       var store = this.props.store;
         return (
-            <Button href="#" style={outerStyle} onClick={toggle}>
+            <Button href="#" style={outerStyle}>
                 <div ref={
                     function(input){
                       jsPlumb.draggable(input, {
                           clone : 'true',
                           ignoreZoom:true,
                           grid:['50','50'],
+                          containment:true,
                           stop : function(param){
                               //TODO: check whether drop has a valid target
-                              var target = {'top' : param.pos[1], 'left' : param.pos[0]};
+                              var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
+                              var target = {'top' : param.pos[1], 'left' : param.pos[0], target : param.e.target, id: id};
                               MapActions.createNodeFromDrop(target);
                           }
                       });
                     }
                   }>
-                    <MapComponent inline  store={store} />&nbsp; {this.props.name}
+                    <MapComponent inline  store={store}/>&nbsp; {this.props.name}
                 </div>
             </Button>
 
@@ -43,4 +38,4 @@ var PaletteComponent = React.createClass({
 
 });
 
-module.exports = PaletteComponent;
+module.exports = DraggablePaletteComponent;
