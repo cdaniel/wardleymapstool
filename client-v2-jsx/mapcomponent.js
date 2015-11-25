@@ -4,6 +4,7 @@
 var React = require('react');
 var _ = require('underscore');
 var MapConstants = require('./constants/mapconstants');
+var MapActions= require('./actions/mapactions');
 
 var mapComponentStyle = {
   minHeight: 20,
@@ -43,12 +44,16 @@ var nonInlinedStyle = {
 
 var MapComponent = React.createClass({
   id : null,
+  left : 0,
+  top : 0,
+  positioned : false,
 
   componentDidUpdate : function ( prevProps,  prevState){
     if(this.props.mapMode === MapConstants.MAP_EDITOR_DRAG_MODE){
       jsPlumb.draggable(this.id, {
         ignoreZoom:true,
-        containment:true
+        containment:true,
+        grid: [50,50]
       });
       jsPlumb.setDraggable(this.id, true);
     } else {
@@ -63,30 +68,38 @@ var MapComponent = React.createClass({
     }
   },
 
+  delete : function(){
+    jsPlumb.detachAllConnections(this.id);
+    jsPlumb.removeAllEndpoints(this.id);
+    jsPlumb.detach(this.id);
+    MapActions.deleteNode(this.id);
+  },
+
   render: function() {
     var that = this;
-    var drag = this.props.drag;
-    if(drag === null){
-      drag = false;
-    }
-    if(this.props.inline){
+
+    if(that.props.inline){
       mapComponentStyle = _.extend(mapComponentStyle, inlinedStyle);
     } else {
       mapComponentStyle = _.extend(mapComponentStyle, nonInlinedStyle);
     }
-    console.log(this.props.styleOverride);
-    mapComponentStyle = _.extend(mapComponentStyle, this.props.styleOverride);
-    if(this.props.position){
-      mapComponentStyle.left =
-        this.props.position.positionX * this.props.canvasSize.width;
-      mapComponentStyle.top =
-        this.props.position.positionY * this.props.canvasSize.height;
+    mapComponentStyle = _.extend(mapComponentStyle, that.props.styleOverride);
+
+    if(that.props.position){
+      this.left = this.props.position.positionX * this.props.canvasSize.width;
+      mapComponentStyle.left = this.left;
+      this.top = this.props.position.positionY * this.props.canvasSize.height;
+      mapComponentStyle.top = this.top;
+      this.positioned = true;
     }
+
     that.id = this.props.id;
+
     return (
       <div
         style={mapComponentStyle}
         id={this.props.id}
+        onClick={this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE ? this.delete : null}
         >
       </div>
     );

@@ -21,8 +21,15 @@ var MapActions = {
    MapDispatcher.dispatch({
     actionType: MapConstants.MAP_EDITOR_DRAG_MODE,
     targetAction : targetAction
-  });
- }
+    });
+  },
+
+  deleteNode: function(id){
+    MapDispatcher.dispatch({
+     actionType: MapConstants.MAP_DELETE_NODE,
+     id : id
+   });
+  }
 
 };
 

@@ -18,6 +18,7 @@ function createFromDrop(drop) {
     id: id,
     drop: drop
   });
+  mapMode = null;
 }
 
 function normalize(params){
@@ -40,6 +41,14 @@ function normalize(params){
   return changed;
 }
 
+function deleteNode(id){
+  for(var i =0; i < _nodes.length; i++){
+    if(_nodes[i].id === id){
+      _nodes.splice(i,1);
+      return;
+    }
+  }
+}
 var MapStore = assign({}, EventEmitter.prototype, {
 
   getAll: function() {
@@ -91,6 +100,10 @@ MapDispatcher.register(function(action) {
           }
           MapStore.emitChange();
         break;
+   case MapConstants.MAP_DELETE_NODE:
+           deleteNode(action.id);
+           MapStore.emitChange();
+           break;
     default:
       // no op
   }
