@@ -18,6 +18,7 @@ var mapCanvasStyle = {
 };
 
 var MapCanvas = React.createClass({
+  id : (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
 
   componentDidMount: function() {
     this.props.store.addChangeListener(this._onChange);
@@ -34,6 +35,7 @@ var MapCanvas = React.createClass({
       }
       }
     );
+    jsPlumb.setContainer(this.id);
   },
 
   componentWillUnmount: function() {
@@ -52,6 +54,8 @@ var MapCanvas = React.createClass({
     var props = this.props;
     var mapMode = this.state.mapMode;
     var store = this.props.store;
+    var id = this.id;
+
     var components = this.state.nodes.map(
       function(component){
         return <MapComponent
@@ -64,7 +68,7 @@ var MapCanvas = React.createClass({
       }
     );
     return (
-      <div style={mapCanvasStyle} ref="root">
+      <div style={mapCanvasStyle} ref="root" id={id}>
         {components}
       </div>
     );

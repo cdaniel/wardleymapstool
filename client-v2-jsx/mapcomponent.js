@@ -21,6 +21,15 @@ var inlinedStyle = {
   verticalAlign : 'middle'
 };
 
+var endpointOptions = {
+        isTarget:true,
+        maxConnections:5,
+        endpoint:"Rectangle",
+        paintStyle:{ fillStyle:"gray" },
+        allowLoopback:false,
+        anchor : "TopCenter"
+};
+
 var nonInlinedStyle = {
   position: 'absolute'
 };
@@ -40,6 +49,13 @@ var MapComponent = React.createClass({
       jsPlumb.setDraggable(this.id, true);
     } else {
       jsPlumb.setDraggable(this.id, false);
+    }
+    if(this.props.mapMode === MapConstants.MAP_EDITOR_CONNECT_MODE){
+      jsPlumb.makeTarget(this.id,endpointOptions);
+      jsPlumb.makeSource(this.id,{anchor : "BottomCenter"});
+    } else {
+      jsPlumb.unmakeSource(this.id);
+      jsPlumb.unmakeTarget(this.id);
     }
   },
 

@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ButtonGroup = require('react-bootstrap').ButtonGroup;
+var Well = require('react-bootstrap').Well;
 var Button = require('react-bootstrap').Button;
 var MapComponent = require('./mapcomponent');
 var ActionPaletteComponent = require('./actionpalettecomponent');
@@ -36,6 +37,8 @@ render: function() {
       <ButtonGroup vertical block>
         {components}
         <ActionPaletteComponent name="Move" toggle={MapConstants.MAP_EDITOR_DRAG_MODE} store={store}/>
+        <ActionPaletteComponent name="Connect" toggle={MapConstants.MAP_EDITOR_CONNECT_MODE} store={store}/>
+        <ActionPaletteComponent name="Delete" toggle={MapConstants.MAP_EDITOR_DELETE_MODE} store={store}/>
       </ButtonGroup>
     </div>
   );
