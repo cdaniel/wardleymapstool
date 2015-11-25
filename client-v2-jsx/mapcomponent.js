@@ -6,8 +6,6 @@ var _ = require('underscore');
 var MapConstants = require('./constants/mapconstants');
 
 var mapComponentStyle = {
-  border: '1 solid black',
-  backgroundColor: 'silver',
   minHeight: 20,
   minWidth: 20,
   maxWidth: 20,
@@ -22,20 +20,26 @@ var inlinedStyle = {
 };
 
 var endpointOptions = {
-        isTarget:true,
-        maxConnections:5,
-        endpoint:"Rectangle",
-        paintStyle:{ fillStyle:"gray" },
+        paintStyle:{ fillStyle:"transparent", outlineColor:'transparent' },
         allowLoopback:false,
-        anchor : "TopCenter"
+        connector : "Straight",
+        connectorStyle : {
+          lineWidth : 2,
+          strokeStyle : 'silver',
+          outlineColor:"transparent",
+          outlineWidth:10
+        },
+        endpoint : [ "Dot", {
+          radius : 1
+        } ],
+        deleteEndpointsOnDetach : false,
+        uniqueEndpoints : true
 };
+
 
 var nonInlinedStyle = {
   position: 'absolute'
 };
-var counter = 0;
-var offset = {top: 0, left : 0};
-
 
 var MapComponent = React.createClass({
   id : null,
@@ -51,8 +55,8 @@ var MapComponent = React.createClass({
       jsPlumb.setDraggable(this.id, false);
     }
     if(this.props.mapMode === MapConstants.MAP_EDITOR_CONNECT_MODE){
-      jsPlumb.makeTarget(this.id,endpointOptions);
-      jsPlumb.makeSource(this.id,{anchor : "BottomCenter"});
+      jsPlumb.makeTarget(this.id, endpointOptions, {anchor: "TopCenter"});
+      jsPlumb.makeSource(this.id, endpointOptions, {anchor : "BottomCenter"});
     } else {
       jsPlumb.unmakeSource(this.id);
       jsPlumb.unmakeTarget(this.id);
@@ -70,9 +74,8 @@ var MapComponent = React.createClass({
     } else {
       mapComponentStyle = _.extend(mapComponentStyle, nonInlinedStyle);
     }
-    if(this.props.offset){
-      offset = this.props.offset;
-    }
+    console.log(this.props.styleOverride);
+    mapComponentStyle = _.extend(mapComponentStyle, this.props.styleOverride);
     if(this.props.position){
       mapComponentStyle.left =
         this.props.position.positionX * this.props.canvasSize.width;

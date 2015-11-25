@@ -60,6 +60,8 @@ var MapCanvas = React.createClass({
       function(component){
         return <MapComponent
           id={component.id}
+          key={component.id}
+          styleOverride={component.styleOverride}
           position={component}
           offset={offset}
           canvasSize={size}
@@ -79,7 +81,6 @@ var MapCanvas = React.createClass({
   },
 
   _normalizeDrop : function(){
-    //TODO: safety check, maybe some parallel handling, maybe more events in one call
       var top = this.state.offset.top;
       var left = this.state.offset.left;
       var width = jquery(this.refs.root).width();

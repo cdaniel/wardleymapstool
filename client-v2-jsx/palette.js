@@ -19,9 +19,12 @@ var paletteStyle = {
 var Palette = React.createClass({
   getInitialState : function(){
     return {items:[
-      {key:'userneed', name : 'User need'},
-      {key:'internalcomponent', name : 'Internal Component'},
-      {key:'externalcomponent', name : 'External Component'}
+      {key:'userneed', name : 'User need', styleOverride: {border: '2px solid black',
+      backgroundColor: 'silver'}},
+      {key:'internal', name : 'Internal Component', styleOverride: {border: '1px solid black',
+      backgroundColor: 'silver'}},
+      {key:'external', name : 'External Component', styleOverride: {border: '1px solid black',
+      backgroundColor: 'white'}}
     ]
   };
 },
@@ -29,7 +32,7 @@ render: function() {
   var store = this.props.store;
   var components = this.state.items.map(
     function(component){
-      return <DraggablePaletteComponent name={component.name}  store={store}/>;
+      return <DraggablePaletteComponent name={component.name}  store={store} key={component.key} styleOverride={component.styleOverride}/>;
     }
   );
   return (

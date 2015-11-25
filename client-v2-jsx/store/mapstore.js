@@ -26,6 +26,8 @@ function normalize(params){
   while( node = _nodesToCreate.pop() ) {
     var normalizedNode = {};
     normalizedNode.id = node.id;
+    normalizedNode.key = node.drop.key;
+    normalizedNode.styleOverride = node.drop.styleOverride;
     normalizedNode.positionX = (node.drop.left - params.left) / params.width;
     normalizedNode.positionY = (node.drop.top - params.top) / params.height;
     // accept only nodes that are within map canvas

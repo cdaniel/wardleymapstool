@@ -11,6 +11,8 @@ var outerStyle = {
 var DraggablePaletteComponent = React.createClass({
     render: function() {
       var store = this.props.store;
+      var props = this.props;
+      var key = this.props.key;
         return (
             <Button href="#" style={outerStyle}>
                 <div ref={
@@ -21,15 +23,14 @@ var DraggablePaletteComponent = React.createClass({
                           grid:['50','50'],
                           containment:true,
                           stop : function(param){
-                              //TODO: check whether drop has a valid target
                               var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-                              var target = {'top' : param.pos[1], 'left' : param.pos[0], id: id};
+                              var target = {'top' : param.pos[1], 'left' : param.pos[0], id: id, key:key, styleOverride:props.styleOverride};
                               MapActions.createNodeFromDrop(target);
                           }
                       });
                     }
                   }>
-                  <MapComponent inline  store={store}/>&nbsp; {this.props.name}
+                  <MapComponent inline  store={store} styleOverride={props.styleOverride}/>&nbsp; {this.props.name}
                 </div>
             </Button>
 
