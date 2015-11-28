@@ -36,6 +36,29 @@ var MapCanvas = React.createClass({
       }
     );
     jsPlumb.setContainer(this.id);
+    jsPlumb.bind("beforeDrop", function(connection) {
+
+    	    var scope = connection.connection.getData().scope;
+
+          // no connection to self
+          if (connection.sourceId == connection.targetId) {
+    			     return false;
+    		  }
+
+          // no duplicate connections - TODO: check that in app state
+          if(jsPlumb.getConnections({
+              scope:scope,
+              source : connection.sourceId,
+              target : connection.targetId
+            }, true).length > 0){
+            //connection already exists
+            return false;
+          };
+
+          MapActions.recordConnection(connection);
+
+     		return true;
+    	});
   },
 
   componentWillUnmount: function() {
@@ -44,7 +67,7 @@ var MapCanvas = React.createClass({
   },
 
   getInitialState : function(){
-    return {nodes:[], offset : {left : 0, top : 0}};
+    return {nodes:[], connections:[], offset : {left : 0, top : 0}};
   },
 
   render: function() {

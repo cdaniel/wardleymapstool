@@ -8,6 +8,9 @@ module.exports = keyMirror({
   MAP_EDITOR_CONNECT_MODE : null,
   MAP_EDITOR_DELETE_MODE : null,
 
+  MAP_RECORD_CONNECTION : null,
+  MAP_DELETE_CONNECTION : null,
+
   DROP_EVENT : null,
   CHANGE_EVENT : null
 });

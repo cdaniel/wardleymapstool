@@ -47,7 +47,26 @@ var MapComponent = React.createClass({
   left : 0,
   top : 0,
   positioned : false,
+  relatedConnections : [],
+  relatedConnectionListeners : [],
 
+  /**
+  * each map component has to manage all the connections that are starting from it.
+  * This is due to the fact that jsPlumb is not modularized and does plenty of
+  * things on its own and therefore we cannot have React component for connections.
+  * (at least not from the very begginning - in theory it could be possible to
+  * intercept connection even and create it in the React first - TODO:)
+  */
+  componentWillUpdate : function (nextProps, nextState){
+    var _this = this;
+    var connections = nextProps.store.getAll().connections;
+    _this.relatedConnections = [];
+    for(var i = 0; i < connections.length; i++){
+      if(connections[i].sourceId === _this.id){
+        _this.relatedConnections.push(connections[i]);
+      }
+    }
+  },
   componentDidUpdate : function ( prevProps,  prevState){
     if(this.props.mapMode === MapConstants.MAP_EDITOR_DRAG_MODE){
       jsPlumb.draggable(this.id, {
@@ -66,6 +85,20 @@ var MapComponent = React.createClass({
       jsPlumb.unmakeSource(this.id);
       jsPlumb.unmakeTarget(this.id);
     }
+    if(this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE){
+      for(var i = 0; i < this.relatedConnections.length; i++){
+        var conn =  this.relatedConnections[i].conn.connection;
+        conn.bind('click', function(_conn){
+          jsPlumb.detach(_conn);
+          MapActions.deleteConnection(_conn);
+        });
+      }
+    } else {
+      for(var i = 0; i < this.relatedConnections.length; i++){
+        this.relatedConnections[i].conn.connection.unbind('click');
+      }
+    }
+    //TODO: check if all connections exist
   },
 
   delete : function(){

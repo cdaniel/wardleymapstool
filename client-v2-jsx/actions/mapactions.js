@@ -29,6 +29,20 @@ var MapActions = {
      actionType: MapConstants.MAP_DELETE_NODE,
      id : id
    });
+ },
+
+ recordConnection : function(connection){
+   MapDispatcher.dispatch({
+    actionType: MapConstants.MAP_RECORD_CONNECTION,
+    connection : connection
+  });
+},
+
+  deleteConnection : function(connection){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_DELETE_CONNECTION,
+      connection : connection
+    });
   }
 
 };

@@ -6,6 +6,7 @@ var assign = require('object-assign');
 
 var _nodes = [];
 var _nodesToCreate = [];
+var _connections = [];
 
 var mapMode = null;
 
@@ -49,10 +50,37 @@ function deleteNode(id){
     }
   }
 }
+
+function recordConnection(connection){
+    var sourceId = connection.sourceId;
+    var targetId = connection.targetId;
+    var scope = connection.scope;
+    //may or may not be needed, we'll see
+    var jsPlumbConnection = connection.connection;
+    var id = jsPlumbConnection.id;
+
+
+    _connections.push({
+      scope:scope,
+      sourceId : sourceId,
+      targetId : targetId,
+      conn : connection,
+      id: id
+    });
+}
+
+function deleteConnection(connection){
+    for(var i = 0; i < _connections.length; i++){
+      if(_connections[i].conn === connection){
+        _connections.splice(i,1);
+        return;
+      }
+    }
+}
 var MapStore = assign({}, EventEmitter.prototype, {
 
   getAll: function() {
-    return {nodes:_nodes, tocreate:_nodesToCreate, mapMode:mapMode};
+    return {nodes:_nodes, connections:_connections, mapMode:mapMode};
   },
 
   emitChange: function() {
@@ -102,6 +130,14 @@ MapDispatcher.register(function(action) {
         break;
    case MapConstants.MAP_DELETE_NODE:
            deleteNode(action.id);
+           MapStore.emitChange();
+           break;
+   case MapConstants.MAP_RECORD_CONNECTION:
+           recordConnection(action.connection);
+           MapStore.emitChange();
+           break;
+   case MapConstants.MAP_DELETE_CONNECTION:
+           deleteConnection(action.connection);
            MapStore.emitChange();
            break;
     default:
