@@ -1,13 +1,13 @@
 {
 	// --------------------------------------------------------------------
-	// JSHint Nodeclipse Configuration v0.15.1 
+	// JSHint Nodeclipse Configuration v0.15.1
 	// Strict Edition with some relaxations and switch to Node.js, no `use strict`
 	// by Ory Band, Michael Haschke, Paul Verest
 	// https://github.com/Nodeclipse/nodeclipse-1/blob/master/org.nodeclipse.ui/templates/common-templates/.jshintrc
 	// JSHint Documentation is at http://www.jshint.com/docs/options/
 	// JSHint Integration v0.9.9 comes with JSHInt 2.1.10 , see https://github.com/eclipsesource/jshint-eclipse
 	// Known issues:
-	// newer JSHint can't be used  https://github.com/eclipsesource/jshint-eclipse/issues/75 that depends on JSHint issues. 
+	// newer JSHint can't be used  https://github.com/eclipsesource/jshint-eclipse/issues/75 that depends on JSHint issues.
 	// --------------------------------------------------------------------
 	// from https://gist.github.com/haschek/2595796
 	//
@@ -27,14 +27,14 @@
 	// [2]: https://github.com/jshint/node-jshint/blob/master/example/config.json //404
 	// [3]: https://github.com/oryband/dotfiles/blob/master/jshintrc //404
 	// [4]: http://www.jshint.com/options/
-	 
+
 	// == Enforcing Options ===============================================
 	//
 	// These options tell JSHint to be more strict towards your code. Use
 	// them if you want to allow only a safe subset of JavaScript, very
 	// useful when your codebase is shared with a big number of developers
 	// with different skill levels. Was all true.
-	 
+
 	"bitwise" : true, // Prohibit bitwise operators (&, |, ^, etc.).
 	"curly" : true, // Require {} for every new block or scope.
 	"eqeqeq" : true, // Require triple equals i.e. `===`.
@@ -50,7 +50,7 @@
 	"undef" : true, // Require all non-global variables be declared before they are used.
 	"strict" : false, // Require `use strict` pragma in every file.
 	"trailing" : true, // Prohibit trailing whitespaces.
-	
+
 	// == Relaxing Options ================================================
 	//
 	// These options allow you to suppress certain types of warnings. Use
@@ -82,12 +82,12 @@
 	"sub" : false, // Tolerate all forms of subscript notation besides dot notation e.g. `dict['key']` instead of `dict.key`.
 	"supernew" : false, // Tolerate `new function () { ... };` and `new Object;`.
 	"validthis" : false, // Tolerate strict violations when the code is running in strict mode and you use this in a non-constructor function.
-	
+
 	// == Environments ====================================================
 	//
 	// These options pre-define global variables that are exposed by
 	// popular JavaScript libraries and runtime environments—such as
-	// browser or node.js. TODO JSHint Documentation has more, but it is not clear since what JSHint version they appeared 
+	// browser or node.js. TODO JSHint Documentation has more, but it is not clear since what JSHint version they appeared
 	"browser" : false, // Standard browser globals e.g. `window`, `document`.
 	"couch" : false, // Enable globals exposed by CouchDB.
 	"devel" : false, // Allow development statements e.g. `console.log();`.
@@ -102,7 +102,7 @@
 	"worker" : false, //?since version? This option defines globals available when your code is running inside of a Web Worker.
 	"wsh" : false, // Enable globals available when your code is running as a script for the Windows Script Host.
 	"yui" : false, //?since version? This option defines globals exposed by the YUI JavaScript framework.
-	
+
 	// == JSLint Legacy ===================================================
 	//
 	// These options are legacy from JSLint. Aside from bug fixes they will
@@ -111,17 +111,15 @@
 	"onevar" : false, // Allow only one `var` statement per function.
 	"passfail" : false, // Stop on first error.
 	"white" : false, // Check against strict whitespace and indentation rules.
-	
+
 	// == Undocumented Options ============================================
 	//
 	// While Michael have found these options in [example1][2] and [example2][3] (already gone 404)
 	// they are not described in the [JSHint Options documentation][4].
-	 
+
 	"predef" : [ // Extra globals.
-		//"exampleVar",
-		//"anotherCoolGlobal",
-		//"iLoveDouglas"
+		"jsPlumb",
 		"Java", "JavaFX", "$ARG" //no effect
 	]
-	//,	"indent" : 2 // Specify indentation spacing
+	,	"indent" : 4 // Specify indentation spacing
 }
