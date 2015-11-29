@@ -396,8 +396,9 @@ function HTMLMapNode(parentNode, nodeData) {
 	self.caption.text(self.nodeData.name);
 
 	jsPlumb.draggable(self.internalNode, {
-		containment : 'parent',
+		containment : true,
 		distance : 5,
+		grid:[150,150],
 		drag : function() {
 			self.updatePositionData();
 			fireDirty();

@@ -134,29 +134,29 @@ MapDispatcher.register(function(action) {
         }
         break;
    case MapConstants.MAP_EDITOR_DRAG_MODE:
-              if( mapMode === action.targetAction){
-                mapMode = null;
-              } else {
-                mapMode = action.targetAction;
-              }
-              MapStore.emitChange();
-            break;
+        if( mapMode === action.targetAction){
+            mapMode = null;
+        } else {
+            mapMode = action.targetAction;
+        }
+        MapStore.emitChange();
+        break;
    case MapConstants.MAP_DELETE_NODE:
-           deleteNode(action.id);
-           MapStore.emitChange();
-           break;
+        deleteNode(action.id);
+        MapStore.emitChange();
+        break;
    case MapConstants.MAP_RECORD_CONNECTION:
-           recordConnection(action.connection);
-           MapStore.emitChange();
-           break;
+        recordConnection(action.connection);
+        MapStore.emitChange();
+        break;
    case MapConstants.MAP_DELETE_CONNECTION:
-           deleteConnection(action.connection);
-           MapStore.emitChange();
-           break;
+        deleteConnection(action.connection);
+        MapStore.emitChange();
+        break;
    case MapConstants.MAP_NODE_DRAGSTOP:
-          nodeDragged(action.drag);
-          MapStore.emitChange();
-          break;
+        bodeDragged(action.drag);
+        MapStore.emitChange();
+        break;
     default:
       // no op
   }
