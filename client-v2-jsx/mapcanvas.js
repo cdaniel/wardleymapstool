@@ -114,8 +114,8 @@ var MapCanvas = React.createClass({
   handleResize : function () {
     var newState = {
         offset : {
-          top : this.refs.root.offsetTop + this.refs.parentRoot.offsetTop,
-          left : this.refs.root.offsetLeft + this.refs.parentRoot.offsetLeft
+          top : jquery(this.refs.root).offset().top,
+          left : jquery(this.refs.root).offset().left
         },
         size : {
           width : jquery(this.refs.root).width(),
