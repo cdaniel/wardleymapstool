@@ -119,6 +119,7 @@
 
 	"predef" : [ // Extra globals.
 		"jsPlumb",
+		"window",
 		"Java", "JavaFX", "$ARG" //no effect
 	]
 	,	"indent" : 4 // Specify indentation spacing
