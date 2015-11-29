@@ -3,13 +3,12 @@ var React = require('react');
 var Palette = require('./palette');
 var MapCanvas = require('./mapcanvas');
 var MapStore = require('./store/mapstore');
+var MapActions = require('./actions/mapactions');
 
 var mapEditorStyle = {
         minWidth : 800,
-        color: 'green',
         minHeight : 600,
         height: 'auto',
-        borderStyle: 'dotted',
         position: 'relative'
 };
 

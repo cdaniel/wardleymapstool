@@ -5,17 +5,105 @@ var MapComponent = require('./mapcomponent');
 var MapConstants = require('./constants/mapconstants');
 var MapActions = require('./actions/mapactions');
 var jquery = require('jquery');
+var _ = require('underscore');
 
 var mapCanvasStyle = {
+  position: 'absolute',
+  top: 0,
+  left : '2%',
+  bottom : '2%',
+  right : 0,
+  backgroundImage: 'transparent url(1x1_transparent.png) repeat center top'
+};
+
+var outerStyle = {
   width: 'auto',
   left: 150,
   right: 0,
-  color: 'green',
   height: '100%',
   float: 'left',
-  borderStyle: 'dotted',
   position: 'absolute'
 };
+
+
+var axisSupport = {
+    position: 'absolute',
+    borderWidth: 1,
+    top: '3%',
+    bottom: '2%',
+    border: '1px dashed silver',
+    zIndex: '1'
+};
+
+//TODO: align this properly (relative to the canvas)
+var axisSupport1 = _.extend(_.clone(axisSupport), {left: '25.5%'});
+var axisSupport2 = _.extend(_.clone(axisSupport), {left: '51%'});
+var axisSupport3 = _.extend(_.clone(axisSupport), {left: '76.5%'});
+
+
+var axisX = {
+	position: 'absolute',
+	bottom: '2%',
+	height: 1,
+	left: '2%',
+	right: '2%',
+	border: '1px solid gray',
+  marginRight: 0,
+  marginLeft: 0,
+};
+
+var arrowX = {
+	position: 'absolute',
+    width: 0,
+    height: 0,
+    borderTop: '4px solid transparent',
+    borderBottom: '2px solid transparent',
+    borderLeft: '10px solid gray',
+    right: '2%',
+    bottom: '2%'
+};
+
+var axisY = {
+  position: 'absolute',
+  width: 1,
+  borderWidth: 1,
+  top: '2%',
+  bottom: '2%',
+  left: '2%',
+  border: '1px solid gray'
+};
+
+var arrowY = {
+  position: 'absolute',
+  width: 0,
+  height: 0,
+  left: '2%',
+  top: '2%',
+  borderLeft: '2px solid transparent',
+  borderRight: '4px solid transparent',
+  borderBottom: '10px solid gray'
+};
+
+var valueCaption = {
+    position: 'absolute',
+    zIndex: 1,
+    fontSize: 'smaller',
+    top: '3%',
+    left: '3%'
+};
+
+var evolutionCaption = {
+    position: 'absolute',
+    zIndex: 1,
+    fontSize: 'smaller',
+    bottom: '3%',
+    right: '3%'
+};
+
+var genesisStyle = {fontSize: 'smaller', position:'absolute', left : '5%'};
+var customBuiltStyle = {fontSize: 'smaller', position:'absolute', left : '31%'};
+var productStyle = {fontSize: 'smaller', position:'absolute', left : '57%'};
+var commodityStyle = {fontSize: 'smaller', position:'absolute', left : '81%'};
 
 var MapCanvas = React.createClass({
 
@@ -26,8 +114,8 @@ var MapCanvas = React.createClass({
   handleResize : function () {
     var newState = {
         offset : {
-          top : this.refs.root.offsetTop,
-          left : this.refs.root.offsetLeft
+          top : this.refs.root.offsetTop + this.refs.parentRoot.offsetTop,
+          left : this.refs.root.offsetLeft + this.refs.parentRoot.offsetLeft
         },
         size : {
           width : jquery(this.refs.root).width(),
@@ -52,7 +140,7 @@ var MapCanvas = React.createClass({
     	    var scope = connection.connection.getData().scope;
 
           // no connection to self
-          if (connection.sourceId == connection.targetId) {
+          if (connection.sourceId === connection.targetId) {
     			     return false;
     		  }
 
@@ -64,7 +152,7 @@ var MapCanvas = React.createClass({
             }, true).length > 0){
             //connection already exists
             return false;
-          };
+          }
 
           MapActions.recordConnection(connection);
 
@@ -105,8 +193,24 @@ var MapCanvas = React.createClass({
       }
     );
     return (
-      <div style={mapCanvasStyle} ref="root" id={id}>
-        {components}
+      <div style={outerStyle} ref="parentRoot">
+        <div style={mapCanvasStyle} ref="root" id={id}>
+          {components}
+        </div>
+        <div style={axisX}>
+            <div style={genesisStyle}>Genesis</div>
+            <div style={customBuiltStyle}>Custom Built</div>
+            <div style={productStyle}>Product or Rental</div>
+            <div style={commodityStyle}>Commodity/Utility</div>
+        </div>
+        <div style={arrowX}/>
+        <div style={valueCaption}>Value</div>
+        <div style={axisY}/>
+        <div style={arrowY}/>
+        <div style={evolutionCaption}>Evolution</div>
+        <div style={axisSupport1}/>
+        <div style={axisSupport2}/>
+        <div style={axisSupport3}/>
       </div>
     );
   },
@@ -120,14 +224,14 @@ var MapCanvas = React.createClass({
       var left = this.state.offset.left;
       var width = jquery(this.refs.root).width();
       var height = jquery(this.refs.root).height();
-      var root = this.refs.root;
+      var data = {
+        left : left,
+        top : top,
+        width : width,
+        height : height
+      };
       setTimeout(function(){
-        MapActions.normalize({
-          left : left,
-          top : top,
-          width : width,
-          height : height
-        });
+        MapActions.normalize(data);
       });
   }
 });

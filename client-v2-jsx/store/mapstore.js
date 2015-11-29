@@ -20,6 +20,7 @@ function createFromDrop(drop) {
     id: id,
     drop: drop
   });
+  console.log(drop);
   mapMode = null;
 }
 
