@@ -154,7 +154,7 @@ MapDispatcher.register(function(action) {
         MapStore.emitChange();
         break;
    case MapConstants.MAP_NODE_DRAGSTOP:
-        bodeDragged(action.drag);
+        nodeDragged(action.drag);
         MapStore.emitChange();
         break;
     default:
