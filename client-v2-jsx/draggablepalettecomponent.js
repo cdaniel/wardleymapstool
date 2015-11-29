@@ -14,7 +14,7 @@ var DraggablePaletteComponent = React.createClass({
       var props = this.props;
       var key = this.props.key;
         return (
-            <Button href="#" style={outerStyle}>
+            <Button href="#" style={outerStyle} bsStyle={null}>
                 <div ref={
                     function(input){
                       jsPlumb.draggable(input, {

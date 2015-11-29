@@ -31,8 +31,9 @@ var ActionPaletteComponent = React.createClass({
       var target_function = this.handleClickMove;
       var store = this.props.store;
       var active = this.state.mapMode === this.props.toggle;
+      var bsStyle = this.state.mapMode === this.props.toggle ? 'info' : 'default';
         return (
-            <Button href="#" style={outerStyle} onClick={target_function} ref="button" active={active}>
+            <Button href="#" style={outerStyle} onClick={target_function} ref="button" active={active} bsStyle={bsStyle}>
                 <div>
                     {this.props.name}
                 </div>

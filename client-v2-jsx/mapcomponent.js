@@ -42,6 +42,21 @@ var nonInlinedStyle = {
   position: 'absolute'
 };
 
+
+var itemCaptionStyle = {
+  top: -10,
+  left: 23,
+  position: 'absolute',
+  zIndex: 2,
+  textShadow: '2px 2px white',
+  width: 10,
+  height: 10,
+  maxWidth: 10,
+  maxHeight: 10,
+  marginBottom: -20,
+  fontSize: 10
+};
+
 var MapComponent = React.createClass({
   id : null,
   left : 0,
@@ -151,6 +166,18 @@ var MapComponent = React.createClass({
         id={this.props.id}
         onClick={this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE ? this.delete : null}
         >
+        {
+          (function() {
+            if(that.props.inline){
+              return null;
+            } else {
+              return  (
+                <div style={itemCaptionStyle}>
+                  very long and descriptive
+                </div> );
+            }
+          })()
+        }
       </div>
     );
   }
