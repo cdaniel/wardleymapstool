@@ -123,24 +123,24 @@ MapDispatcher.register(function(action) {
 
   switch(action.actionType) {
     case MapConstants.MAP_CREATE_NODE_FROM_DROP:
-      if (action.drop !== null) {
-        createFromDrop(action.drop);
-        MapStore.emitDrop();
-      }
-      break;
-   case MapConstants.MAP_NEW_NODE:
-      if( normalize(action.params) ){
-          MapStore.emitChange();
-      }
-      break;
-   case MapConstants.MAP_EDITOR_DRAG_MODE:
-          if( mapMode === action.targetAction){
-            mapMode = null;
-          } else {
-            mapMode = action.targetAction;
-          }
-          MapStore.emitChange();
+        if (action.drop !== null) {
+          createFromDrop(action.drop);
+          MapStore.emitDrop();
+        }
         break;
+   case MapConstants.MAP_NEW_NODE:
+        if( normalize(action.params) ){
+            MapStore.emitChange();
+        }
+        break;
+   case MapConstants.MAP_EDITOR_DRAG_MODE:
+              if( mapMode === action.targetAction){
+                mapMode = null;
+              } else {
+                mapMode = action.targetAction;
+              }
+              MapStore.emitChange();
+            break;
    case MapConstants.MAP_DELETE_NODE:
            deleteNode(action.id);
            MapStore.emitChange();
@@ -156,6 +156,7 @@ MapDispatcher.register(function(action) {
    case MapConstants.MAP_NODE_DRAGSTOP:
           nodeDragged(action.drag);
           MapStore.emitChange();
+          break;
     default:
       // no op
   }
