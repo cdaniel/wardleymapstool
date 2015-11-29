@@ -11,6 +11,8 @@ module.exports = keyMirror({
   MAP_RECORD_CONNECTION : null,
   MAP_DELETE_CONNECTION : null,
 
+  MAP_NODE_DRAGSTOP : null,
+
   DROP_EVENT : null,
   CHANGE_EVENT : null
 });

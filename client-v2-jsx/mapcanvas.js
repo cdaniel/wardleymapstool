@@ -45,7 +45,7 @@ var MapCanvas = React.createClass({
     //intial size and react to resize
     this.handleResize();
     jquery(window).resize(this.handleResize);
-    
+
     jsPlumb.setContainer(this.id);
     jsPlumb.bind("beforeDrop", function(connection) {
 

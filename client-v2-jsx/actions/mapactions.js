@@ -43,6 +43,13 @@ var MapActions = {
       actionType: MapConstants.MAP_DELETE_CONNECTION,
       connection : connection
     });
+  },
+
+  nodeDragged : function(drag){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_NODE_DRAGSTOP,
+      drag : drag
+    });
   }
 
 };

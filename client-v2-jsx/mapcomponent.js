@@ -72,16 +72,31 @@ var MapComponent = React.createClass({
     MapActions.deleteConnection(_conn); //update the state
   },
   componentDidUpdate : function ( prevProps,  prevState){
+
     if(this.props.mapMode === MapConstants.MAP_EDITOR_DRAG_MODE){
+      var _this = this;
       jsPlumb.draggable(this.id, {
         ignoreZoom:true,
         containment:true,
-        grid: [50,50]
+        grid: [50,50],
+        stop : function(params){
+          MapActions.nodeDragged(
+            {
+                id:_this.id,
+                pos: {
+                  left : params.pos[0] / _this.props.canvasSize.width,
+                  top : params.pos[1] / _this.props.canvasSize.height,
+
+                }
+            });
+        }
       });
       jsPlumb.setDraggable(this.id, true);
     } else {
       jsPlumb.setDraggable(this.id, false);
     }
+
+
     if(this.props.mapMode === MapConstants.MAP_EDITOR_CONNECT_MODE){
       jsPlumb.makeTarget(this.id, endpointOptions, {anchor: "TopCenter"});
       jsPlumb.makeSource(this.id, endpointOptions, {anchor : "BottomCenter"});
@@ -99,7 +114,7 @@ var MapComponent = React.createClass({
         this.relatedConnections[j].conn.connection.unbind('click');
       }
     }
-    //TODO: check if all connections exist
+    //TODO: check if all connections exist and reconcile them
   },
 
   delete : function(){

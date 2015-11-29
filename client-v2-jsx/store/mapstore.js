@@ -2,6 +2,7 @@ var MapDispatcher = require('../dispatcher/mapdispatcher');
 var EventEmitter = require('events').EventEmitter;
 var MapConstants = require('../constants/mapconstants');
 var assign = require('object-assign');
+var _ = require('underscore');
 
 
 var _nodes = [];
@@ -25,7 +26,9 @@ function createFromDrop(drop) {
 function normalize(params){
   var changed = false;
   var node;
+  /* jshint -W084 */
   while( node = _nodesToCreate.pop() ) {
+  /* jshint +W084 */
     var normalizedNode = {};
     normalizedNode.id = node.id;
     normalizedNode.key = node.drop.key;
@@ -33,8 +36,8 @@ function normalize(params){
     normalizedNode.positionX = (node.drop.left - params.left) / params.width;
     normalizedNode.positionY = (node.drop.top - params.top) / params.height;
     // accept only nodes that are within map canvas
-    if( (normalizedNode.positionX > 0 && normalizedNode.positionX < 1)
-        && (normalizedNode.positionY > 0 && normalizedNode.positionY < 1) ){
+    if( (normalizedNode.positionX > 0 && normalizedNode.positionX < 1) &&
+        (normalizedNode.positionY > 0 && normalizedNode.positionY < 1) ){
       _nodes.push(normalizedNode);
       changed = true;
     }
@@ -76,6 +79,16 @@ function deleteConnection(connection){
         return;
       }
     }
+}
+
+/**
+just update the node, as actual dragging is performed by jsPlumb.
+we need to discover the change and update the model to prevent next redraw
+(f.e. after resize) from overriding changes */
+function nodeDragged(drag){
+  var node = _.findWhere(_nodes, {id:drag.id});
+  node.positionX = drag.pos.left;
+  node.positionY = drag.pos.top;
 }
 var MapStore = assign({}, EventEmitter.prototype, {
 
@@ -140,6 +153,9 @@ MapDispatcher.register(function(action) {
            deleteConnection(action.connection);
            MapStore.emitChange();
            break;
+   case MapConstants.MAP_NODE_DRAGSTOP:
+          nodeDragged(action.drag);
+          MapStore.emitChange();
     default:
       // no op
   }
