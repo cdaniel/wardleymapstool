@@ -18,23 +18,34 @@ var mapCanvasStyle = {
 };
 
 var MapCanvas = React.createClass({
+
   id : (+new Date() + Math.floor(Math.random() * 999999)).toString(36),
+
+  _this:this,
+
+  handleResize : function () {
+    var newState = {
+        offset : {
+          top : this.refs.root.offsetTop,
+          left : this.refs.root.offsetLeft
+        },
+        size : {
+          width : jquery(this.refs.root).width(),
+          height: jquery(this.refs.root).height()
+        }
+    };
+    this.setState(newState);
+    //anti pattern but jsPlumb does not want to work otherwise with react
+    jsPlumb.repaintEverything();
+  },
 
   componentDidMount: function() {
     this.props.store.addChangeListener(this._onChange);
     this.props.store.addChangeListener(this._normalizeDrop, MapConstants.DROP_EVENT);
-    //TODO: maybe react to resize
-    this.setState(
-      {offset : {
-        top : this.refs.root.offsetTop,
-        left : this.refs.root.offsetLeft
-      },
-      size : {
-        width : jquery(this.refs.root).width(),
-        height: jquery(this.refs.root).height()
-      }
-      }
-    );
+    //intial size and react to resize
+    this.handleResize();
+    jquery(window).resize(this.handleResize);
+    
     jsPlumb.setContainer(this.id);
     jsPlumb.bind("beforeDrop", function(connection) {
 
@@ -64,6 +75,7 @@ var MapCanvas = React.createClass({
   componentWillUnmount: function() {
     this.props.store.removeChangeListener(this._onChange);
     this.props.store.removeChangeListener(this._normalizeDrop, MapConstants.DROP_EVENT);
+    jquery(window).off('resize', this.handleResize);
   },
 
   getInitialState : function(){

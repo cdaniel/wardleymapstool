@@ -111,18 +111,19 @@ var MapComponent = React.createClass({
   render: function() {
     var that = this;
 
+    var styleToSet = _.clone(mapComponentStyle);
     if(that.props.inline){
-      mapComponentStyle = _.extend(mapComponentStyle, inlinedStyle);
+      styleToSet = _.extend(styleToSet, inlinedStyle);
     } else {
-      mapComponentStyle = _.extend(mapComponentStyle, nonInlinedStyle);
+      styleToSet = _.extend(styleToSet, nonInlinedStyle);
     }
-    mapComponentStyle = _.extend(mapComponentStyle, that.props.styleOverride);
+    styleToSet = _.extend(styleToSet, that.props.styleOverride);
 
     if(that.props.position){
       this.left = this.props.position.positionX * this.props.canvasSize.width;
-      mapComponentStyle.left = this.left;
+      styleToSet.left = this.left;
       this.top = this.props.position.positionY * this.props.canvasSize.height;
-      mapComponentStyle.top = this.top;
+      styleToSet.top = this.top;
       this.positioned = true;
     }
 
@@ -130,7 +131,7 @@ var MapComponent = React.createClass({
 
     return (
       <div
-        style={mapComponentStyle}
+        style={styleToSet}
         id={this.props.id}
         onClick={this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE ? this.delete : null}
         >
