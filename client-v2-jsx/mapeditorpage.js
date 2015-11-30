@@ -9,6 +9,7 @@ var Navbar = require('react-bootstrap').Navbar;
 var NavbarHeader = require('react-bootstrap').Navbar.Header;
 var NavbarCollapse = require('react-bootstrap').Navbar.Collapse;
 var NavbarBrand= require('react-bootstrap').NavbarBrand;
+var PageHeader= require('react-bootstrap').PageHeader;
 var NavItem = require('react-bootstrap').NavItem;
 var Glyphicon = require('react-bootstrap').Glyphicon;
 var Nav = require('react-bootstrap').Nav;
@@ -36,26 +37,29 @@ var logoStyle = {
                       </NavbarBrand>
                     </NavbarHeader>
                     <Nav>
-                      <NavItem eventKey={1} href="#"><Glyphicon glyph="download-alt">
-                         &nbsp;Download
-                      </Glyphicon></NavItem>
-                    <NavItem eventKey={2} href="#"><Glyphicon glyph="share">
-                         &nbsp;Share...
-                      </Glyphicon></NavItem>
+                      <NavItem eventKey={1} href="#">
+                        <Glyphicon glyph="download-alt"></Glyphicon>
+                        &nbsp;Download
+                      </NavItem>
+                      <NavItem eventKey={2} href="#">
+                        <Glyphicon glyph="share"></Glyphicon>
+                        &nbsp;Share...
+                      </NavItem>
                     </Nav>
                     <Nav pullRight>
-                       <NavItem eventKey={1} href="#">
-                         <Glyphicon glyph="user">
-                            Username
-                         </Glyphicon>
+                       <NavItem eventKey={8} href="/profile">
+                         <Glyphicon glyph="user"></Glyphicon> Username
                        </NavItem>
                        <NavItem eventKey={9} href="/logout">
-                         <Glyphicon glyph="log-out">
-                            Logout
-                         </Glyphicon>
+                         <Glyphicon glyph="log-out"></Glyphicon> Logout
                        </NavItem>
                      </Nav>
                   </Navbar>
+                </Col>
+              </Row>
+              <Row className="show-grid">
+                <Col xs={16} md={16}>
+                  <h4>Title <br/><small>description</small></h4>
                 </Col>
               </Row>
               <Row className="show-grid">
