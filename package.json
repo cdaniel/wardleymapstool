@@ -1,6 +1,6 @@
 {
   "name": "wardleymaptool",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "A tool for creating Wardley Maps",
   "keywords": [
     "OpenShift",
@@ -67,7 +67,9 @@
     "keymirror": "~0.1.1",
     "flux": "~2.1.1",
     "object-assign": "~4.0.1",
-    "events": "~1.1.0"
+    "events": "~1.1.0",
+    "react-mini-router": "~2.0.0",
+    "urllite": "~0.5.0"
   },
   "optionalDependencies": {
     "express-stormpath": "2.1.0",

@@ -16,7 +16,7 @@ limitations under the License.*/
 module.exports = function(maps){
     var module = {};
 
-    
+
     module.router = require('express').Router();
 
     module.router.get('/' , function(req, res) {
@@ -24,7 +24,7 @@ module.exports = function(maps){
             res.render('index', {response : response, user : req.user});
         });
     });
-    
+
     //deserves own module
     module.router.get('/map/:mapid', function(req, res) {
         maps.getMap(req, req.params.mapid, function(map) {
@@ -41,7 +41,10 @@ module.exports = function(maps){
             maps.findRelatedMaps(req, res2);
         });
     });
-    
+
+    module.router.get('/map', function(req, res) {
+          res.render('mapeditor2', {});
+    });
     //help
     module.router.get('/help/:filename', function(req, res) {
 		res.render('help/'+req.params.filename);

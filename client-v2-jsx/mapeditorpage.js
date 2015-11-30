@@ -14,12 +14,22 @@ var NavItem = require('react-bootstrap').NavItem;
 var Glyphicon = require('react-bootstrap').Glyphicon;
 var Nav = require('react-bootstrap').Nav;
 var MapEditor = require('./mapeditor');
-
+var RouterMixin = require('react-mini-router').RouterMixin;
 
 var logoStyle = {
   height : 30,
   marginTop : -5
 };
+var urllite = require('urllite');
+var url = urllite(window.location);
+var mapId = url.hash;
+
+//remove # at the beginning
+if(mapId) {
+  mapId = mapId.substring(1);
+}
+
+var origin = url.origin;
 
   var MapEditorPage = React.createClass({
     render: function() {
@@ -31,7 +41,7 @@ var logoStyle = {
                     <NavbarHeader>
                       <NavbarBrand>
                           <a href="/">
-                            <img src="logo.png" alt="Home" style={logoStyle}>
+                            <img src="/logo.png" alt="Home" style={logoStyle}>
                             </img>
                           </a>
                       </NavbarBrand>
@@ -64,7 +74,7 @@ var logoStyle = {
               </Row>
               <Row className="show-grid">
                 <Col xs={16} md={16}>
-                  <MapEditor/>
+                  <MapEditor mapid={mapId} origin={origin}/>
                 </Col>
               </Row>
             </Grid>

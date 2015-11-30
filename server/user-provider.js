@@ -49,6 +49,24 @@ module.exports = function(app) {
                     clientId : googleauth.getClientID(),
                     clientSecret : googleauth.getClientSecret(),
                 },
+                facebook : {
+                  enabled : false
+              },
+              linkedin : {
+                  enabled : false
+              }
+            },
+            socialProviders : {
+                google : {
+                    clientId : googleauth.getClientID(),
+                    clientSecret : googleauth.getClientSecret(),
+                },
+                facebook : {
+                  enabled : false
+              },
+              linkedin : {
+                  enabled : false
+              }
             },
             expand: {
                 customData: true,

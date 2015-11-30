@@ -4,6 +4,7 @@ var Palette = require('./palette');
 var MapCanvas = require('./mapcanvas');
 var MapStore = require('./store/mapstore');
 var MapActions = require('./actions/mapactions');
+var jquery = require('jquery');
 
 var mapEditorStyle = {
         minWidth : 800,
@@ -16,6 +17,12 @@ var mapEditorStyle = {
 
 
   var MapEditor = React.createClass({
+    componentDidMount : function(){
+      var url = this.props.origin + '/api/map/' + this.props.mapid;
+      jquery.get(url, function(result) {
+        console.log(result);
+      }.bind(this));
+    },
     render: function() {
         return (
             <div style={mapEditorStyle}>
@@ -28,7 +35,6 @@ var mapEditorStyle = {
                         grid:['50','50'],
                         containment:true,
                         stop : function(param){
-                            //TODO: check whether drop has a valid target
                             var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
                             var target = {'top' : param.pos[1], 'left' : param.pos[0], id: id};
                             MapActions.createNodeFromDrop(target);
