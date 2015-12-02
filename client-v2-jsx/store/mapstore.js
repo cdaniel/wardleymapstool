@@ -67,7 +67,7 @@ function recordConnection(connection){
       scope:scope,
       sourceId : sourceId,
       targetId : targetId,
-      conn : connection,
+      conn : jsPlumbConnection,
       id: id
     });
 }

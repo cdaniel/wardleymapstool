@@ -78,9 +78,8 @@ var MapComponent = React.createClass({
 
     //TODO: check if all connections exist and reconcile them
     for(var k = 0; k < this.relatedConnections.length; k++){
-      var _conn =  this.relatedConnections[k].conn;
-      if(_conn) { continue; }       //the connection exists
-      _conn = this.relatedConnections[k];
+      if(this.relatedConnections[k].conn) { continue; }       //the connection exists
+      var _conn = this.relatedConnections[k];
       var connectionData = {
         source : _conn.sourceId,
         target : _conn.targetId,
@@ -91,7 +90,7 @@ var MapComponent = React.createClass({
         connector : endpointOptions.connector,
         endpointStyles : [endpointOptions.paintStyle, endpointOptions.paintStyle]
       };
-      jsPlumb.connect(connectionData);
+      this.relatedConnections[k].conn = jsPlumb.connect(connectionData);
     }
   },
   connectionDelete : function(_conn){
@@ -139,13 +138,13 @@ var MapComponent = React.createClass({
     }
     if(this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE){
       for(var i = 0; i < this.relatedConnections.length; i++){
-        var conn =  this.relatedConnections[i].conn.connection;
+        var conn =  this.relatedConnections[i].conn;
         conn.bind('click', this.connectionDelete);
       }
     } else {
       for(var j = 0; j < this.relatedConnections.length; j++){
         if(this.relatedConnections[j].conn){
-          this.relatedConnections[j].conn.connection.unbind('click');
+          this.relatedConnections[j].conn.unbind('click');
         }
       }
     }
