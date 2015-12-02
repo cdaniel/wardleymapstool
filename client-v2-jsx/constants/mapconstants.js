@@ -14,5 +14,7 @@ module.exports = keyMirror({
   MAP_NODE_DRAGSTOP : null,
 
   DROP_EVENT : null,
-  CHANGE_EVENT : null
+  CHANGE_EVENT : null,
+
+  MAP_RETRIEVED : null
 });

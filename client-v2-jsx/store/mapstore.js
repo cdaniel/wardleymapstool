@@ -20,7 +20,6 @@ function createFromDrop(drop) {
     id: id,
     drop: drop
   });
-  console.log(drop);
   mapMode = null;
 }
 
@@ -80,6 +79,41 @@ function deleteConnection(connection){
         return;
       }
     }
+}
+
+function mapRetrieved(map){
+  _nodes = map.history[0].nodes;
+  //backward compatibility
+  for(var i = 0; i < _nodes.length; i++){
+    if(_nodes[i].componentId){
+      _nodes[i].id = _nodes[i].componentId;
+      delete _nodes[i].componentId;
+    }
+    if(_nodes[i].userneed){
+      _nodes[i].styleOverride = {border: '2px solid black',
+      backgroundColor: 'silver'};
+      continue;
+    }
+    if(_nodes[i].external){
+      _nodes[i].styleOverride = {border: '1px solid black',
+      backgroundColor: 'white'};
+    } else {
+      _nodes[i].styleOverride = {border: '1px solid black',
+      backgroundColor: 'silver'};
+    }
+  }
+
+  _connections = map.history[0].connections;
+  for(var j = 0; j < _connections.length; j++){
+    if(_connections[j].pageSourceId){
+        _connections[j].sourceId = _connections[j].pageSourceId;
+        delete _connections[j].pageSourceId;
+    }
+    if(_connections[j].pageTargetId){
+      _connections[j].targetId = _connections[j].pageTargetId;
+      delete _connections[j].pageTargetId;
+    }
+  }
 }
 
 /**
@@ -156,6 +190,10 @@ MapDispatcher.register(function(action) {
         break;
    case MapConstants.MAP_NODE_DRAGSTOP:
         nodeDragged(action.drag);
+        MapStore.emitChange();
+        break;
+   case MapConstants.MAP_RETRIEVED:
+        mapRetrieved(action.map);
         MapStore.emitChange();
         break;
     default:

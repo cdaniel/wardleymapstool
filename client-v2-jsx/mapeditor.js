@@ -21,6 +21,7 @@ var mapEditorStyle = {
       var url = this.props.origin + '/api/map/' + this.props.mapid;
       jquery.get(url, function(result) {
         console.log(result);
+        MapActions.mapRetrieved(result);
       }.bind(this));
     },
     render: function() {

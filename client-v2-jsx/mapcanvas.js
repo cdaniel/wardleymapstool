@@ -189,7 +189,8 @@ var MapCanvas = React.createClass({
           offset={offset}
           canvasSize={size}
           mapMode={mapMode}
-          store={store}/>;
+          store={store}
+          name={component.name}/>;
       }
     );
     return (

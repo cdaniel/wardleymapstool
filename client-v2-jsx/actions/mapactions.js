@@ -50,6 +50,13 @@ var MapActions = {
       actionType: MapConstants.MAP_NODE_DRAGSTOP,
       drag : drag
     });
+  },
+
+  mapRetrieved : function(map){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_RETRIEVED,
+      map : map
+    });
   }
 
 };

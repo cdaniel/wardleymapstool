@@ -65,28 +65,46 @@ var MapComponent = React.createClass({
   relatedConnections : [],
   relatedConnectionListeners : [],
 
-  /**
-  * each map component has to manage all the connections that are starting from it.
-  * This is due to the fact that jsPlumb is not modularized and does plenty of
-  * things on its own and therefore we cannot have React component for connections.
-  * (at least not from the very begginning - in theory it could be possible to
-  * intercept connection even and create it in the React first - TODO:)
-  */
-  componentWillUpdate : function (nextProps, nextState){
+
+  sortOutDeps : function(){
     var _this = this;
-    var connections = nextProps.store.getAll().connections;
+    var connections = _this.props.store.getAll().connections;
     _this.relatedConnections = [];
     for(var i = 0; i < connections.length; i++){
       if(connections[i].sourceId === _this.id){
         _this.relatedConnections.push(connections[i]);
       }
     }
+
+    //TODO: check if all connections exist and reconcile them
+    for(var k = 0; k < this.relatedConnections.length; k++){
+      var _conn =  this.relatedConnections[k].conn;
+      if(_conn) { continue; }       //the connection exists
+      _conn = this.relatedConnections[k];
+      var connectionData = {
+        source : _conn.sourceId,
+        target : _conn.targetId,
+        scope : _conn.scope,
+        anchors: ["BottomCenter", "TopCenter"],
+        paintStyle : endpointOptions.connectorStyle,
+        endpoint : endpointOptions.endpoint,
+        connector : endpointOptions.connector,
+        endpointStyles : [endpointOptions.paintStyle, endpointOptions.paintStyle]
+      };
+      jsPlumb.connect(connectionData);
+    }
   },
   connectionDelete : function(_conn){
     jsPlumb.detach(_conn); //remove from jsPlumb
     MapActions.deleteConnection(_conn); //update the state
   },
+
+  componentDidMount : function(){
+    this.sortOutDeps();
+  },
+
   componentDidUpdate : function ( prevProps,  prevState){
+    this.sortOutDeps();
 
     if(this.props.mapMode === MapConstants.MAP_EDITOR_DRAG_MODE){
       var _this = this;
@@ -126,10 +144,11 @@ var MapComponent = React.createClass({
       }
     } else {
       for(var j = 0; j < this.relatedConnections.length; j++){
-        this.relatedConnections[j].conn.connection.unbind('click');
+        if(this.relatedConnections[j].conn){
+          this.relatedConnections[j].conn.connection.unbind('click');
+        }
       }
     }
-    //TODO: check if all connections exist and reconcile them
   },
 
   delete : function(){
@@ -148,7 +167,7 @@ var MapComponent = React.createClass({
     } else {
       styleToSet = _.extend(styleToSet, nonInlinedStyle);
     }
-    styleToSet = _.extend(styleToSet, that.props.styleOverride);
+        styleToSet = _.extend(styleToSet, that.props.styleOverride);
 
     if(that.props.position){
       this.left = this.props.position.positionX * this.props.canvasSize.width;
@@ -159,7 +178,7 @@ var MapComponent = React.createClass({
     }
 
     that.id = this.props.id;
-
+    var name = this.props.name;
     return (
       <div
         style={styleToSet}
@@ -173,7 +192,7 @@ var MapComponent = React.createClass({
             } else {
               return  (
                 <div style={itemCaptionStyle}>
-                  very long and descriptive
+                  {name}
                 </div> );
             }
           })()
