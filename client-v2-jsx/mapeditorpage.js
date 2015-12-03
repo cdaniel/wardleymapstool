@@ -15,6 +15,8 @@ var Glyphicon = require('react-bootstrap').Glyphicon;
 var Nav = require('react-bootstrap').Nav;
 var MapEditor = require('./mapeditor');
 var RouterMixin = require('react-mini-router').RouterMixin;
+var MapStore = require('./store/mapstore');
+var MapTitleDescription = require('./maptitledescription');
 
 var logoStyle = {
   height : 30,
@@ -69,12 +71,12 @@ var origin = url.origin;
               </Row>
               <Row className="show-grid">
                 <Col xs={16} md={16}>
-                  <h4>Title <br/><small>description</small></h4>
+                  <MapTitleDescription store={MapStore}/>
                 </Col>
               </Row>
               <Row className="show-grid">
                 <Col xs={16} md={16}>
-                  <MapEditor mapid={mapId} origin={origin}/>
+                  <MapEditor mapid={mapId} origin={origin} store={MapStore}/>
                 </Col>
               </Row>
             </Grid>

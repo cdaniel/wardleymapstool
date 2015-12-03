@@ -27,7 +27,7 @@ var mapEditorStyle = {
     render: function() {
         return (
             <div style={mapEditorStyle}>
-              <Palette store={MapStore}/>
+              <Palette store={this.props.store}/>
               <MapCanvas ref={
                   function(input){
                     jsPlumb.draggable(input, {
@@ -42,7 +42,7 @@ var mapEditorStyle = {
                         }
                     });
                   }
-                } store={MapStore}/>
+                } store={this.props.store}/>
             </div>
         );
     }

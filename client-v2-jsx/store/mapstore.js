@@ -11,6 +11,8 @@ var _connections = [];
 
 var mapMode = null;
 
+var _map = null;
+
 function createFromDrop(drop) {
   // Hand waving here -- not showing how this interacts with XHR or persistent
   // server-side storage.
@@ -82,6 +84,7 @@ function deleteConnection(connection){
 }
 
 function mapRetrieved(map){
+  _map = map;
   _nodes = map.history[0].nodes;
   //backward compatibility
   for(var i = 0; i < _nodes.length; i++){
@@ -129,6 +132,21 @@ var MapStore = assign({}, EventEmitter.prototype, {
 
   getAll: function() {
     return {nodes:_nodes, connections:_connections, mapMode:mapMode};
+  },
+
+  getNameAndDescription : function () {
+    var name = '';
+    var description = '';
+    if(_map && _map.history && _map.history[0]){
+      name = _map.history[0].name;
+      description = _map.history[0].description;
+      return {
+        name : name,
+        description : description
+      };
+    } else {
+      return null;
+    }
   },
 
   emitChange: function() {
