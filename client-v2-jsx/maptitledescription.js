@@ -16,7 +16,7 @@ var styleToEdit = {
   display: 'inline'
 };
 var formStyle = {
-  margin:'-15px -1px'
+  margin:'-15px -240px'
 };
 var MapTitleDescription = React.createClass({
     editablename : null,

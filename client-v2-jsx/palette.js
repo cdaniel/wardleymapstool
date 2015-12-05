@@ -21,9 +21,9 @@ var Palette = React.createClass({
     return {items:[
       {key:'userneed', name : 'User need', styleOverride: {border: '2px solid black',
       backgroundColor: 'silver'}},
-      {key:'internal', name : 'Internal Component', styleOverride: {border: '1px solid black',
+      {key:'internal', name : 'Internal', styleOverride: {border: '1px solid black',
       backgroundColor: 'silver'}},
-      {key:'external', name : 'External Component', styleOverride: {border: '1px solid black',
+      {key:'external', name : 'External', styleOverride: {border: '1px solid black',
       backgroundColor: 'white'}}
     ]
   };
