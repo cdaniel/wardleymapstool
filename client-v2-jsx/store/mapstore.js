@@ -149,6 +149,10 @@ var MapStore = assign({}, EventEmitter.prototype, {
     }
   },
 
+  getStateInfo : function() {
+    return {state:null};
+  },
+
   emitChange: function() {
     this.emit(MapConstants.CHANGE_EVENT);
   },

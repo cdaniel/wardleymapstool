@@ -17,6 +17,9 @@ var MapEditor = require('./mapeditor');
 var RouterMixin = require('react-mini-router').RouterMixin;
 var MapStore = require('./store/mapstore');
 var MapTitleDescription = require('./maptitledescription');
+var Button = require('react-bootstrap').Button;
+var MapStatus = require('./mapstatus');
+var EditableShortText = require('./editableshorttext');
 
 var logoStyle = {
   height : 30,
@@ -70,8 +73,11 @@ var origin = url.origin;
                 </Col>
               </Row>
               <Row className="show-grid">
-                <Col xs={16} md={16}>
+                <Col xs={10} sm={10} md={10} lg={10}>
                   <MapTitleDescription store={MapStore}/>
+                </Col>
+                <Col xs={2} sm={2} md={2} lg={2}>
+                  <MapStatus  store={MapStore}/>
                 </Col>
               </Row>
               <Row className="show-grid">

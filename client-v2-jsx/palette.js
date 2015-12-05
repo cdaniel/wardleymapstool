@@ -37,6 +37,7 @@ render: function() {
   );
   return (
     <div style={paletteStyle}>
+      <h4>Components:</h4>
       <ButtonGroup vertical block>
         {components}
         <ActionPaletteComponent name="Move" toggle={MapConstants.MAP_EDITOR_DRAG_MODE} store={store}/>
