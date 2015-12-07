@@ -20,6 +20,7 @@ var MapTitleDescription = require('./maptitledescription');
 var Button = require('react-bootstrap').Button;
 var MapStatus = require('./mapstatus');
 var EditableShortText = require('./editableshorttext');
+var Download = require('./download');
 
 var logoStyle = {
   height : 30,
@@ -52,10 +53,7 @@ var origin = url.origin;
                       </NavbarBrand>
                     </NavbarHeader>
                     <Nav>
-                      <NavItem eventKey={1} href="#">
-                        <Glyphicon glyph="download-alt"></Glyphicon>
-                        &nbsp;Download
-                      </NavItem>
+                      <Download mapId={mapId} store={MapStore}/>
                       <NavItem eventKey={2} href="#">
                         <Glyphicon glyph="share"></Glyphicon>
                         &nbsp;Share...
