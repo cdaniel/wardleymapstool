@@ -18,38 +18,43 @@ var paletteStyle = {
 
 var Palette = React.createClass({
   getInitialState : function(){
-    return {items:[
-      {key:'userneed', name : 'User need', styleOverride: {border: '2px solid black',
-      backgroundColor: 'silver'}},
-      {key:'internal', name : 'Internal', styleOverride: {border: '1px solid black',
-      backgroundColor: 'silver'}},
-      {key:'external', name : 'External', styleOverride: {border: '1px solid black',
-      backgroundColor: 'white'}}
-    ]
-  };
-},
-render: function() {
-  var store = this.props.store;
-  var components = this.state.items.map(
-    function(component){
-      return <DraggablePaletteComponent name={component.name}  store={store} key={component.key} styleOverride={component.styleOverride}/>;
-    }
-  );
-  return (
-    <div style={paletteStyle}>
-      <h5>Components:</h5>
-      <ButtonGroup vertical block>
-        {components}
-      </ButtonGroup>
-      <h5>Actions:</h5>
-      <ButtonGroup vertical block>
-        <ActionPaletteComponent name="Move" toggle={MapConstants.MAP_EDITOR_DRAG_MODE} store={store}/>
-        <ActionPaletteComponent name="Connect" toggle={MapConstants.MAP_EDITOR_CONNECT_MODE} store={store}/>
-        <ActionPaletteComponent name="Delete" toggle={MapConstants.MAP_EDITOR_DELETE_MODE} store={store}/>
-      </ButtonGroup>
-    </div>
-  );
-}
+    return {items: this.props.store.getComponentTypes()};
+  },
+  render: function() {
+    var store = this.props.store;
+    var components = this.state.items.map(
+      function(component){
+        return <DraggablePaletteComponent
+          name={component.name}
+          store={store}
+          key={component.key}
+          styleOverride={component.styleOverride}/>;
+      }
+    );
+    return (
+      <div style={paletteStyle}>
+        <h5>Components:</h5>
+        <ButtonGroup vertical block>
+          {components}
+        </ButtonGroup>
+        <h5>Actions:</h5>
+        <ButtonGroup vertical block>
+          <ActionPaletteComponent
+            name="Move"
+            toggle={MapConstants.MAP_EDITOR_DRAG_MODE}
+            store={store}/>
+          <ActionPaletteComponent
+            name="Connect"
+            toggle={MapConstants.MAP_EDITOR_CONNECT_MODE}
+            store={store}/>
+          <ActionPaletteComponent
+            name="Delete"
+            toggle={MapConstants.MAP_EDITOR_DELETE_MODE}
+            store={store}/>
+        </ButtonGroup>
+      </div>
+    );
+  }
 });
 
 module.exports = Palette;

@@ -9,9 +9,18 @@ var _nodes = [];
 var _nodesToCreate = [];
 var _connections = [];
 
-var mapMode = null;
+var mapMode = null; // useful for determing whether to edit or drag nodes
 
 var _map = null;
+
+var componentTypes = [
+  {key:'userneed', name : 'User need', styleOverride: {border: '3px solid black',
+  backgroundColor: 'silver'}},
+  {key:'internal', name : 'Internal', styleOverride: {border: '1px solid black',
+  backgroundColor: 'silver'}},
+  {key:'external', name : 'External', styleOverride: {border: '1px solid black',
+  backgroundColor: 'white'}}
+];
 
 function createFromDrop(drop) {
   // Hand waving here -- not showing how this interacts with XHR or persistent
@@ -101,16 +110,13 @@ function mapRetrieved(map){
       delete _nodes[i].componentId;
     }
     if(_nodes[i].userneed){
-      _nodes[i].styleOverride = {border: '2px solid black',
-      backgroundColor: 'silver'};
+      _nodes[i].styleOverride = componentTypes[0].styleOverride;
       continue;
     }
     if(_nodes[i].external){
-      _nodes[i].styleOverride = {border: '1px solid black',
-      backgroundColor: 'white'};
+      _nodes[i].styleOverride = componentTypes[2].styleOverride;
     } else {
-      _nodes[i].styleOverride = {border: '1px solid black',
-      backgroundColor: 'silver'};
+      _nodes[i].styleOverride = componentTypes[1].styleOverride;
     }
   }
 
@@ -181,6 +187,10 @@ var MapStore = assign({}, EventEmitter.prototype, {
         event = MapConstants.CHANGE_EVENT;
     }
     this.removeListener(event, callback);
+  },
+
+  getComponentTypes : function(){
+    return componentTypes;
   }
 });
 
@@ -229,15 +239,12 @@ MapDispatcher.register(function(action) {
   case MapConstants.MAP_CHANGE_NAME:
        nameChanged(action.name);
        MapStore.emitChange();
-       console.log(_map);
        break;
   case MapConstants.MAP_CHANGE_DESCRIPTION:
        descriptionChanged(action.description);
        MapStore.emitChange();
-       console.log(_map);
        break;
     default:
-        console.log(action);
       // no op
   }
 });
