@@ -37,9 +37,12 @@ render: function() {
   );
   return (
     <div style={paletteStyle}>
-      <h4>Components:</h4>
+      <h5>Components:</h5>
       <ButtonGroup vertical block>
         {components}
+      </ButtonGroup>
+      <h5>Actions:</h5>
+      <ButtonGroup vertical block>
         <ActionPaletteComponent name="Move" toggle={MapConstants.MAP_EDITOR_DRAG_MODE} store={store}/>
         <ActionPaletteComponent name="Connect" toggle={MapConstants.MAP_EDITOR_CONNECT_MODE} store={store}/>
         <ActionPaletteComponent name="Delete" toggle={MapConstants.MAP_EDITOR_DELETE_MODE} store={store}/>
