@@ -83,6 +83,14 @@ function deleteConnection(connection){
     }
 }
 
+function nameChanged(name){
+  _map.history[0].name = name;
+}
+
+function descriptionChanged(description){
+  _map.history[0].description = description;
+}
+
 function mapRetrieved(map){
   _map = map;
   _nodes = map.history[0].nodes;
@@ -218,7 +226,18 @@ MapDispatcher.register(function(action) {
         mapRetrieved(action.map);
         MapStore.emitChange();
         break;
+  case MapConstants.MAP_CHANGE_NAME:
+       nameChanged(action.name);
+       MapStore.emitChange();
+       console.log(_map);
+       break;
+  case MapConstants.MAP_CHANGE_DESCRIPTION:
+       descriptionChanged(action.description);
+       MapStore.emitChange();
+       console.log(_map);
+       break;
     default:
+        console.log(action);
       // no op
   }
 });

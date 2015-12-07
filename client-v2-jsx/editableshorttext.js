@@ -28,108 +28,105 @@ label
 * onChange - method to call
 */
 var EditableShortText = React.createClass({
-    getInitialState: function() {
-      return {state:'text', newValue:null}; //also availabe 'hover' & 'edit'
-    },
-    componendDidMount : function(){
-      console.log(this.refs.input);
-      if(this.refs.input){
-        var domnode =  ReactDOM.findDOMNode(this.refs.input);
-              if(domnode){
-                domnode.onkeyup=this._keyListener;
-                domnode.focus();
-              }
-      }
-    },
-    componentDidUpdate : function(){
-      console.log('input', this.refs.input);
-      if(this.refs.input){
-
-        // var domnode =  ReactDOM.findInputDOMNode(this.refs.input);
-        var domnode = this.refs.input.getInputDOMNode();
-        console.log('domnode', domnode);
-              if(domnode){
-                domnode.onkeyup=this._keyListener;
-                var _this=this;
-                domnode.onblur=function(){
-                  _this.newValue = null;
-                  _this.setState({state:'text'});
-                };
-                domnode.focus();
-              }
-      }
-    },
-    render: function() {
-      var textToDisplay = this.state.newValue !== null ? this.state.newValue : this.props.text;
-      if(this.state.state === 'text'){
-        return (
-          <FormControls.Static
-            type="text"
-            onMouseOver={this._onHover}
-            value={textToDisplay}
-            placeholder={this.props.placeholder}
-            label={this.props.label}
-            labelClassName="col-xs-2"
-            wrapperClassName="col-xs-5"
-            />
-      );
-      }
-      if(this.state.state === 'hover'){
-        var glyph  = (<Glyphicon glyph="edit"></Glyphicon>);
-        return <FormControls.Static
-          type="text"
-          onMouseOut={this._onMouseOut}
-          onClick={this._startEdit}
-          value={textToDisplay}
-          placeholder={this.props.placeholder}
-          label={this.props.label}
-          labelClassName="col-xs-2"
-          wrapperClassName="col-xs-5"
-          feedbackIcon={glyph}
-          hasFeedback
-          inline
-          />;
-      }
-      if(this.state.state === 'edit'){
-        var _this = this;
-        return <Input
-          type="text"
-          value={textToDisplay}
-          placeholder={this.props.placeholder}
-          label={this.props.label}
-          labelClassName="col-xs-2"
-          wrapperClassName="col-xs-5"
-          onChange={this._onEdit}
-          ref="input"
-          inline
-          />;
-      }
-    },
-    _onChange : function() {
-      this.setState(this.props.store.getStateInfo());
-    },
-    _onHover : function(){
-      this.setState({state:'hover'});
-    },
-    _onMouseOut : function(){
-      this.setState({state:'text'});
-    },
-    _startEdit : function(){
-      this.setState({state:'edit'});
-    },
-    _onEdit : function(i){
-      this.setState({newValue : i.target.value});
-    },
-    _keyListener : function(key){
-      if(key.keyCode === 27){ //esc
-        this.newValue = null;
-        this.setState({state:'text'});
-      }
-      if(key.keyCode === 13){ //enter
-        this.setState({state:'text'});
-        //todo - fire onChangeEvent
+  getInitialState: function() {
+    return {state:'text', newValue:null}; //also availabe 'hover' & 'edit'
+  },
+  componendDidMount : function(){
+    if(this.refs.input){
+      var domnode =  ReactDOM.findDOMNode(this.refs.input);
+      if(domnode){
+        domnode.onkeyup=this._keyListener;
+        domnode.focus();
       }
     }
+  },
+  componentDidUpdate : function(){
+    if(this.refs.input){
+      var domnode = this.refs.input.getInputDOMNode();
+      if(domnode){
+        domnode.onkeyup=this._keyListener;
+        var _this=this;
+        domnode.onblur=function(){
+          _this.setState({state:'text', newValue : null});
+        };
+        domnode.focus();
+      }
+    }
+  },
+  render: function() {
+    var textToDisplay = this.state.newValue !== null ? this.state.newValue : this.props.text;
+    if(this.state.state === 'text'){
+      return (
+        <FormControls.Static
+          type="text"
+          onMouseOver={this._onHover}
+          value={textToDisplay}
+          placeholder={this.props.placeholder}
+          label={this.props.label}
+          labelClassName="col-xs-2"
+          wrapperClassName="col-xs-5"
+          />
+      );
+    }
+    if(this.state.state === 'hover'){
+      var glyph  = (
+        <Glyphicon glyph="edit">
+        </Glyphicon>
+      );
+      return <FormControls.Static
+        type="text"
+        onMouseOut={this._onMouseOut}
+        onClick={this._startEdit}
+        value={textToDisplay}
+        placeholder={this.props.placeholder}
+        label={this.props.label}
+        labelClassName="col-xs-2"
+        wrapperClassName="col-xs-5"
+        feedbackIcon={glyph}
+        hasFeedback
+        inline
+        />;
+    }
+    if(this.state.state === 'edit'){
+      var _this = this;
+      return <Input
+        type="text"
+        value={textToDisplay}
+        placeholder={this.props.placeholder}
+        label={this.props.label}
+        labelClassName="col-xs-2"
+        wrapperClassName="col-xs-5"
+        onChange={this._onEdit}
+        ref="input"
+        inline
+        />;
+    }
+  },
+  _onChange : function() {
+    this.setState(this.props.store.getStateInfo());
+  },
+  _onHover : function(){
+    this.setState({state:'hover'});
+  },
+  _onMouseOut : function(){
+    this.setState({state:'text'});
+  },
+  _startEdit : function(){
+    this.setState({state:'edit'});
+  },
+  _onEdit : function(i){
+    this.setState({newValue : i.target.value});
+  },
+  _keyListener : function(key){
+    if(key.keyCode === 27){ //esc
+      this.setState({state:'text', newValue : null});
+    }
+    if(key.keyCode === 13){ //enter
+      var _newValue = this.state.newValue;
+      this.setState({state:'text', newValue: null});
+      this.props.onChange(_newValue);
+    }
+  }
 });
 
 module.exports = EditableShortText;

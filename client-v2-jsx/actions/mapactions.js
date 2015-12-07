@@ -57,6 +57,20 @@ var MapActions = {
       actionType: MapConstants.MAP_RETRIEVED,
       map : map
     });
+  },
+
+  changeName : function(name){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_CHANGE_NAME,
+      name : name
+    });
+  },
+
+  changeDescription : function(description){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_CHANGE_DESCRIPTION,
+      description : description
+    });
   }
 
 };

@@ -19,61 +19,64 @@ var formStyle = {
   margin:'-15px -240px'
 };
 var MapTitleDescription = React.createClass({
-    editablename : null,
-    editabledescription : null,
-    componentDidMount: function() {
-      this.props.store.addChangeListener(this._onChange);
+  editablename : null,
+  editabledescription : null,
+  componentDidMount: function() {
+    this.props.store.addChangeListener(this._onChange);
 
-    },
-    componentWillUnmount: function() {
-      this.props.store.removeChangeListener(this._onChange);
-    },
-    componentDidUpdate : function() {
-      if(this.editabledescription){
-        $(this.editabledescription).editable();
-      }
-    },
-    render: function() {
-      if(this.state){
-        var name = this.state.name;
-        var description = this.state.description;
-        var _this = this;
-        return (
-          <h4>
-            <form className="form-horizontal" >
-              <div style={formStyle}>
-            <EditableShortText
+  },
+  componentWillUnmount: function() {
+    this.props.store.removeChangeListener(this._onChange);
+  },
+  componentDidUpdate : function() {
+    if(this.editabledescription){
+      $(this.editabledescription).editable();
+    }
+  },
+  render: function() {
+    if(this.state){
+      var name = this.state.name;
+      var description = this.state.description;
+      var _this = this;
+      return (
+        <h4>
+          <form className="form-horizontal" >
+            <div style={formStyle}>
+              <EditableShortText
                 text={name}
                 label="Title:"
-                placeholder="EnterTitle"/>
+                placeholder="EnterTitle"
+                parameterName="name"
+                onChange={MapActions.changeName}/>
             </div>
-<div style={formStyle}>
-             <small>
-
-               <EditableShortText
-                   text={description}
-                   label="Description:"
-                   placeholder="Enter Description"/>
-             </small>
-           </div>
-           </form>
-          </h4>
-        );
-      } else {
-        return (
-          <h4>Loading title & description </h4>
-        );
-      }
-    },
-    _onChange : function() {
-      this.setState(this.props.store.getNameAndDescription());
-    },
-    _dataChanged : function(a,b,c){
-      console.log(a,b,c);
-    },
-    _customValidateText : function(){
-      return true;
+            <div style={formStyle}>
+              <small>
+                <EditableShortText
+                  text={description}
+                  label="Description:"
+                  placeholder="Enter Description"
+                  parameterName="description"
+                  onChange={MapActions.changeDescription}/>
+              </small>
+            </div>
+          </form>
+        </h4>
+      );
+    } else {
+      return (
+        <h4>Loading title & description </h4>
+      );
     }
+  },
+  _onChange : function() {
+    this.setState(this.props.store.getNameAndDescription());
+  },
+  _dataChanged : function(a,b,c){
+    console.log(a,b,c);
+  },
+  _customValidateText : function(){
+    return true;
+  }
 });
 
 module.exports = MapTitleDescription;
