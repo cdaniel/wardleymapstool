@@ -44,7 +44,7 @@
     "q": "~1.4.1"
   },
   "optionalDependencies": {
-    "express-stormpath": "2.1.0",
+    "express-stormpath": "2.3.2",
     "mailchimp-api": "^2.0.7",
     "request": "^2.53.0"
   },
