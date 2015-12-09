@@ -25,6 +25,7 @@ var ActionPaletteComponent = React.createClass({
       };
     },
     handleClickMove : function(event){
+      event.preventDefault();
       MapActions.toggleMode(this.props.toggle);
     },
     render: function() {
