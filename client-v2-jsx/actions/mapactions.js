@@ -71,6 +71,19 @@ var MapActions = {
       actionType: MapConstants.MAP_CHANGE_DESCRIPTION,
       description : description
     });
+  },
+
+  toggleSharingDialog : function(){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_SHARING_DIALOG
+    });
+  },
+
+  toggleAnonymousSharing : function(url){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_TOGGLE_ANONYMOUS_SHARING,
+      url : url
+    });
   }
 
 };

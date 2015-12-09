@@ -21,6 +21,8 @@ var Button = require('react-bootstrap').Button;
 var MapStatus = require('./mapstatus');
 var EditableShortText = require('./editableshorttext');
 var Download = require('./download');
+var MapSharingDialog = require('./sharedialog/sharingdialog');
+var MapActions = require('./actions/mapactions.js');
 
 var logoStyle = {
   height : 30,
@@ -38,6 +40,10 @@ if(mapId) {
 var origin = url.origin;
 
   var MapEditorPage = React.createClass({
+    MapStore : MapStore,
+    toggleSharingDialog : function(){
+      MapActions.toggleSharingDialog();
+    },
     render: function() {
         return (
             <Grid fluid={true}>
@@ -53,8 +59,8 @@ var origin = url.origin;
                       </NavbarBrand>
                     </NavbarHeader>
                     <Nav>
-                      <Download mapId={mapId} store={MapStore}/>
-                      <NavItem eventKey={2} href="#">
+                      <Download mapId={mapId} store={this.MapStore}/>
+                      <NavItem eventKey={2} onClick={this.toggleSharingDialog} role="toggle">
                         <Glyphicon glyph="share"></Glyphicon>
                         &nbsp;Share...
                       </NavItem>
@@ -72,17 +78,18 @@ var origin = url.origin;
               </Row>
               <Row className="show-grid">
                 <Col xs={10} sm={10} md={10} lg={10}>
-                  <MapTitleDescription store={MapStore}/>
+                  <MapTitleDescription store={this.MapStore}/>
                 </Col>
                 <Col xs={2} sm={2} md={2} lg={2}>
-                  <MapStatus  store={MapStore}/>
+                  <MapStatus  store={this.MapStore}/>
                 </Col>
               </Row>
               <Row className="show-grid">
                 <Col xs={16} md={16}>
-                  <MapEditor mapid={mapId} origin={origin} store={MapStore}/>
+                  <MapEditor mapid={mapId} origin={origin} store={this.MapStore}/>
                 </Col>
               </Row>
+              <MapSharingDialog store={this.MapStore} mapId={mapId}/>
             </Grid>
         );
     }

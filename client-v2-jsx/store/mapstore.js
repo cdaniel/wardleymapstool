@@ -13,6 +13,13 @@ var mapMode = null; // useful for determing whether to edit or drag nodes
 
 var _map = null;
 
+
+var _sharingDialog = false;
+
+
+function toggleSharingDialog(){
+  _sharingDialog = !_sharingDialog;
+}
 var componentTypes = [
   {key:'userneed', name : 'User need', styleOverride: {border: '3px solid black',
   backgroundColor: 'silver'}},
@@ -148,6 +155,10 @@ var MapStore = assign({}, EventEmitter.prototype, {
     return {nodes:_nodes, connections:_connections, mapMode:mapMode};
   },
 
+  getMap : function(){
+    return _map;
+  },
+
   getNameAndDescription : function () {
     var name = '';
     var description = '';
@@ -161,6 +172,14 @@ var MapStore = assign({}, EventEmitter.prototype, {
     } else {
       return null;
     }
+  },
+
+  getSharedDialogState : function(){
+    var anonymousShare = _map !== null ? _map.anonymousShare : false;
+    var anonymousShareLink = _map !== null ? _map.anonymousShareLink : '';
+    return {sharingDialog:_sharingDialog,
+            anonymousShare:anonymousShare,
+          anonymousShareLink:anonymousShareLink};
   },
 
   getStateInfo : function() {
@@ -242,6 +261,19 @@ MapDispatcher.register(function(action) {
        break;
   case MapConstants.MAP_CHANGE_DESCRIPTION:
        descriptionChanged(action.description);
+       MapStore.emitChange();
+       break;
+  case MapConstants.MAP_SHARING_DIALOG:
+       toggleSharingDialog();
+       MapStore.emitChange();
+       break;
+  case MapConstants.MAP_TOGGLE_ANONYMOUS_SHARING:
+       if(action.url){
+          _map.anonymousShare = true;
+          _map.anonymousShareLink = action.url;
+       } else {
+         _map.anonymousShare = false;
+       }
        MapStore.emitChange();
        break;
     default:

@@ -18,5 +18,8 @@ module.exports = keyMirror({
   DROP_EVENT : null,
   CHANGE_EVENT : null,
 
-  MAP_RETRIEVED : null
+  MAP_RETRIEVED : null,
+  MAP_SHARING_DIALOG : null,
+
+  MAP_TOGGLE_ANONYMOUS_SHARING : null
 });
