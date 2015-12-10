@@ -12,7 +12,9 @@ var DraggablePaletteComponent = React.createClass({
     render: function() {
       var store = this.props.store;
       var props = this.props;
-      var key = this.props.key;
+      console.log(this.props);
+      var _key = this.props._key;
+      console.log(_key);
         return (
             <Button href="#" style={outerStyle} bsStyle={null}>
                 <div ref={
@@ -24,7 +26,8 @@ var DraggablePaletteComponent = React.createClass({
                           containment:true,
                           stop : function(param){
                               var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-                              var target = {'top' : param.pos[1], 'left' : param.pos[0], id: id, key:key, styleOverride:props.styleOverride};
+                              console.log(_key);
+                              var target = {'top' : param.pos[1], 'left' : param.pos[0], id: id, key:props._key, styleOverride:props.styleOverride};
                               MapActions.createNodeFromDrop(target);
                           }
                       });

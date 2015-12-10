@@ -34,12 +34,13 @@ var NodeEditDialog = React.createClass({
     var editedNode = this.props.store.getNodeBeingEdited();
     var show = editedNode !== null;
     var name = editedNode !== null ? editedNode.name : "";
-    if(this.state.newName !== null){
+    if(this.state.newName){
       name = this.state.newName;
     }
 
     var type = null;
-    if(editedNode !== null){
+    if(editedNode){
+      console.log(editedNode);
       if(editedNode.userneed){
         type = 'userneed';
       } else if (editedNode.external){
@@ -48,7 +49,7 @@ var NodeEditDialog = React.createClass({
         type = 'internal';
       }
     }
-    if(this.state.newType !== null){
+    if(this.state.newType){
       type = this.state.newType;
     }
     return (

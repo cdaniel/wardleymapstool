@@ -24,10 +24,12 @@ var Palette = React.createClass({
     var store = this.props.store;
     var components = this.state.items.map(
       function(component){
+        var _key = component.key;
+        console.log(_key);
         return <DraggablePaletteComponent
           name={component.name}
           store={store}
-          key={component.key}
+          _key={_key}
           styleOverride={component.styleOverride}/>;
       }
     );

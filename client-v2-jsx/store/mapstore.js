@@ -102,6 +102,22 @@ function normalize(params){
     if( (normalizedNode.positionX > 0 && normalizedNode.positionX < 1) &&
         (normalizedNode.positionY > 0 && normalizedNode.positionY < 1) ){
       _nodes.push(normalizedNode);
+      _nodeBeingEdited = normalizedNode;
+      for(var j = 0; j < componentTypes.length; j++){
+        if(_nodeBeingEdited.key === componentTypes[j].key){
+          _nodeBeingEdited.styleOverride = componentTypes[j].styleOverride;
+          if(componentTypes[j].key === 'userneed'){
+            _nodeBeingEdited.userneed = true;
+            _nodeBeingEdited.external = false;
+          } else if(componentTypes[j].key === 'external'){
+            _nodeBeingEdited.userneed = false;
+            _nodeBeingEdited.external = true;
+          } else {
+            _nodeBeingEdited.userneed = false;
+            _nodeBeingEdited.external = false;
+          }
+        }
+      }
       changed = true;
     }
   }
