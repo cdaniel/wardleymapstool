@@ -84,7 +84,15 @@ var MapActions = {
       actionType: MapConstants.MAP_TOGGLE_ANONYMOUS_SHARING,
       url : url
     });
-  }
+  },
+
+  editNode : function(nodeId, newState){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.MAP_EDIT_NODE,
+      nodeId : nodeId,
+      newState : newState
+    });
+  },
 
 };
 

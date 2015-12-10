@@ -104,6 +104,22 @@ var MapComponent = React.createClass({
 
   componentDidUpdate : function ( prevProps,  prevState){
     this.sortOutDeps();
+    if(this.props.mapMode !== MapConstants.MAP_EDITOR_DRAG_MODE){
+      jsPlumb.setDraggable(this.id, false);
+    }
+    if(this.props.mapMode !== MapConstants.MAP_EDITOR_CONNECT_MODE){
+      jsPlumb.unmakeSource(this.id);
+      jsPlumb.unmakeTarget(this.id);
+    }
+    if(this.props.mapMode !== MapConstants.MAP_EDITOR_DELETE_MODE){
+      //connections. nodes are handled by a direct listener
+      for(var j = 0; j < this.relatedConnections.length; j++){
+        if(this.relatedConnections[j].conn){
+          this.relatedConnections[j].conn.unbind('click');
+        }
+      }
+    }
+
 
     if(this.props.mapMode === MapConstants.MAP_EDITOR_DRAG_MODE){
       var _this = this;
@@ -124,28 +140,18 @@ var MapComponent = React.createClass({
         }
       });
       jsPlumb.setDraggable(this.id, true);
-    } else {
-      jsPlumb.setDraggable(this.id, false);
     }
 
 
     if(this.props.mapMode === MapConstants.MAP_EDITOR_CONNECT_MODE){
       jsPlumb.makeTarget(this.id, endpointOptions, {anchor: "TopCenter"});
       jsPlumb.makeSource(this.id, endpointOptions, {anchor : "BottomCenter"});
-    } else {
-      jsPlumb.unmakeSource(this.id);
-      jsPlumb.unmakeTarget(this.id);
     }
+
     if(this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE){
       for(var i = 0; i < this.relatedConnections.length; i++){
         var conn =  this.relatedConnections[i].conn;
         conn.bind('click', this.connectionDelete);
-      }
-    } else {
-      for(var j = 0; j < this.relatedConnections.length; j++){
-        if(this.relatedConnections[j].conn){
-          this.relatedConnections[j].conn.unbind('click');
-        }
       }
     }
   },
@@ -155,6 +161,10 @@ var MapComponent = React.createClass({
     jsPlumb.removeAllEndpoints(this.id);
     jsPlumb.detach(this.id);
     MapActions.deleteNode(this.id);
+  },
+
+  editNode : function(){
+    MapActions.editNode(this.id);
   },
 
   render: function() {
@@ -178,11 +188,16 @@ var MapComponent = React.createClass({
 
     that.id = this.props.id;
     var name = this.props.name;
+    var onClickHandler = null;
+    onClickHandler = this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE ? this.delete : null;
+    if(this.props.mapMode === MapConstants.MAP_EDITOR_EDIT_MODE){
+      onClickHandler = this.editNode;
+    }
     return (
       <div
         style={styleToSet}
         id={this.props.id}
-        onClick={this.props.mapMode === MapConstants.MAP_EDITOR_DELETE_MODE ? this.delete : null}
+        onClick={onClickHandler}
         >
         {
           (function() {

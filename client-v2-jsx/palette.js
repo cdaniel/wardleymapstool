@@ -40,6 +40,10 @@ var Palette = React.createClass({
         <h5>Actions:</h5>
         <ButtonGroup vertical block>
           <ActionPaletteComponent
+            name="Edit"
+            toggle={MapConstants.MAP_EDITOR_EDIT_MODE}
+            store={store}/>
+          <ActionPaletteComponent
             name="Move"
             toggle={MapConstants.MAP_EDITOR_DRAG_MODE}
             store={store}/>

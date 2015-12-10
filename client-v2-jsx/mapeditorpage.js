@@ -21,7 +21,8 @@ var Button = require('react-bootstrap').Button;
 var MapStatus = require('./mapstatus');
 var EditableShortText = require('./editableshorttext');
 var Download = require('./download');
-var MapSharingDialog = require('./sharedialog/sharingdialog');
+var MapSharingDialog = require('./dialogs/sharingdialog');
+var NodeEditDialog = require('./dialogs/nodeeditdialog');
 var MapActions = require('./actions/mapactions.js');
 
 var logoStyle = {
@@ -90,6 +91,7 @@ var origin = url.origin;
                 </Col>
               </Row>
               <MapSharingDialog store={this.MapStore} mapId={mapId}/>
+              <NodeEditDialog store={this.MapStore}/>
             </Grid>
         );
     }

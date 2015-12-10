@@ -13,13 +13,8 @@ var mapMode = null; // useful for determing whether to edit or drag nodes
 
 var _map = null;
 
+var _nodeBeingEdited = null;
 
-var _sharingDialog = false;
-
-
-function toggleSharingDialog(){
-  _sharingDialog = !_sharingDialog;
-}
 var componentTypes = [
   {key:'userneed', name : 'User need', styleOverride: {border: '3px solid black',
   backgroundColor: 'silver'}},
@@ -28,6 +23,56 @@ var componentTypes = [
   {key:'external', name : 'External', styleOverride: {border: '1px solid black',
   backgroundColor: 'white'}}
 ];
+
+// wicked logic to fix, because it does select and edit
+function selectNodeForEdit(nodeId, newState){
+  if(!newState){
+    newState = null;
+  }
+  if(nodeId === null && newState === null){
+    _nodeBeingEdited = null; //deselect edit
+    return;
+  }
+  if(nodeId === null && newState !== null){
+    if(newState.newName){
+      _nodeBeingEdited.name = newState.newName;
+    }
+    if(newState.newType){
+      for(var j = 0; j < componentTypes.length; j++){
+        if(newState.newType === componentTypes[j].key){
+          _nodeBeingEdited.styleOverride = componentTypes[j].styleOverride;
+          if(componentTypes[j].key === 'userneed'){
+            _nodeBeingEdited.userneed = true;
+            _nodeBeingEdited.external = false;
+          } else if(componentTypes[j].key === 'external'){
+            _nodeBeingEdited.userneed = false;
+            _nodeBeingEdited.external = true;
+          } else {
+            _nodeBeingEdited.userneed = false;
+            _nodeBeingEdited.external = false;
+          }
+        }
+      }
+    }
+    _nodeBeingEdited = null;
+    return;
+  }
+  for(var i =0; i < _nodes.length; i++){
+    if(_nodes[i].id === nodeId){
+      _nodeBeingEdited = _nodes[i];
+      return;
+    }
+  }
+}
+
+
+var _sharingDialog = false;
+
+
+function toggleSharingDialog(){
+  _sharingDialog = !_sharingDialog;
+}
+
 
 function createFromDrop(drop) {
   // Hand waving here -- not showing how this interacts with XHR or persistent
@@ -210,6 +255,10 @@ var MapStore = assign({}, EventEmitter.prototype, {
 
   getComponentTypes : function(){
     return componentTypes;
+  },
+
+  getNodeBeingEdited : function(){
+    return _nodeBeingEdited;
   }
 });
 
@@ -274,6 +323,10 @@ MapDispatcher.register(function(action) {
        } else {
          _map.anonymousShare = false;
        }
+       MapStore.emitChange();
+       break;
+  case MapConstants.MAP_EDIT_NODE:
+       selectNodeForEdit(action.nodeId, action.newState);
        MapStore.emitChange();
        break;
     default:
