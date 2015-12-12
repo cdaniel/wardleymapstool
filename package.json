@@ -38,7 +38,7 @@
     "morgan": "~1.6.1",
     "errorhandler": "~1.4.2",
     "phantom": "~0.8.0",
-    "atob": "~1.1.2",
+    "atob": "~2.0.0",
     "temporary": "0.0.8",
     "phantomjs": "~1.9.18",
     "q": "~1.4.1"
