@@ -66,7 +66,8 @@ var NodeEditDialog = React.createClass({
               label="Name"
               placeholder="Enter component name"
               parameterName="name"
-              onChange={this.onNameUpdate}/>
+              onChange={this.onNameUpdate}
+              updateOnBlur="true"/>
             <Input
               type="select"
               label="Type"

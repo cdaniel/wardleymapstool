@@ -47,7 +47,13 @@ var EditableShortText = React.createClass({
         domnode.onkeyup=this._keyListener;
         var _this=this;
         domnode.onblur=function(){
-          _this.setState({state:'text', newValue : null});
+          if(_this.props.updateOnBlur === 'true'){
+            var _newValue = _this.state.newValue;
+            _this.setState({state:'text', newValue: null});
+            _this.props.onChange(_newValue);
+          } else {
+              _this.setState({state:'text', newValue : null});
+          }
         };
         domnode.focus();
       }
