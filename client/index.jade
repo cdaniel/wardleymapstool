@@ -89,6 +89,10 @@ html
                                                 a(role="menuitem" tabindex="-1" href="/api/map/delete/" + map._id)
                                                     span.glyphicon.glyphicon-remove
                                                     | &nbsp;Delete!
+                                            li(role="presentation")
+                                                a(role="menuitem" tabindex="-1" href="/map/#" + map._id)
+                                                    span.glyphicon.glyphicon-flash
+                                                    | &nbsp;Open with an <b>EXPERIMENTAL</b> editor.
         //- new business line dialog
         #basicModal(class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true")
             div(class="modal-dialog")
