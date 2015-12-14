@@ -73,12 +73,12 @@ function preprocessNewSubMapRequest(req, res, callback){
     var deferred = Q.defer();
     var userId = req.user.href;
     logger.debug("new submap creation requested for user", userId);
-    
+
     var parentmapid = "";
     if (typeof req.body.parentmapid !== 'undefined') {
         parentmapid = req.body.parentmapid;
     }
-    
+
     var parentcomponentid = "";
     if (typeof req.body.parentcomponentid !== 'undefined') {
         parentcomponentid = req.body.parentcomponentid;
@@ -112,21 +112,21 @@ function preprocessNewSubMapRequest(req, res, callback){
 }
 
 var mapmodule = function(db, share) {
-    
+
     var _prepareMetadataToClone = function(params, callback){
         var deferred = Q.defer();
         var map = params.mapsNoHistory[0]; //just one map
-        
+
         //strip the id
         delete map._id;
-        map.history[0].name = "Clone of \"" + map.history[0].name + "\""; 
-        
+        map.history[0].name = "Clone of \"" + map.history[0].name + "\"";
+
         params.meta = map;
-        
+
         deferred.resolve(params);
         return deferred.promise.nodeify(callback);
     };
-    
+
     /**
      * params = {req,res,meta},
      * output = {req,res,meta,_id}
@@ -169,7 +169,7 @@ var mapmodule = function(db, share) {
         });
         return deferred.promise.nodeify(callback);
     };
-    
+
     /**
      * input {mapId, progress}
      * output {mapId, progress}
@@ -190,7 +190,7 @@ var mapmodule = function(db, share) {
         });
         return deferred.promise.nodeify(callback);
     };
-    
+
     /**
      * input {mapId, progress}
      * output {mapId, progress}
@@ -219,7 +219,7 @@ var mapmodule = function(db, share) {
         });
         return deferred.promise.nodeify(callback);
     };
-    
+
     /**
      * params {req, res, mapId,userId }
      * returns {code:403} if not authorized
@@ -239,15 +239,15 @@ var mapmodule = function(db, share) {
             }
         });
         return deferred.promise.nodeify(callback);
-    }
-    
+    };
+
     var _redirectToMapID = function (params, callback){
         var deferred = Q.defer();
         params.res.redirect('/map/' + params._id);
         deferred.resolve(params);
         return deferred.promise.nodeify(callback);
     };
-    
+
     /**
      * Retrieves maps that were not yet deleted and belong to the user.
      * If mapid is specified, retrieves only one map.
@@ -275,7 +275,7 @@ var mapmodule = function(db, share) {
         });
         return deferred.promise.nodeify(callback);
     };
-    
+
     /*
      * This should prepare maps to be easily displayable as a list (without nodes and connections, just metadata).
      */
@@ -295,11 +295,11 @@ var mapmodule = function(db, share) {
         deferred.resolve(params);
         return deferred.promise.nodeify(callback);
     };
-    
+
     var _prepareMapToFullDisplay = function(params, callback){
         var deferred = Q.defer();
         var maps = params.mapsNoHistory;
-        
+
         if(maps.length === 0){
             var err = new Error('no map to display');
             err.code = 404;
@@ -321,12 +321,12 @@ var mapmodule = function(db, share) {
         if(!maps[0].preciseShare){
             maps[0].preciseShare = [];
         }
-        
+
         params.mapToDisplay = maps[0];
         deferred.resolve(params);
         return deferred.promise.nodeify(callback);
     };
-    
+
     var _preparePartialUpdateHistoryEntry = function(params, callback){
         var deferred = Q.defer();
         var map = params.mapsNoHistory[0];
@@ -335,12 +335,12 @@ var mapmodule = function(db, share) {
         var historyEntry = (JSON.parse(JSON.stringify(map.history[0])));
         historyEntry.serverDate = new Date();
         historyEntry[params.load.pk] = params.load.value;
-        
+
         params.historyEntry = historyEntry;
         deferred.resolve(params);
         return deferred.promise.nodeify(callback);
     };
-    
+
     var _saveHistoryEntry = function(params, callback){
         var deferred = Q.defer();
         var map = params.mapsNoHistory[0];
@@ -365,16 +365,16 @@ var mapmodule = function(db, share) {
                 deferred.resolve(params);
             }
         });
-        
+
         return deferred.promise.nodeify(callback);
     };
-    
+
     var  _storeParentMap = function(params, callback){
         var deferred = Q.defer();
-        
+
         var parentMapId = '' + params.mapId;
         var newMapId = '' + params._id;
-        
+
         var relation = {
                 type : 'clone',
                 clonedSource : parentMapId,
@@ -393,7 +393,7 @@ var mapmodule = function(db, share) {
         });
         return deferred.promise.nodeify(callback);
     };
-    
+
     var _findRelatedMaps = function(params, callback){
         var deferred = Q.defer();
         var mapId = params.req.params.mapid;
@@ -417,7 +417,7 @@ var mapmodule = function(db, share) {
         });
         return deferred.promise.nodeify(callback);
     };
-    
+
     var _deleteRelatedMapsEntries = function(params, callback){
         var deferred = Q.defer();
         var mapId = params.req.params.mapid;
@@ -438,7 +438,7 @@ var mapmodule = function(db, share) {
        });
         return deferred.promise.nodeify(callback);
     };
-    
+
     return {
         createNewMap : function (req, res) {
 
@@ -455,15 +455,15 @@ var mapmodule = function(db, share) {
                 })
                 .done();
         },
-        
+
         cloneMap : function (req, res, mapId) {
             var userId = req.user.href;
             var mapId = db.ObjectId(mapId);
-            
+
             var params = {userId : userId, mapId : mapId, progress : -1, res:res, req:req};
-            
+
             logger.debug("cloning map", mapId, "for user", userId);
-            
+
             _getRawMapsWithoutHistory(params)
                 .then(_prepareMetadataToClone)
                 .then(_saveMetaMap)
@@ -479,15 +479,15 @@ var mapmodule = function(db, share) {
                 })
                 .done();
         },
-        
+
         findRelatedMaps : function (req, res) {
             var userId = req.user.href;
             var mapId = req.params.mapid;
-            
+
             var params = {res:res, req:req, mapId : mapId};
-            
+
             logger.debug("finding related maps for map", mapId);
-            
+
             _findRelatedMaps(params)
             .then(function(params){
 //                console.log(params);
@@ -502,7 +502,7 @@ var mapmodule = function(db, share) {
                 })
                 .done();
         },
-        
+
 /*        createNewSubMap : function (req, res) {
 
             preprocessNewSubMapRequest(req,res)
@@ -527,8 +527,8 @@ var mapmodule = function(db, share) {
                             mapid : '' + mapId
                         }
                     }
-            }; 
-            
+            };
+
             var userId = req.user.href;
 
             mapId = db.ObjectId(mapId);
@@ -583,7 +583,7 @@ var mapmodule = function(db, share) {
             historyEntry._id = mapId;
             historyEntry.userId = userId;
             historyEntry.serverDate = new Date();
-            
+
 
         for (var i = 0; i < historyEntry.nodes.length; i++ ) {
                var node = historyEntry.nodes[i];
@@ -632,9 +632,9 @@ var mapmodule = function(db, share) {
             var mapId = db.ObjectId(mapId);
             var load = req.body;
             var params = {userId : userId, mapId : mapId, load : load};
-            
+
             logger.debug("updating map partially", mapId, "for user", userId, " request" + JSON.stringify(load));
-            
+
             _getRawMapsWithoutHistory(params)
                 .then(_preparePartialUpdateHistoryEntry)
                 .then(_saveHistoryEntry)
@@ -656,8 +656,8 @@ var mapmodule = function(db, share) {
 
             var userId = req.user.href;
             mapId = db.ObjectId(mapId);
-            
-            var params = {userId : userId, 
+
+            var params = {userId : userId,
                             mapId : mapId,
                             req : req};
             logger.debug("getting map", mapId, "for user", userId);
@@ -680,7 +680,7 @@ var mapmodule = function(db, share) {
             var userId = req.user.href;
 
             logger.debug("getting maps for user", userId);
-            
+
             var params = {userId : userId};
 
             _getRawMapsWithoutHistory(params)
@@ -698,7 +698,7 @@ var mapmodule = function(db, share) {
             var userId = req.user.href;
             var mapId = db.ObjectId(mapId);
             var params = {userId : userId, mapId : mapId};
-            
+
             _writeAccessCheck(params)
                 .then(_getProgressNoAccessCheck)
                 .then(finalCallback)
@@ -712,7 +712,7 @@ var mapmodule = function(db, share) {
             var userId = req.user.href;
             var mapId = db.ObjectId(mapId);
             var params = {userId : userId, mapId : mapId};
-            
+
             _writeAccessCheck(params)
                 .then(_advanceProgressNoAccessCheck)
                 .then(finalCallback)

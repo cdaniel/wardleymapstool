@@ -15,9 +15,7 @@ var styleToEdit = {
   borderBottom: '1px dashed #999',
   display: 'inline'
 };
-var formStyle = {
-  margin:'-15px -240px'
-};
+
 var MapTitleDescription = React.createClass({
   editablename : null,
   editabledescription : null,
@@ -39,9 +37,8 @@ var MapTitleDescription = React.createClass({
       var description = this.state.description;
       var _this = this;
       return (
-        <h4>
           <form className="form-horizontal" >
-            <div style={formStyle}>
+            <div>
               <EditableShortText
                 text={name}
                 label="Title:"
@@ -50,7 +47,7 @@ var MapTitleDescription = React.createClass({
                 onChange={MapActions.changeName}
                 updateOnBlur="true"/>
             </div>
-            <div style={formStyle}>
+            <div>
               <small>
                 <EditableShortText
                   text={description}
@@ -62,7 +59,6 @@ var MapTitleDescription = React.createClass({
               </small>
             </div>
           </form>
-        </h4>
       );
     } else {
       return (
@@ -72,9 +68,6 @@ var MapTitleDescription = React.createClass({
   },
   _onChange : function() {
     this.setState(this.props.store.getNameAndDescription());
-  },
-  _dataChanged : function(a,b,c){
-    console.log(a,b,c);
   },
   _customValidateText : function(){
     return true;

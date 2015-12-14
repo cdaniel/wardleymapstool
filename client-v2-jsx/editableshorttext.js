@@ -69,8 +69,8 @@ var EditableShortText = React.createClass({
           value={textToDisplay}
           placeholder={this.props.placeholder}
           label={this.props.label}
-          labelClassName="col-xs-2"
-          wrapperClassName="col-xs-5"
+          labelClassName="col-xs-2 col-sm-2 col-md-1 col-lg-1"
+          wrapperClassName="col-xs-5 col-sm-4 col-md-3 col-lg-3"
           />
       );
     }
@@ -86,8 +86,8 @@ var EditableShortText = React.createClass({
         value={textToDisplay}
         placeholder={this.props.placeholder}
         label={this.props.label}
-        labelClassName="col-xs-2"
-        wrapperClassName="col-xs-5"
+        labelClassName="col-xs-2 col-sm-2 col-md-1 col-lg-1"
+        wrapperClassName="col-xs-5 col-sm-4 col-md-3 col-lg-3"
         feedbackIcon={glyph}
         hasFeedback
         inline
@@ -100,8 +100,8 @@ var EditableShortText = React.createClass({
         value={textToDisplay}
         placeholder={this.props.placeholder}
         label={this.props.label}
-        labelClassName="col-xs-2"
-        wrapperClassName="col-xs-5"
+        labelClassName="col-xs-2 col-sm-2 col-md-1 col-lg-1"
+        wrapperClassName="col-xs-5 col-sm-4 col-md-3 col-lg-3"
         onChange={this._onEdit}
         ref="input"
         inline
