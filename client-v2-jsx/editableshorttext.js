@@ -19,6 +19,8 @@ var styleToEdit = {
   display: 'inline'
 };
 
+var defaultLabelClassName = "col-xs-2";
+var defaultWrapperClassName = "col-xs-5";
 
 /**
 * params:
@@ -61,6 +63,9 @@ var EditableShortText = React.createClass({
   },
   render: function() {
     var textToDisplay = this.state.newValue !== null ? this.state.newValue : this.props.text;
+    var labelClassName = this.props.labelClassNameOverride ? this.props.labelClassNameOverride : defaultLabelClassName;
+    var wrapperClassName = this.props.wrapperClassNameOverride ? this.props.wrapperClassNameOverride : defaultWrapperClassName;
+    
     if(this.state.state === 'text'){
       return (
         <FormControls.Static
@@ -69,8 +74,8 @@ var EditableShortText = React.createClass({
           value={textToDisplay}
           placeholder={this.props.placeholder}
           label={this.props.label}
-          labelClassName="col-xs-2 col-sm-2 col-md-1 col-lg-1"
-          wrapperClassName="col-xs-5 col-sm-4 col-md-3 col-lg-3"
+          labelClassName={labelClassName}
+          wrapperClassName={wrapperClassName}
           />
       );
     }
@@ -86,8 +91,8 @@ var EditableShortText = React.createClass({
         value={textToDisplay}
         placeholder={this.props.placeholder}
         label={this.props.label}
-        labelClassName="col-xs-2 col-sm-2 col-md-1 col-lg-1"
-        wrapperClassName="col-xs-5 col-sm-4 col-md-3 col-lg-3"
+        labelClassName={labelClassName}
+        wrapperClassName={wrapperClassName}
         feedbackIcon={glyph}
         hasFeedback
         inline
@@ -100,8 +105,8 @@ var EditableShortText = React.createClass({
         value={textToDisplay}
         placeholder={this.props.placeholder}
         label={this.props.label}
-        labelClassName="col-xs-2 col-sm-2 col-md-1 col-lg-1"
-        wrapperClassName="col-xs-5 col-sm-4 col-md-3 col-lg-3"
+        labelClassName={labelClassName}
+        wrapperClassName={wrapperClassName}
         onChange={this._onEdit}
         ref="input"
         inline
@@ -132,6 +137,8 @@ var EditableShortText = React.createClass({
       this.setState({state:'text', newValue: null});
       this.props.onChange(_newValue);
     }
+    key.preventDefault();
+    key.stopPropagation();
   }
 });
 

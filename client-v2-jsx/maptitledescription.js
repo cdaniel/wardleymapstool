@@ -45,7 +45,9 @@ var MapTitleDescription = React.createClass({
                 placeholder="EnterTitle"
                 parameterName="name"
                 onChange={MapActions.changeName}
-                updateOnBlur="true"/>
+                updateOnBlur="true"
+                labelClassNameOverride="col-xs-2 col-sm-2 col-md-1 col-lg-1"
+                wrapperClassNameOverride="col-xs-5 col-sm-4 col-md-3 col-lg-3"/>
             </div>
             <div>
               <small>
@@ -55,7 +57,9 @@ var MapTitleDescription = React.createClass({
                   placeholder="Enter Description"
                   parameterName="description"
                   onChange={MapActions.changeDescription}
-                  updateOnBlur="true"/>
+                  updateOnBlur="true"
+                  labelClassNameOverride="col-xs-2 col-sm-2 col-md-1 col-lg-1"
+                  wrapperClassNameOverride="col-xs-5 col-sm-4 col-md-3 col-lg-3"/>
               </small>
             </div>
           </form>
