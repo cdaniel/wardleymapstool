@@ -30,6 +30,11 @@ var NodeEditDialog = React.createClass({
   onNameUpdate : function(value){
     this.setState({newName:value});
   },
+  onSubmit : function(key){
+    key.preventDefault();
+    key.stopPropagation();
+    return false;
+  },
   render: function() {
     var editedNode = this.props.store.getNodeBeingEdited();
     var show = editedNode !== null;
@@ -60,7 +65,7 @@ var NodeEditDialog = React.createClass({
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form className="form-horizontal" >
+          <form className="form-horizontal" onSubmit={this.onSubmit} >
             <EditableShortText
               text={name}
               label="Name"

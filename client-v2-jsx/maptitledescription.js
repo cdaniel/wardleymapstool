@@ -31,13 +31,18 @@ var MapTitleDescription = React.createClass({
       $(this.editabledescription).editable();
     }
   },
+  onSubmit : function(key){
+    key.preventDefault();
+    key.stopPropagation();
+    return false;
+  },
   render: function() {
     if(this.state){
       var name = this.state.name;
       var description = this.state.description;
       var _this = this;
       return (
-          <form className="form-horizontal" >
+        <form className="form-horizontal" onSubmit={this.onSubmit}>
             <div>
               <EditableShortText
                 text={name}
@@ -62,7 +67,7 @@ var MapTitleDescription = React.createClass({
                   wrapperClassNameOverride="col-xs-5 col-sm-4 col-md-3 col-lg-3"/>
               </small>
             </div>
-          </form>
+        </form>
       );
     } else {
       return (

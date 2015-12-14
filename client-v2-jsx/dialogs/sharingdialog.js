@@ -21,6 +21,11 @@ var MapSharingDialog = React.createClass({
   close : function(){
     MapActions.toggleSharingDialog();
   },
+  onSubmit : function(key){
+    key.preventDefault();
+    key.stopPropagation();
+    return false;
+  },
   // selectFullText : function (){
   //   var range = document.createRange();
   //   var selection = window.getSelection();
@@ -79,13 +84,14 @@ var MapSharingDialog = React.createClass({
         </Modal.Header>
         <Modal.Body>
           <h4>Anonymously</h4>
+          <form className="form-horizontal" onSubmit={this.onSubmit}>
           <Input
             type="checkbox"
             label="Share this map to anyone with the link"
             checked={!isNotSharedAnonymously}
             onClick={this.toggleAnonymousSharing}/>
           { anonymousShareBlock() }
-          <hr />
+        </form>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.close}>Close</Button>
