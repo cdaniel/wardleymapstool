@@ -96,7 +96,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "gulp build",
-    "test": "mocha server-tests/tests_*",
+    "test": "mocha server-tests/tests_*  && ./node_modules/.bin/cucumber.js functional_tests/*.featurea",
     "start": "node server/server.js"
   },
   "bin": "server/server.js"

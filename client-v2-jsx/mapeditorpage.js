@@ -24,11 +24,13 @@ var Download = require('./download');
 var MapSharingDialog = require('./dialogs/sharingdialog');
 var NodeEditDialog = require('./dialogs/nodeeditdialog');
 var MapActions = require('./actions/mapactions.js');
+var RelatedMaps = require('./relatedmaps.js');
 
 var logoStyle = {
   height : 30,
   marginTop : -5
 };
+
 var urllite = require('urllite');
 var url = urllite(window.location);
 var mapId = url.hash;
@@ -65,10 +67,11 @@ var origin = url.origin;
                         <Glyphicon glyph="share"></Glyphicon>
                         &nbsp;Share...
                       </NavItem>
+                      <RelatedMaps mapId={mapId} store={this.MapStore}/>
                     </Nav>
                     <Nav pullRight>
                        <NavItem eventKey={8} href="/profile">
-                         <Glyphicon glyph="user"></Glyphicon> Username
+                         <Glyphicon glyph="user"></Glyphicon> My Account
                        </NavItem>
                        <NavItem eventKey={9} href="/logout">
                          <Glyphicon glyph="log-out"></Glyphicon> Logout
