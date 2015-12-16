@@ -94,6 +94,13 @@ var MapActions = {
     });
   },
 
+  errorReported : function(error){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.ERROR,
+      error : error
+    });
+  }
+
 };
 
 module.exports = MapActions;

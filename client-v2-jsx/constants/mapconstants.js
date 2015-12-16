@@ -26,5 +26,7 @@ module.exports = keyMirror({
   MAP_RETRIEVED : null,
   MAP_SHARING_DIALOG : null,
 
-  MAP_TOGGLE_ANONYMOUS_SHARING : null
+  MAP_TOGGLE_ANONYMOUS_SHARING : null,
+
+  ERROR : null
 });

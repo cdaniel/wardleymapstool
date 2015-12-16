@@ -122,6 +122,7 @@
 		"window",
 		"document",
 		"$",
+		"it", "describe", "before", "after", "afterEach"
 		"Java", "JavaFX", "$ARG" //no effect
 	]
 	,	"indent" : 4 // Specify indentation spacing

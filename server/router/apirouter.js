@@ -16,29 +16,29 @@ limitations under the License.*/
 module.exports = function(maps, exportmap){
     var module = {};
 
-    
+
     module.router = require('express').Router();
 
     //create a map
     module.router.post('/map/' , function(req, res) {
     	maps.createNewMap(req, res);
     });
-    
+
     //create a map
     module.router.post('/map/partial/:mapid' , function(req, res) {
     	maps.partialMapUpdate(req, res, req.params.mapid);
     });
-    
+
     //clone a map
     module.router.get('/map/clone/:mapid' , function(req, res) {
         maps.cloneMap(req, res, req.params.mapid);
     });
-    
+
     //get related maps
     module.router.get('/map/related/:mapid' , function(req, res) {
         maps.findRelatedMaps(req, res);
     });
-    
+
 	// 2b. update a map
     module.router.post('/map/:mapid', function(req, res) {
 		maps.updateMap(req, res, req.params.mapid);
@@ -62,8 +62,10 @@ module.exports = function(maps, exportmap){
 		    if(arg instanceof Error){
 		        if(arg.code === 404){
 		            res.sendStatus(404);
+                return;
 		        } else {
 		            res.sendStatus(500);
+                return;
 		        }
 		    }
 		    res.send.bind(res)(arg);
@@ -92,18 +94,18 @@ module.exports = function(maps, exportmap){
 		    }
 		});
 	});
-	
+
 	// 6. export
 	module.router.get('/svg/:mapid/:name', function(req,
 			res) {
 		exportmap.createSVG(req, res, req.params.mapid, req.params.name, {format:'svg'});
 	});
-	
+
 	module.router.get('/svgforcedownload/:mapid/:name', function(req,
             res) {
         exportmap.createSVG(req, res, req.params.mapid, req.params.name, {forcedownload:true, format:'svg'});
     });
-	
+
 	module.router.get('/pngforcedownload/:mapid/:name', function(req,
             res) {
         exportmap.createSVG(req, res, req.params.mapid, req.params.name, {forcedownload:true, format:'png'});

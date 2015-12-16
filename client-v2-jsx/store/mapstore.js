@@ -12,7 +12,7 @@ var _connections = [];
 var mapMode = null; // useful for determing whether to edit or drag nodes
 
 var _map = null;
-
+var _state = null; //message to display to the user
 var _nodeBeingEdited = null;
 
 var componentTypes = [
@@ -231,7 +231,10 @@ var MapStore = assign({}, EventEmitter.prototype, {
         description : description
       };
     } else {
-      return null;
+      return {
+        name : '',
+        description : ''
+      };
     }
   },
 
@@ -244,7 +247,7 @@ var MapStore = assign({}, EventEmitter.prototype, {
   },
 
   getStateInfo : function() {
-    return {state:null};
+    return {state:_state};
   },
 
   emitChange: function() {
@@ -343,6 +346,10 @@ MapDispatcher.register(function(action) {
        break;
   case MapConstants.MAP_EDIT_NODE:
        selectNodeForEdit(action.nodeId, action.newState);
+       MapStore.emitChange();
+       break;
+  case MapConstants.ERROR:
+       _state = action.error;
        MapStore.emitChange();
        break;
     default:
