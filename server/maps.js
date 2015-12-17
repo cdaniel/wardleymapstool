@@ -312,7 +312,7 @@ var mapmodule = function(db, share) {
         if (!maps[0].history[0].connections) {
             maps[0].history[0].connections = [];
         } else {
-          _connections = map.history[0].connections;
+          _connections = maps[0].history[0].connections;
           // remove this stupid pageSourceId & pageTargetId
           for(var j = 0; j < _connections.length; j++){
             if(_connections[j].pageSourceId){
