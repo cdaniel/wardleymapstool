@@ -37,7 +37,7 @@ var draw = function(res, filename, map, config){
     }
     if(!config){
         config={};
-    };
+    }
 	jsdom.env({
 		features : {
 			QuerySelector : true
@@ -72,7 +72,7 @@ var draw = function(res, filename, map, config){
                 external : false,
                 name : 'internal component'
             }] : []);
-		    
+
 			function pick(key) {
 				return function(d) {
 					return d[key];
@@ -95,7 +95,7 @@ var draw = function(res, filename, map, config){
 			    .attr('id', 'maptitle')
 			    .attr('y', "1%")
 			    .attr('x', "2%");
-			
+
 			svgimg.append("text")
                 .text("created at wardleymaps.com")
                 .attr('id', 'createdAt')
@@ -115,11 +115,19 @@ var draw = function(res, filename, map, config){
 			}
 
 			var dependencyConnections = _dependencyConnections.map(function(c) {
-				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+        if(c.pageSourceId && c.pageTargetId){
+          return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+        } else {
+          return [ nodes[c.sourceId][0], nodes[c.targetId][0] ];
+        }
 			});
 
 			var actionConnections = _actionConnections.map(function(c) {
-				return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+        if(c.pageSourceId && c.pageTargetId){
+          return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+        } else {
+          return [ nodes[c.sourceId][0], nodes[c.targetId][0] ];
+        }
 			});
 
 
@@ -218,14 +226,14 @@ var draw = function(res, filename, map, config){
 						.classed('nodeTextShadow', true)
 						.attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 						.text(pick('name'));
-			
+
 			        gnode.append('text')
 			            .classed('nodeTex', true)
 			            .attr('transform', function(d) { return 'translate(' + (moveX(d) + 12) + ',' + (moveY(d) - 8) + ')'; })
 			            .text(pick('name'));
                     });
 
-			
+
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString(el);
 			if(config.format === 'svg'){
     			res.setHeader('Content-Type', 'image/svg+xml');
@@ -295,7 +303,7 @@ var export_module = function(db) {
         if(!format){
             format = 'svg';
         }
-        
+
         var userId = req.user.href;
         mapId = db.ObjectId(mapId);
         logger.debug("drawing svg", mapId, "for user", userId);

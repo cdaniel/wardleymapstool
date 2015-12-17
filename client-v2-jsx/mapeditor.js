@@ -7,8 +7,8 @@ var MapActions = require('./actions/mapactions');
 var jquery = require('jquery');
 
 var mapEditorStyle = {
-  minWidth : 800,
-  minHeight : 600,
+  minWidth : 600,
+  minHeight : 500,
   height: 'auto',
   position: 'relative'
 };

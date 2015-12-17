@@ -187,18 +187,6 @@ function mapRetrieved(map){
       _nodes[i].styleOverride = componentTypes[1].styleOverride;
     }
   }
-
-  _connections = map.history[0].connections;
-  for(var j = 0; j < _connections.length; j++){
-    if(_connections[j].pageSourceId){
-        _connections[j].sourceId = _connections[j].pageSourceId;
-        delete _connections[j].pageSourceId;
-    }
-    if(_connections[j].pageTargetId){
-      _connections[j].targetId = _connections[j].pageTargetId;
-      delete _connections[j].pageTargetId;
-    }
-  }
 }
 
 /**
