@@ -311,18 +311,19 @@ var mapmodule = function(db, share) {
         }
         if (!maps[0].history[0].connections) {
             maps[0].history[0].connections = [];
-            _connections = map.history[0].connections;
-            // remove this stupid pageSourceId & pageTargetId
-            for(var j = 0; j < _connections.length; j++){
-              if(_connections[j].pageSourceId){
-                  _connections[j].sourceId = _connections[j].pageSourceId;
-                  delete _connections[j].pageSourceId;
-              }
-              if(_connections[j].pageTargetId){
-                _connections[j].targetId = _connections[j].pageTargetId;
-                delete _connections[j].pageTargetId;
-              }
+        } else {
+          _connections = map.history[0].connections;
+          // remove this stupid pageSourceId & pageTargetId
+          for(var j = 0; j < _connections.length; j++){
+            if(_connections[j].pageSourceId){
+                _connections[j].sourceId = _connections[j].pageSourceId;
+                delete _connections[j].pageSourceId;
             }
+            if(_connections[j].pageTargetId){
+              _connections[j].targetId = _connections[j].pageTargetId;
+              delete _connections[j].pageTargetId;
+            }
+          }
         }
         if (!maps[0].anonymousShare) {
             maps[0].anonymousShare = false;
