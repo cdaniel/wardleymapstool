@@ -316,14 +316,19 @@ var export_module = function(db) {
                 $slice : -1
             }
         }).toArray(function(err, maps) {
-            res.setHeader('Content-Type', 'application/json');
             if (err !== null) {
+                res.setHeader('Content-Type', 'application/json');
                 logger.error(err);
                 res.statusCode = 500;
                 res.send(JSON.stringify(err));
             } else {
                 if(forcedownload){
                     res.setHeader('Content-Disposition', 'attachment; filename="' + maps[0].history[0].name + '.' + format + '"');
+                }
+                if(format === 'svg'){
+                    res.setHeader('Content-Type', 'image/svg+xml');
+                } else {
+                    res.setHeader('Content-Type', 'image/png');
                 }
                 draw(res, mapId, maps[0].history[0], {legend:true, format:format});
             }
@@ -345,16 +350,18 @@ var export_module = function(db) {
                 $slice : -1
             }
         }).toArray(function(err, maps) {
-            res.setHeader('Content-Type', 'application/json');
             if (err !== null) {
+                res.setHeader('Content-Type', 'application/json');
                 logger.error(err);
                 res.statusCode = 500;
                 res.send(JSON.stringify(err));
             } else {
                 // empty map
                 if (maps.length === 0) {
+                    res.setHeader('Content-Type', 'image/png');
                     res.redirect('/android-icon-192x192.png');
                 } else {
+                    res.setHeader('Content-Type', 'image/svg+xml');
                     draw(res, mapId, maps[0].history[0], {legend:true, format:'svg'});
                 }
             }
@@ -374,12 +381,13 @@ var export_module = function(db) {
                 $slice : -1
             }
         }).toArray(function(err, maps) {
-            res.setHeader('Content-Type', 'application/json');
             if (err !== null) {
+                res.setHeader('Content-Type', 'application/json');
                 logger.error(err);
                 res.statusCode = 500;
                 res.send(JSON.stringify(err));
             } else {
+                res.setHeader('Content-Type', 'image/svg+xml');
                 draw(res, mapId, maps[0].history[0],{format:'svg'});
             }
         });
