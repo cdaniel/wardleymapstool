@@ -187,6 +187,7 @@ function mapRetrieved(map){
       _nodes[i].styleOverride = componentTypes[1].styleOverride;
     }
   }
+  _connections = map.history[0].connections;
 }
 
 /**
