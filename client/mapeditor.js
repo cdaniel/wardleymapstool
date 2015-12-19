@@ -263,11 +263,11 @@ function drawMap() {
 				scope = jsPlumb.getDefaultScope();
 			}
 			var src = jsPlumb.selectEndpoints({
-				source : elem.pageSourceId,
+				source : elem.sourceId,
 				scope : scope
 			}).get(0);
 			var trg = jsPlumb.selectEndpoints({
-				target : elem.pageTargetId,
+				target : elem.targetId,
 				scope : scope
 			}).get(0);
 			var connection = jsPlumb.connect({
@@ -281,7 +281,7 @@ function drawMap() {
 			// restore previously saved id
 			connection.id = elem.connectionId;
 			jsPlumb.setIdChanged(connection.id, elem.connectionId);
-			
+
 			addConnectionListener(connection);
 		});
 	};
@@ -312,7 +312,7 @@ function init() {
 
 //	$('#mapeditor-preference-clickcreate').checkbox();
 	$('[data-toggle="tooltip"]').tooltip();
-	
+
 	drawMap();
 
 	//update the progress helper
@@ -381,7 +381,7 @@ function HTMLMapNode(parentNode, nodeData) {
 	// create and append item to the canvas
 	self.internalNode = $('<div>').attr('id', self.nodeData.componentId)
 			.addClass('item');
-	
+
 	self.wheelnavid = 'wheelnav' + self.nodeData.componentId;
 	self.internalNode.append($('<div>').attr('id', self.wheelnavid));
 
@@ -483,8 +483,8 @@ function HTMLMapNode(parentNode, nodeData) {
 			endpoints[i].setPaintStyle(ps);
 		}
 		self.internalNode.addClass('itemSelected');
-		
-		
+
+
 		$('#' + self.wheelnavid).addClass('wheelnav');
 		self.myWheelnav = new wheelnav('wheelnav' + self.nodeData.componentId);
 
@@ -498,13 +498,13 @@ function HTMLMapNode(parentNode, nodeData) {
 		var custom = new slicePathCustomization();
 		custom.minRadiusPercent = 0.2;
 		custom.maxRadiusPercent = 1;
-		 
-		self.myWheelnav.slicePathFunction = function(helper, percent){ 
+
+		self.myWheelnav.slicePathFunction = function(helper, percent){
 		    return slicePath().DonutSlice( helper, percent, custom);
 		};
 
 		self.myWheelnav.createWheel(["edit","delete", null,null,null,null,null,null,null,null,null,null]);
-		
+
 		self.myWheelnav.navItems[0].navigateFunction = function(){
 		    $('#nodemenudialog').modal('show');
 		};
@@ -512,10 +512,10 @@ function HTMLMapNode(parentNode, nodeData) {
 		self.myWheelnav.navItems[1].navigateFunction = function(){deleteSelection();};
 
 		self.myWheelnav.refreshWheel();
-		
+
 		//this throws exception but makes the trick
 		try{
-		self.myWheelnav.navigateWheel(-1);} catch(e){};
+		self.myWheelnav.navigateWheel(-1);} catch(e){}
 	};
 
 	self.updatePositionData = function() {
@@ -526,7 +526,6 @@ function HTMLMapNode(parentNode, nodeData) {
 			self.nodeData.positionY = parseInt(self.internalNode.css("top"), 10)
 					/ parseInt($('#map-container').height(), 10);
 		}
-		;
 	};
 
 	self.blur = function() {
@@ -598,13 +597,13 @@ function HTMLMapNode(parentNode, nodeData) {
 				map.nodes.splice(i, 1);
 				break;
 			}
-		};
+		}
 		for (var j = map.connections.length - 1; j > -1 ; j--) {
-			if (self.nodeData.componentId === map.connections[j].pageSourceId
-					|| self.nodeData.componentId === map.connections[j].pageTargetId) {
+			if (self.nodeData.componentId === map.connections[j].sourceId ||
+						self.nodeData.componentId === map.connections[j].targetIdId) {
 				map.connections.splice(j, 1);
 			}
-		};
+		}
 		delete self.nodeData;
 		fireDirty();
 	};
@@ -621,7 +620,7 @@ function HTMLMapNode(parentNode, nodeData) {
 
 	self.isUserNeed = function() {
 		return self.nodeData.userneed;
-	}
+	};
 
 	self.setExternal = function(external) {
 		if (external) {
@@ -635,7 +634,7 @@ function HTMLMapNode(parentNode, nodeData) {
 
 	self.isExternal = function() {
 		return self.nodeData.external;
-	}
+	};
 
 	self.setExternal(self.nodeData.external);
 	self.setUserNeed(self.nodeData.userneed);
@@ -684,14 +683,14 @@ function initalizeJSPlumb() {
 	jsPlumb.bind("beforeDrop", function(connection) {
 //		console.log('before drop', connection);
 	    var scope = connection.connection.getData().scope;
-	    
+
 		if (connection.sourceId == connection.targetId) {
 			return false;
 		}
 
 		var outcomingEndpointId = connection.sourceId + scope + "o";
 		var acceptingEndpointId = connection.targetId + scope + "i";
-		
+
 		if(jsPlumb.getConnections({
 			  scope:scope,
 			  source : connection.sourceId,
@@ -699,8 +698,8 @@ function initalizeJSPlumb() {
 			}, true).length > 0){
 			//connection already exists
 			return false;
-		};
-		
+		}
+
 		if(connection.connection.getData().established) return false;
 
 		var c = jsPlumb.connect({
@@ -712,8 +711,8 @@ function initalizeJSPlumb() {
 
 		var connectionData = {
 			connectionId : c.id,
-			pageSourceId : c.sourceId,
-			pageTargetId : c.targetId,
+			sourceId : c.sourceId,
+			targetId : c.targetId,
 			scope : scope
 		};
 
@@ -763,8 +762,8 @@ function initalizeJSPlumb() {
 			info.getData().established = true;
 			var connectionData = {
 				connectionId : c.id,
-				pageSourceId : c.sourceId,
-				pageTargetId : c.targetId,
+				sourceId : c.sourceId,
+				targetId : c.targetId,
 				scope : info.getData().scope
 			};
 			addConnectionListener(c);
@@ -775,7 +774,7 @@ function initalizeJSPlumb() {
 			fireDirty();
 			updateSelectionMenus();
 			$('#nodemenudialog').modal('show');
-		};
+		}
 		jsPlumb.repaintEverything();
 	});
 	//put scope into connection - no more guessing
@@ -802,7 +801,7 @@ $( window ).resize(function() {
 	jsPlumb.reset();
 	if(selectedConnection){
 		selectedConnection = null;
-	};
+	}
 	if(selectedNode) {
 		selectedNode = null;
 	}
