@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 var MapConstants = require('../constants/mapconstants');
 var assign = require('object-assign');
 var _ = require('underscore');
+var jquery = require('jquery');
 
 
 var _nodes = [];
@@ -188,8 +189,103 @@ function mapRetrieved(map){
     }
   }
   _connections = map.history[0].connections;
+  console.log(_map);
 }
 
+
+//TODO: move this to separate module
+var dirtyIndex = 0;
+var lastSavedIndex = 0;
+
+var saving = false;
+
+function markDirty (){
+  dirtyIndex ++;
+}
+
+function constructResponse(map){
+  var response = {};
+  response.name = map.history[0].name;
+  response.description = map.history[0].description;
+
+  response.connections = [];
+  for(var i = 0; i < map.history[0].connections.length; i++){
+    var conn = _.clone(map.history[0].connections[i]);
+    delete conn.conn;
+    response.connections.push(conn);
+  }
+
+  response.nodes =  [];
+  for(var j = 0; j < map.history[0].nodes.length; j++){
+    var n = _.clone(map.history[0].nodes[j]);
+    delete n.styleOverride;
+    response.nodes.push(n);
+  }
+
+  return response;
+}
+
+function saveMap(){
+  saving = true;
+  var dirtyIndexCopy = dirtyIndex;
+  console.log(constructResponse(_map));
+  console.log(JSON.stringify(constructResponse(_map)));
+  // saving = false;
+  // lastSavedIndex = dirtyIndexCopy;
+  // return;
+  jquery.ajax({
+    url : "/api/map/" + _map._id,
+    type : 'post',
+    async : 'true',
+    contentType: 'application/json',
+    data : JSON.stringify(constructResponse(_map)),
+    dataType : 'json',
+    error : function(request, error) {
+        if(request.status == 401){
+            // served by status code
+            return;
+        }
+      console.log('An error while saving a map!', error);
+      console.log('error ' + dirtyIndexCopy);
+      saving = false;
+      // $("#servernotresponding").show();
+      // setTimeout(function() {
+      //     window.location.href = "/";
+      // }, 5000);
+    },
+    statusCode : {
+        200 : function(){
+            saving = false;
+            lastSavedIndex = dirtyIndexCopy;
+        }
+        // ,
+        // 302 : function() {
+        //     $("#lostsession").show();
+        //     setTimeout(function() {
+        //         window.location.href = "/";
+        //     }, 5000);
+        // },
+        // 401 : function() {
+        //     $("#lostsession").show();
+        //     setTimeout(function() {
+        //         window.location.href = "/";
+        //     }, 5000);
+        // }
+    }
+  });
+}
+
+function saveLoop() {
+	setTimeout(function() {
+		if (lastSavedIndex != dirtyIndex && !saving) {
+			saveMap();
+		}
+		saveLoop();
+	}, 1000);
+}
+
+saveLoop();
+//--end of TODO
 /**
 just update the node, as actual dragging is performed by jsPlumb.
 we need to discover the change and update the model to prevent next redraw
@@ -282,6 +378,7 @@ MapDispatcher.register(function(action) {
    case MapConstants.MAP_NEW_NODE:
         if( normalize(action.params) ){
             MapStore.emitChange();
+            markDirty();
         }
         break;
    case MapConstants.MAP_EDITOR_DRAG_MODE:
@@ -295,18 +392,22 @@ MapDispatcher.register(function(action) {
    case MapConstants.MAP_DELETE_NODE:
         deleteNode(action.id);
         MapStore.emitChange();
+        markDirty();
         break;
    case MapConstants.MAP_RECORD_CONNECTION:
         recordConnection(action.connection);
         MapStore.emitChange();
+        markDirty();
         break;
    case MapConstants.MAP_DELETE_CONNECTION:
         deleteConnection(action.connection);
         MapStore.emitChange();
+        markDirty();
         break;
    case MapConstants.MAP_NODE_DRAGSTOP:
         nodeDragged(action.drag);
         MapStore.emitChange();
+        markDirty();
         break;
    case MapConstants.MAP_RETRIEVED:
         mapRetrieved(action.map);
@@ -315,10 +416,12 @@ MapDispatcher.register(function(action) {
   case MapConstants.MAP_CHANGE_NAME:
        nameChanged(action.name);
        MapStore.emitChange();
+       markDirty();
        break;
   case MapConstants.MAP_CHANGE_DESCRIPTION:
        descriptionChanged(action.description);
        MapStore.emitChange();
+       markDirty();
        break;
   case MapConstants.MAP_SHARING_DIALOG:
        toggleSharingDialog();
@@ -332,10 +435,12 @@ MapDispatcher.register(function(action) {
          _map.anonymousShare = false;
        }
        MapStore.emitChange();
+       markDirty();
        break;
   case MapConstants.MAP_EDIT_NODE:
        selectNodeForEdit(action.nodeId, action.newState);
        MapStore.emitChange();
+       markDirty();
        break;
   case MapConstants.ERROR:
        _state = action.error;
