@@ -102,7 +102,7 @@ var draw = function(res, filename, map, config){
                 .attr('y', "1%")
                 .attr('x', "98%");
 
-			var nodes = _.groupBy(map.nodes, 'componentId');
+			var nodes = _.groupBy(map.nodes, 'componentId'); // <- nowy edytor nie ma componentId, chyba
 
 			var _dependencyConnections = [];
 			var _actionConnections = [];
@@ -114,7 +114,9 @@ var draw = function(res, filename, map, config){
 				}
 			}
 
+console.log(nodes);
 			var dependencyConnections = _dependencyConnections.map(function(c) {
+        console.log(c);
         if(c.pageSourceId && c.pageTargetId){
           return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
         } else {

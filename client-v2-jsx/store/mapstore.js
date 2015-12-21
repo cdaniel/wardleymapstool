@@ -219,6 +219,9 @@ function constructResponse(map){
   for(var j = 0; j < map.history[0].nodes.length; j++){
     var n = _.clone(map.history[0].nodes[j]);
     delete n.styleOverride;
+
+    n.componentId = n.id;
+    delete n.id;
     response.nodes.push(n);
   }
 
