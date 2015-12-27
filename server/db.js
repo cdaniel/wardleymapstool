@@ -17,9 +17,9 @@ module.exports = function (connectionString) {
     var logger = require('./util/log.js').getLogger("db");
 	logger.setLevel('ALL');
 	logger.debug('connecting to ', connectionString);
-	
-	var COLLECTIONS = ['users', 'maps', 'progress', 'maprelations'];
+
+	var COLLECTIONS = ['users', 'maps', 'progress', 'maprelations', 'sharing'];
 	var db = require('mongojs')(connectionString, COLLECTIONS);
-	
+
 	return db;
 };

@@ -86,6 +86,13 @@ var MapActions = {
     });
   },
 
+  loadSharingState : function(data){
+    MapDispatcher.dispatch({
+      actionType: MapConstants.LOAD_MAP_SHARING_STATE,
+      data : data
+    });
+  },
+
   editNode : function(nodeId, newState){
     MapDispatcher.dispatch({
       actionType: MapConstants.MAP_EDIT_NODE,

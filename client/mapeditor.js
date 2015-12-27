@@ -275,6 +275,7 @@ function drawMap() {
 				target : trg,
 				deleteEndpointsOnDetach : false
 			});
+			console.log(src,trg,connection);
 			if(elem.label != null){
 				connection.setLabel({label:elem.label,cssClass:'connectionlabel'});
 			}
@@ -285,6 +286,7 @@ function drawMap() {
 			addConnectionListener(connection);
 		});
 	};
+	jsPlumb.repaintEverything(true);
 	jsPlumb.setSuspendDrawing(false, true);
 }
 

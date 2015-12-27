@@ -67,13 +67,6 @@ function selectNodeForEdit(nodeId, newState){
 }
 
 
-var _sharingDialog = false;
-
-
-function toggleSharingDialog(){
-  _sharingDialog = !_sharingDialog;
-}
-
 
 function createFromDrop(drop) {
   // Hand waving here -- not showing how this interacts with XHR or persistent
@@ -326,14 +319,6 @@ var MapStore = assign({}, EventEmitter.prototype, {
     }
   },
 
-  getSharedDialogState : function(){
-    var anonymousShare = _map !== null ? _map.anonymousShare : false;
-    var anonymousShareLink = _map !== null ? _map.anonymousShareLink : '';
-    return {sharingDialog:_sharingDialog,
-            anonymousShare:anonymousShare,
-          anonymousShareLink:anonymousShareLink};
-  },
-
   getStateInfo : function() {
     return {state:_state};
   },
@@ -423,20 +408,6 @@ MapDispatcher.register(function(action) {
        break;
   case MapConstants.MAP_CHANGE_DESCRIPTION:
        descriptionChanged(action.description);
-       MapStore.emitChange();
-       markDirty();
-       break;
-  case MapConstants.MAP_SHARING_DIALOG:
-       toggleSharingDialog();
-       MapStore.emitChange();
-       break;
-  case MapConstants.MAP_TOGGLE_ANONYMOUS_SHARING:
-       if(action.url){
-          _map.anonymousShare = true;
-          _map.anonymousShareLink = action.url;
-       } else {
-         _map.anonymousShare = false;
-       }
        MapStore.emitChange();
        markDirty();
        break;

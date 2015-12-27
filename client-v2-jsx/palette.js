@@ -29,7 +29,7 @@ var Palette = React.createClass({
         return <DraggablePaletteComponent
           name={component.name}
           store={store}
-          _key={_key}
+          key={_key}
           styleOverride={component.styleOverride}/>;
       }
     );

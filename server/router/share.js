@@ -14,6 +14,8 @@
  limitations under the License.*/
 
 var logger = require('./../util/log.js').getLogger('share');
+var Q = require('q');
+Q.longStackSupport = true;
 
 module.exports = function(context, db, authmiddleware, mapsmodule, exporter) {
 	var module = {};
@@ -26,9 +28,9 @@ module.exports = function(context, db, authmiddleware, mapsmodule, exporter) {
 	 * @param req - a request that is used to extract the host of the application running.
 	 * @param mapId - id of map to share
 	 * @param precise - true/false value indicating whether the map should be available to selected persons only
-	 * 
+	 *
 	 * @return url to share.
-	 * 
+	 *
 	 * It is actually necessary to rely on req, because otherwise we would not know where the map is located.
 	 */
 	module.constructSharingURL = function(req, mapId, precise) {
@@ -40,111 +42,127 @@ module.exports = function(context, db, authmiddleware, mapsmodule, exporter) {
 		var url_mainpart = protocol + '://' + req.headers.host;
 		return url_mainpart + context + '/' + mode + '/' + mapId + '/map.svg';
 	};
-	
-	module.share = function(req, userId, mapId, mode, callback){
+
+	/**
+	 * input {mapId, progress}
+	 * output {mapId, progress}
+	 */
+	var _anonymousShare = function(params, callback){
+		var deferred = Q.defer();
+		var mapId = '' + params.mapId; //ensure mapid is a string
+		var updateInstruction = {};
+		if(params.anonymousShare){
+			updateInstruction = {$set:{anonymousShare:true,mapId:mapId}};
+		}
+		if(params.anonymousUnshare){
+			updateInstruction = {$set:{anonymousShare:false,mapId:mapId}};
+		}
+		db.sharing.update(
+			{mapId : mapId}, //query
+			updateInstruction, //set value
+			{upsert: true},
+			function(err, object) {
+				if (err) {
+						deferred.reject(err);
+						return;
+				}
+				if (object) {
+						params.shareResult = {url : module.constructSharingURL(params.req, params.mapId, false)};
+						deferred.resolve(params);
+				}
+		});
+		return deferred.promise.nodeify(callback);
+	};
+
+	module.share = function(req, res, userId, mapId, mode, callback){
 		logger.debug('sharing map ', mapId, ' as ', mode);
 		var anonymousShare = mode === 'anonymous';
 
+		var params = {
+			req : req,
+			res : res,
+			mapId : mapId,
+		  userId : userId
+		};
+
 		if (anonymousShare) {
-			db.maps.findAndModify({
-				query : {
-					"_id" : mapId,
-					"userIdGoogle" : userId,
-					deleted : false
-				},
-				update : {
-					$set : {
-						anonymousShare : true
+			params.anonymousShare = true;
+			require('./../util/Access')(db).writeAccessCheck(params)
+				.then(_anonymousShare)
+				.then(callback)
+				.catch(function(err){
+					if(err){
+						logger.err(err);
 					}
-				}
-			}, function(err, object) {
-				if (err) {
-					logger.error(err);
-				}
-				if(!object) {
-					logger.error('no map, share failed ' + mapId);
-					//TODO: negative callback
-				}
-				callback({
-					url : module.constructSharingURL(req, mapId)
-				});
-			});
+					callback(null,err);
+				}).done();
 			return;
 		}
 
 		var unshareanonymousShare = mode === 'unshareanonymous';
 		if (unshareanonymousShare) {
-			db.maps.findAndModify({
-				query : {
-					"_id" : mapId,
-					"userIdGoogle" : userId,
-					deleted : false
-				},
-				update : {
-					$set : {
-						anonymousShare : false
-					}
-				}
-			}, function(err, object) {
-				if (err) {
-					logger.error(err);
-				}
-				if(!object){
-					logger.error('no map, unshare failed ' + mapId);
-				}
-				callback({});
-			});
-			return;
-		}
-
-		var to = decodeURI(req.param('to'));
-		to = to.split(',');
-		for (var i = 0; i < to.length; i++) {
-			to[i] = to[i].trim();
-		}
-		var preciseShare = mode === 'precise';
-
-		if (preciseShare) {
-			logger.debug('sharing to ' + to);
-			db.maps.findAndModify({
-				query : {
-					"_id" : mapId,
-					"userIdGoogle" : userId,
-					deleted : false
-				},
-				update : {
-					$set : {
-						preciseShare : to
-					}
-				}
-			}, function(err, object) {
-				if (err) {
-					logger.error(err);
-				}
-				if(!object){
-					logger.error('no map, precise share failed ' + mapId);
-				}
-				callback({
-					url : module.constructSharingURL(req, mapId, true)
-				});
-			});
+			params.anonymousUnshare = true;
+			require('./../util/Access')(db).writeAccessCheck(params)
+				.then(_anonymousShare)
+				.then(callback)
+				.catch(function(err){
+					callback(null,err);
+				}).done();
 			return;
 		}
 	};
 
+	module.getInfo = function(req, res, userId, mapId){
+		//TODO: do not forget to check user id
+		db.sharing.findOne(
+			{mapId : '' + req.params.mapid},
+			function(err, object) {
+				res.setHeader('Content-Type', 'application/json');
+				if (err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.send(JSON.stringify(err));
+				}
+				if (object && object.anonymousShare === true) {
+						res.json({anonymousShare:true,url : module.constructSharingURL(req, mapId, false)});
+				} else {
+					res.json({anonymousShare:false});
+				}
+		});
+	};
+
 	module.router = require('express').Router();
 
+  // GET /share/anonymous/:mapid/:filename  <- export
 	module.router.get('/' + module.ANONYMOUS + '/:mapid/:filename', function(
 			req, res) {
-		exporter.createSharedSVG(req, res, req.params.mapid, req.params.name);
+				db.sharing.findOne(
+					{mapId : '' + req.params.mapid},
+					function(err, object) {
+						console.log('found matching', err, object);
+						if (err) {
+							res.setHeader('Content-Type', 'application/json');
+							logger.error(err);
+							res.statusCode = 500;
+							res.send(JSON.stringify(err));
+						}
+						if (object && object.anonymousShare === true) {
+								exporter.createSharedSVG(req, res, req.params.mapid, req.params.name);
+						} else {
+							res.setHeader('Content-Type', 'image/png');
+							res.redirect('/android-icon-192x192.png');
+						}
+				});
 	});
 
+  // GET /share/precise/:mapid/:filename <- export
 	module.router.get('/' + module.PRECISE + '/:mapid/:filename',
 			authmiddleware, function(req, res) {
 				exporter.createSharedSVG(req, res, req.params.mapid,
 						req.params.name);
 			});
 
+  // /share/map/:mapid/:mode <- set mode
 	module.router.put('/map/:mapid/:mode', authmiddleware, function(req, res) {
 
 		var userId = req.user.href;
@@ -153,13 +171,24 @@ module.exports = function(context, db, authmiddleware, mapsmodule, exporter) {
 		var mode = req.params.mode;
 
 		// this is how we communicate the result
-		var callback = function(result) {
-			res.json(result);
+		var callback = function(result, err) {
+			//TODO: handle error
+			res.json(result.shareResult);
 		};
 
 		logger.debug("sharing ", mapId, " for user ", userId, " mode ", mode);
 
-		module.share(req, userId, mapId, mode, callback);
+		module.share(req, res, userId, mapId, mode, callback);
+	});
+
+	// /share/map/:mapid/:mode <- get mode
+	module.router.get('/map/:mapid', authmiddleware, function(req, res) {
+
+		var userId = req.user.href;
+		//TODO: validation of params
+		var mapId = db.ObjectId(req.params.mapid);
+
+		module.getInfo(req, res, userId, mapId);
 	});
 
 	return module;

@@ -344,9 +344,9 @@ var export_module = function(db) {
 
         db.maps.find({
             "_id" : mapId,
-            deleted : false,
-            $or : [{anonymousShare : true},
-                 {preciseShare : req.user.email}]
+            deleted : false//,
+            //$or : [{anonymousShare : true},
+            //     {preciseShare : req.user.email}]
         }, {
             history : {
                 $slice : -1

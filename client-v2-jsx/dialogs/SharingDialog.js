@@ -9,30 +9,41 @@ var MapActions = require('./../actions/mapactions.js');
 var $ = require('jquery');
 
 var MapSharingDialog = React.createClass({
+
   getInitialState : function(){
-    return {sharingDialog:false,anonymousShare:false,anonymousShareLink:''};
+    return {
+      sharingDialog:false,
+      anonymousShare:false,
+      anonymousShareLink:''
+    };
   },
+
   componentDidMount: function() {
     this.props.store.addChangeListener(this._onChange);
+    $.ajax({
+        type : 'GET',
+        url : '/share/map/' + this.props.mapId,
+        dataType : 'json',
+        success : function(data) {
+            MapActions.loadSharingState(data);
+        }
+    });
   },
+
   componentWillUnmount: function() {
     this.props.store.removeChangeListener(this._onChange);
   },
+
   close : function(){
     MapActions.toggleSharingDialog();
   },
+
   onSubmit : function(key){
     key.preventDefault();
     key.stopPropagation();
     return false;
   },
-  // selectFullText : function (){
-  //   var range = document.createRange();
-  //   var selection = window.getSelection();
-  //   range.selectNodeContents(this);
-  //   selection.removeAllRanges();
-  //   selection.addRange(range);
-  // },
+
   toggleAnonymousSharing : function(){
     if (!this.state.anonymousShare) {
         $.ajax({
@@ -54,26 +65,19 @@ var MapSharingDialog = React.createClass({
         });
     }
   },
+
   render: function() {
     var show = this.state.sharingDialog;
 
     var isNotSharedAnonymously =  ! this.state.anonymousShare;
     var anonymousShareLink = this.state.anonymousShareLink;
-    var glyph =
-    <Button><Glyphicon glyph="copy" /></Button>
-    ;
+    var glyph = <Button><Glyphicon glyph="copy" /></Button>;
     var anonymousShareBlock = function(){
       if(isNotSharedAnonymously === true){
         return null;
+      } else {
+        return ( <Input type="text" value={anonymousShareLink} /> );
       }
-      // onClick={this.selectFullText}
-      // buttonAfter={glyph}
-      return (
-        <Input
-          type="text"
-          value={anonymousShareLink}
-          />
-      );
     };
     return (
       <Modal show={show} onHide={this.close}>

@@ -25,6 +25,9 @@ var MapEditor = React.createClass({
       MapActions.errorReported(e.responseText + ' ' + e.status);
     }.bind(this));
   },
+  // componentDidUpdate : function(oldProps, newProps){
+  //   jsPlumb.repaintEverything();
+  // },
   render: function() {
     return (
       <div style={mapEditorStyle}>

@@ -103,7 +103,7 @@ var NodeEditDialog = React.createClass({
     this.setState({newType : i.target.value});
   },
   _onChange : function() {
-    this.setState(this.props.store.getSharedDialogState());
+    this.setState({newName : null, newType : null});
   }
 });
 

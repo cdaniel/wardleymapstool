@@ -111,7 +111,7 @@ function preprocessNewSubMapRequest(req, res, callback){
     return deferred.promise.nodeify(callback);
 }
 
-var mapmodule = function(db, share) {
+var mapmodule = function(db) {
 
     var _prepareMetadataToClone = function(params, callback){
         var deferred = Q.defer();
@@ -220,27 +220,6 @@ var mapmodule = function(db, share) {
         return deferred.promise.nodeify(callback);
     };
 
-    /**
-     * params {req, res, mapId,userId }
-     * returns {code:403} if not authorized
-     */
-    var _writeAccessCheck = function(params, callback){
-        var deferred = Q.defer();
-        db.maps.find({
-            "userIdGoogle" : params.userId, /* only if user id matches */
-            "_id" : params.mapId, /* only if map id matches */
-            deleted : false /* don't return deleted maps */
-        }).toArray(function(err, maps) {
-            if (err || !maps || maps.length !== 1) {
-                deferred.reject(err || {code:403});
-            }
-            if (maps.length === 1) {
-                deferred.resolve(params);
-            }
-        });
-        return deferred.promise.nodeify(callback);
-    };
-
     var _redirectToMapID = function (params, callback){
         var deferred = Q.defer();
         params.res.redirect('/map/' + params._id);
@@ -324,15 +303,6 @@ var mapmodule = function(db, share) {
               delete _connections[j].pageTargetId;
             }
           }
-        }
-        if (!maps[0].anonymousShare) {
-            maps[0].anonymousShare = false;
-        } else {
-                //TODO: remove this dependency
-            maps[0].anonymousShareLink = share[0].constructSharingURL(params.req, params.mapId);
-        }
-        if(!maps[0].preciseShare){
-            maps[0].preciseShare = [];
         }
 
         params.mapToDisplay = maps[0];
@@ -712,7 +682,7 @@ var mapmodule = function(db, share) {
             var mapId = db.ObjectId(mapId);
             var params = {userId : userId, mapId : mapId};
 
-            _writeAccessCheck(params)
+            require('./util/Access')(db).writeAccessCheck(params)
                 .then(_getProgressNoAccessCheck)
                 .then(finalCallback)
                 .catch(function(err){
@@ -726,7 +696,7 @@ var mapmodule = function(db, share) {
             var mapId = db.ObjectId(mapId);
             var params = {userId : userId, mapId : mapId};
 
-            _writeAccessCheck(params)
+            require('./util/Access')(db).writeAccessCheck(params)
                 .then(_advanceProgressNoAccessCheck)
                 .then(finalCallback)
                 .catch(function(err){

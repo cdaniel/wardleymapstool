@@ -89,24 +89,20 @@ var WardleyMapsApp = function(configOptions) {
 
 	    var userProvider = require('./user-provider')(app);
 
-        var share = [null];
-	    
 	    self.db = require('./db')(configOptions.databaseConnectionString);
-		self.exportmap = new require('./export')(self.db);
-		self.maps = new require('./maps')(self.db, share);
-		
-		share[0] = require('./router/share.js')('/share', self.db, userProvider.loginRequired, self.maps, self.exportmap);
-		
-		app.use('/share', share[0].router);
+		  self.exportmap = new require('./export')(self.db);
+		  self.maps = new require('./maps')(self.db);
+
+		app.use('/share', require('./router/share.js')('/share', self.db,  userProvider.loginRequired,  self.maps, self.exportmap).router);
 		app.use('/profile', userProvider.loginRequired, require('./router/profilerouter.js')().router);
 		app.use('/api', userProvider.authenticationRequired, require('./router/apirouter.js')(self.maps, self.exportmap).router);
 		app.use('/', userProvider.loginRequired, require('./router/mainrouter.js')(self.maps).router);
-		
-		
+
+
 		// jade configuration
         app.set('views', clientDir);
         app.set('view engine', 'jade');
-		
+
 		var _ = require('underscore');
 		self.ipaddress = configOptions.ipaddress || '0.0.0.0';
 		self.port = configOptions.port || configOptions.ssl ? 8443 : 8080;
@@ -126,7 +122,7 @@ var WardleyMapsApp = function(configOptions) {
 		server.listen(self.port, self.ipaddress, onStart);
 	};
 };
-    
+
 
 
 function getConfig() {
@@ -145,7 +141,7 @@ function getConfig() {
 
 	var mongodbdata = require('./config/mongodbdata').dbdata;
 	config.databaseConnectionString = require('./config/mongodbdata').dbdata.getConnectionString();
-	
+
 	return config;
 }
 

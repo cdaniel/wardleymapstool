@@ -16,13 +16,14 @@ var Nav = require('react-bootstrap').Nav;
 var MapEditor = require('./mapeditor');
 var RouterMixin = require('react-mini-router').RouterMixin;
 var MapStore = require('./store/mapstore');
+var ShareDialogStore = require('./store/ShareDialogStore');
 var MapTitleDescription = require('./maptitledescription');
 var Button = require('react-bootstrap').Button;
 var MapStatus = require('./mapstatus');
 var EditableShortText = require('./editableshorttext');
 var Download = require('./download');
-var MapSharingDialog = require('./dialogs/sharingdialog');
-var NodeEditDialog = require('./dialogs/nodeeditdialog');
+var MapSharingDialog = require('./dialogs/SharingDialog');
+var NodeEditDialog = require('./dialogs/NodeEditDialog');
 var MapActions = require('./actions/mapactions.js');
 var RelatedMaps = require('./relatedmaps.js');
 
@@ -44,6 +45,7 @@ var origin = url.origin;
 
   var MapEditorPage = React.createClass({
     MapStore : MapStore,
+    ShareDialogStore : ShareDialogStore,
     toggleSharingDialog : function(){
       MapActions.toggleSharingDialog();
     },
@@ -63,7 +65,9 @@ var origin = url.origin;
                     </NavbarHeader>
                     <Nav>
                       <Download mapId={mapId} store={this.MapStore}/>
-                      <NavItem eventKey={2} onClick={this.toggleSharingDialog} role="toggle">
+                      <NavItem eventKey={2}
+                          onClick={this.toggleSharingDialog}
+                          role="toggle">
                         <Glyphicon glyph="share"></Glyphicon>
                         &nbsp;Share...
                       </NavItem>
@@ -93,7 +97,7 @@ var origin = url.origin;
                   <MapEditor mapid={mapId} origin={origin} store={this.MapStore}/>
                 </Col>
               </Row>
-              <MapSharingDialog store={this.MapStore} mapId={mapId}/>
+              <MapSharingDialog store={this.ShareDialogStore} mapId={mapId}/>
               <NodeEditDialog store={this.MapStore}/>
             </Grid>
         );

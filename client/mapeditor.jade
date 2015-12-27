@@ -79,8 +79,6 @@ html
                                     li
                                         a#download(download="#{map.history[0].name}.png" href="/api/pngforcedownload/#{map._id}/#{map._id}.png") As PNG&nbsp;
                                             span.badge beta
-                        li
-                            a#share(href="#" data-toggle="modal"  data-target="#sharedialog") Share...
                         if related.length > 0
                             li.dropdown
                                     a.dropdown-toggle(data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false")
@@ -132,12 +130,8 @@ html
                 include ./mapeditor_includes/mapcreationassist.jade
             #menu.col-lg-2
                 include ./mapeditor_includes/actionmenu.jade
-            include mapeditor_includes/sharedialog.jade
 //- pure none sense, but this is proper formatting
 include mapeditor_includes/mapanalysis.jade
 include ./mapeditor_includes/nodedialog.jade
         script(src='/mapeditor.js')
-        script(src='/3rd/ZeroClipboard.min.js')
-        script(src='/share.js')
         script(src='/related.js')
-        
