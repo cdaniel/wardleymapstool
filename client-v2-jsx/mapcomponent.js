@@ -37,6 +37,27 @@ var endpointOptions = {
         uniqueEndpoints : true
 };
 
+var actionEndpointOptions = {
+        paintStyle:{ fillStyle:"transparent", outlineColor:'transparent' },
+        allowLoopback:false,
+        connector : "Straight",
+        connectorStyle : {
+          lineWidth : 2,
+          strokeStyle : '#339933',
+          outlineColor:"transparent",
+          outlineWidth:10
+        },
+        endpoint : [ "Dot", {
+          radius : 1
+        } ],
+        connectorOverlays :  [[ "Arrow", {
+          location : 1.0,
+          width : 8,
+          height : 3
+        } ]],
+        deleteEndpointsOnDetach : false,
+        uniqueEndpoints : true
+};
 
 var nonInlinedStyle = {
   position: 'absolute'
@@ -65,6 +86,41 @@ var MapComponent = React.createClass({
   relatedConnections : [],
   relatedConnectionListeners : [],
 
+  getAnchors : function(scope){
+    if(scope === jsPlumb.getDefaultScope()){
+      return ["BottomCenter", "TopCenter"];
+    }
+    if(scope === 'Actions'){
+        return ["Right", "Left"];
+    }
+  },
+
+  getConnector : function(scope){
+    if(scope === jsPlumb.getDefaultScope()){
+      return endpointOptions.connector;
+    }
+    if(scope === 'Actions'){
+        return actionEndpointOptions.connector;
+    }
+  },
+
+  getConnectorStyle : function(scope){
+    if(scope === jsPlumb.getDefaultScope()){
+      return endpointOptions.connectorStyle;
+    }
+    if(scope === 'Actions'){
+        return actionEndpointOptions.connectorStyle;
+    }
+  },
+
+  getOverlays : function(scope){
+    if(scope === jsPlumb.getDefaultScope()){
+      return [];
+    }
+    if(scope === 'Actions'){
+        return actionEndpointOptions.connectorOverlays;
+    }
+  },
 
   sortOutDeps : function(){
     var _this = this;
@@ -84,11 +140,12 @@ var MapComponent = React.createClass({
         source : _conn.sourceId,
         target : _conn.targetId,
         scope : _conn.scope,
-        anchors: ["BottomCenter", "TopCenter"],
-        paintStyle : endpointOptions.connectorStyle,
+        anchors: this.getAnchors(_conn.scope),
+        paintStyle : this.getConnectorStyle(_conn.scope),
         endpoint : endpointOptions.endpoint,
-        connector : endpointOptions.connector,
-        endpointStyles : [endpointOptions.paintStyle, endpointOptions.paintStyle]
+        connector : this.getConnector(_conn.scope),
+        endpointStyles : [endpointOptions.paintStyle, endpointOptions.paintStyle],
+        overlays : this.getOverlays(_conn.scope),
       };
       this.relatedConnections[k].conn = jsPlumb.connect(connectionData);
     }
