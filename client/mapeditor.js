@@ -275,11 +275,13 @@ function drawMap() {
 				target : trg,
 				deleteEndpointsOnDetach : false
 			});
-			console.log(src,trg,connection);
+			if(!connection){
+				console.log('dangling connection',  elem.sourceId, elem.targetId);
+				return;
+			}
 			if(elem.label != null){
 				connection.setLabel({label:elem.label,cssClass:'connectionlabel'});
 			}
-			// restore previously saved id
 			connection.id = elem.connectionId;
 			jsPlumb.setIdChanged(connection.id, elem.connectionId);
 
