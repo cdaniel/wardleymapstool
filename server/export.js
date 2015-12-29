@@ -114,23 +114,49 @@ var draw = function(res, filename, map, config){
 				}
 			}
 
-console.log(nodes);
 			var dependencyConnections = _dependencyConnections.map(function(c) {
-        console.log(c);
+        var sourceNodes = null;
+        var targetNodes = null;
+
         if(c.pageSourceId && c.pageTargetId){
-          return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+          sourceNodes = nodes[c.pageSourceId];
+          targetNodes = nodes[c.pageTargetId];
         } else {
-          return [ nodes[c.sourceId][0], nodes[c.targetId][0] ];
+          sourceNodes = nodes[c.sourceId];
+          targetNodes = nodes[c.targetId];
         }
-			});
+        if(sourceNodes && targetNodes){
+          return [sourceNodes[0], targetNodes[0]];
+        }
+        logger.error('dangling connection', c.connectionId);
+        return null;
+			}).filter(function(d){
+        if(d){
+          return d;
+        }
+      });
 
 			var actionConnections = _actionConnections.map(function(c) {
+        var sourceNodes = null;
+        var targetNodes = null;
+
         if(c.pageSourceId && c.pageTargetId){
-          return [ nodes[c.pageSourceId][0], nodes[c.pageTargetId][0] ];
+          sourceNodes = nodes[c.pageSourceId];
+          targetNodes = nodes[c.pageTargetId];
         } else {
-          return [ nodes[c.sourceId][0], nodes[c.targetId][0] ];
+          sourceNodes = nodes[c.sourceId];
+          targetNodes = nodes[c.targetId];
         }
-			});
+        if(sourceNodes && targetNodes){
+          return [sourceNodes[0], targetNodes[0]];
+        }
+        logger.error('dangling connection', c.connectionId);
+        return null;
+			}).filter(function(d){
+        if(d){
+          return d;
+        }
+      });
 
 
 			// scales
