@@ -604,7 +604,7 @@ function HTMLMapNode(parentNode, nodeData) {
 		}
 		for (var j = map.connections.length - 1; j > -1 ; j--) {
 			if (self.nodeData.componentId === map.connections[j].sourceId ||
-						self.nodeData.componentId === map.connections[j].targetIdId) {
+						self.nodeData.componentId === map.connections[j].targetId) {
 				map.connections.splice(j, 1);
 			}
 		}
