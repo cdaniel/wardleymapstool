@@ -31,7 +31,7 @@
     "mongojs": "^2.1.0",
     "underscore": "^1.8.2",
     "xmldom": "^0.1.19",
-    "cookie-parser": "~1.4.0",
+    "cookie-parser": "~1.4.1",
     "express-session": "~1.12.1",
     "body-parser": "~1.14.1",
     "multer": "~1.1.0",
