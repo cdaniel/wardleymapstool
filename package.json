@@ -40,7 +40,7 @@
     "phantom": "~0.8.0",
     "atob": "~2.0.0",
     "temporary": "0.0.8",
-    "phantomjs": "~1.9.18",
+    "phantomjs": "~2.1.2",
     "q": "~1.4.1",
     "jsplumb": "git://github.com/sporritt/jsPlumb.git#2.1.0",
     "glob": "~6.0.1",
