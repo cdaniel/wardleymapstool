@@ -74,7 +74,7 @@
     "clipboard": "~1.5.5"
   },
   "optionalDependencies": {
-    "express-stormpath": "2.3.4",
+    "express-stormpath": "2.3.7",
     "mailchimp-api": "^2.0.7",
     "request": "^2.53.0"
   },
