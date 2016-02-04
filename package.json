@@ -42,7 +42,7 @@
     "temporary": "0.0.8",
     "phantomjs": "~2.1.3",
     "q": "~1.4.1",
-    "jsplumb": "git://github.com/sporritt/jsPlumb.git#2.1.0",
+    "jsplumb": "2.1.6",
     "glob": "~6.0.4",
     "vinyl-source-stream": "~1.1.0",
     "gulp-streamify": "~1.0.2",
@@ -100,3 +100,4 @@
   },
   "bin": "server/server.js"
 }
+
