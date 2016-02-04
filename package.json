@@ -31,7 +31,7 @@
     "mongojs": "^2.1.0",
     "underscore": "^1.8.2",
     "xmldom": "^0.1.19",
-    "cookie-parser": "~1.4.0",
+    "cookie-parser": "~1.4.1",
     "express-session": "~1.13.0",
     "body-parser": "~1.14.1",
     "multer": "~1.1.0",
@@ -56,7 +56,7 @@
     "gulp": "~3.9.0",
     "gulp-uglify": "~1.5.1",
     "gulp-if": "~2.0.0",
-    "browserify": "~12.0.1",
+    "browserify": "~13.0.0",
     "watchify": "~3.7.0",
     "gulp-connect": "~2.3.1",
     "reactify": "~1.1.1",
@@ -70,7 +70,6 @@
     "events": "~1.1.0",
     "react-mini-router": "~2.0.0",
     "urllite": "~0.5.0",
-    "react-edit-inline": "~1.0.3",
     "clipboard": "~1.5.5"
   },
   "optionalDependencies": {
