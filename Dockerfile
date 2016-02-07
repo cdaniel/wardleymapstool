@@ -1,4 +1,4 @@
-FROM ubuntu:utopic
+FROM ubuntu:vivid
 
 # Setup NodeSource Official PPA
 RUN apt-get update && \
