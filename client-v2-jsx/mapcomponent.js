@@ -70,13 +70,13 @@ var itemCaptionStyle = {
   position: 'absolute',
   zIndex: 2,
   textShadow: '2px 2px white',
-  width: 80,
+  width: 100,
   height: 22,
-  maxWidth: 80,
+  maxWidth: 100,
   maxHeight: 22,
   marginBottom: -20,
   fontSize: 10,
-  lineHeight: 11
+  lineHeight: '11px'
 };
 
 var MapComponent = React.createClass({
