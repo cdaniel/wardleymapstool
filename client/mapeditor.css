@@ -48,12 +48,13 @@
     position: absolute;
     z-index: 2;
     text-shadow: 2px 2px white;
-    width: 10px;
-    height: 10px;
-    max-width: 10px;
-    max-height: 10px;
+    width: 80px;
+    height: 20px;
+    max-width: 80px;
+    max-height: 20px;
     margin-bottom: -20px;
     font-size: 10px;
+    line-height: 11px;
 }
 
 .itemMenu {
