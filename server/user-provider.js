@@ -29,6 +29,7 @@ module.exports = function(app) {
         var user = new require('./user')();
 
         app.use(stormpath.init(app, {
+            debug: 'info, error',
             client: {
                 apiKey: {
                   id: stormpathconfig.getApiKeyId(),
@@ -48,7 +49,8 @@ module.exports = function(app) {
                     enabled : true,
                     clientId : googleauth.getClientID(),
                     clientSecret : googleauth.getClientSecret(),
-                    callbackUri : '/callbacks/google'
+                    callbackUri : '/callbacks/google',
+                    scopes : 'https://www.googleapis.com/auth/userinfo.profile,https://www.googleapis.com/auth/userinfo.profile,https://www.googleapis.com/auth/userinfo.email'
                 }
             },
             expand: {
