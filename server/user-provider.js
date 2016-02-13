@@ -43,30 +43,13 @@ module.exports = function(app) {
             postRegistrationHandler : function(account, req, res, next) {
                 user.processLoginInfo(account, res, next);
             },
-            enableGoogle : true,
-            social : {
-                google : {
-                    clientId : googleauth.getClientID(),
-                    clientSecret : googleauth.getClientSecret(),
-                },
-                facebook : {
-                  enabled : false
-              },
-              linkedin : {
-                  enabled : false
-              }
-            },
             socialProviders : {
                 google : {
+                    enabled : true,
                     clientId : googleauth.getClientID(),
                     clientSecret : googleauth.getClientSecret(),
-                },
-                facebook : {
-                  enabled : false
-              },
-              linkedin : {
-                  enabled : false
-              }
+                    callbackUri : '/callbacks/google'
+                }
             },
             expand: {
                 customData: true,
@@ -80,6 +63,14 @@ module.exports = function(app) {
                     enable: true,
                     view: __dirname + '/../client/views/' + 'register.jade',
                     fields: {
+                        givenName: {
+                            required: false,
+                            enabled: false
+                        },
+                        surname: {
+                            required: false,
+                            enabled: false
+                        },
                         email : {
                             required: true
                         },

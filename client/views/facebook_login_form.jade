@@ -11,11 +11,15 @@ script(type='text/javascript').
       scopes = '';
     }
 
-    FB.login(function(response) {
+    FB.login(function (response) {
       if (response.status === 'connected') {
         var queryStr = window.location.search.replace('?', '');
         // TODO make dynamic
         if (queryStr) {
+          // Don't include any access_token parameters in
+          // the query string as it will be added by us.
+          queryStr = queryStr.replace(/(&?)access_token=([^&]*)/, '');
+
           window.location.replace('/callbacks/facebook?' + queryStr + '&access_token=' + response.authResponse.accessToken);
         } else {
           window.location.replace('/callbacks/facebook?access_token=' + response.authResponse.accessToken);
@@ -24,7 +28,7 @@ script(type='text/javascript').
     }, {scope: 'email' + (scopes ? ',' + scopes : '')});
   }
 
-  window.fbAsyncInit = function() {
+  window.fbAsyncInit = function () {
     FB.init({
       appId      : '#{stormpathConfig.socialProviders.facebook.clientId}',
       cookie     : true,
@@ -33,7 +37,7 @@ script(type='text/javascript').
     });
   };
 
-  (function(d, s, id){
+  (function (d, s, id){
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) {return;}
     js = d.createElement(s); js.id = id;

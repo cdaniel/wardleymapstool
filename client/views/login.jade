@@ -4,6 +4,8 @@ block vars
   - var title = 'Log In'
   - var description = 'Log into your account!'
   - var bodytag = 'login'
+  - var socialProviders = stormpathConfig.socialProviders
+  - var registerFields = stormpathConfig.web.register.fields
 
 block body
 
@@ -47,7 +49,7 @@ block body
                     receive an email shortly.
           br
         .box.row
-          if stormpathConfig.socialProviders
+          if hasSocialProviders
             - var cls = 'small col-sm-8'
           else
             - var cls = 'large col-sm-12'
@@ -74,29 +76,29 @@ block body
               input(name='_csrf', type='hidden', value=csrfToken)
 
               .form-group.group-email
-                if stormpathConfig.socialProviders
+                if hasSocialProviders
                   - var cls = 'col-sm-12'
                 else
                   - var cls = 'col-sm-4'
 
-                if stormpathConfig.web.register.fields.username.enabled
+                if registerFields.username && registerFields.username.enabled
                   label(class='#{cls}') Username or Email
                 else
                   label(class='#{cls}') Email
 
-                if stormpathConfig.socialProviders
+                if hasSocialProviders
                   - var cls = 'col-sm-12'
                 else
                   - var cls = 'col-sm-8'
 
                 div(class='#{cls}')
                   - var value = form.data ? form.data.login : '';
-                  if stormpathConfig.web.register.fields.username.enabled
+                  if registerFields.username && registerFields.username.enabled
                     input.form-control(autofocus='true', placeholder='Username or Email', required=true, name='login', type='text', value=value)
                   else
                     input.form-control(autofocus='true', placeholder='Email', required=true, name='login', type='text', value=value)
 
-              if stormpathConfig.socialProviders
+              if hasSocialProviders
                 - var cls = 'col-sm-12'
               else
                 - var cls = 'col-sm-4'
@@ -104,7 +106,7 @@ block body
               .form-group.group-password
                 label(class='#{cls}') Password
 
-                if stormpathConfig.socialProviders
+                if hasSocialProviders
                   - var cls = 'col-sm-12'
                 else
                   - var cls = 'col-sm-8'
@@ -115,15 +117,15 @@ block body
               div
                 button.login.btn.btn-login.btn-sp-green(type='submit') Log In
 
-          if stormpathConfig.socialProviders
+          if hasSocialProviders
             .social-area.col-xs-12.col-sm-4
               .header &nbsp;
               label Easy 1-click login:
-              if stormpathConfig.socialProviders.facebook.enabled
+              if socialProviders.facebook && socialProviders.facebook.enabled
                 include facebook_login_form.jade
-              if stormpathConfig.socialProviders.google.enabled
+              if socialProviders.google && socialProviders.google.enabled
                 include google_login_form.jade
-              if stormpathConfig.socialProviders.linkedin.enabled
+              if socialProviders.linkedin && socialProviders.linkedin.enabled
                 include linkedin_login_form.jade
         
         if toc
