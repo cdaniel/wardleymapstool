@@ -37,7 +37,7 @@
     "multer": "~1.1.0",
     "morgan": "~1.6.1",
     "errorhandler": "~1.4.3",
-    "phantom": "~0.8.0",
+    "phantom": "~2.0.0",
     "atob": "~2.0.0",
     "temporary": "0.0.8",
     "phantomjs": "~2.1.3",
