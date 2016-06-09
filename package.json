@@ -63,7 +63,7 @@
     "gulp-notify": "~2.2.0",
     "react-dom": "~0.14.4",
     "react": "~0.14.7",
-    "jquery": "~2.2.0",
+    "jquery": "~3.0.0",
     "keymirror": "~0.1.1",
     "flux": "~2.1.1",
     "object-assign": "~4.0.1",
