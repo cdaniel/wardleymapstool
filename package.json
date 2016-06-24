@@ -81,7 +81,7 @@
     "mocha": "*",
     "should": "8.2.2",
     "sinon": "*",
-    "cucumber": "~0.9.4",
+    "cucumber": "~1.2.0",
     "zombie": "~2.5.1"
   },
   "main": "server/server.js",
