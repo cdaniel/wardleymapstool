@@ -3,6 +3,13 @@ Atlas, the Wardley Mapping Tool
 
 [![Build Status](https://travis-ci.org/cdaniel/wardleymapstool.svg?branch=master)](https://travis-ci.org/cdaniel/wardleymapstool)
 
+![#f03c15](https://placehold.it/15/f03c15/000000?text=+) Important Notice
+----------------
+
+![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **I have no plans to maintain this tool anymore.**
+
+![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **New version is being created at https://github.com/cdaniel/atlas2.**
+
 Preface
 -------------
 
