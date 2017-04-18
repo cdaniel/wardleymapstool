@@ -78,7 +78,7 @@
     "request": "^2.53.0"
   },
   "devDependencies": {
-    "mocha": "*",
+    "mocha": "2.5.0",
     "should": "8.2.2",
     "sinon": "*",
     "cucumber": "~0.9.4",
