@@ -75,7 +75,7 @@
   "optionalDependencies": {
     "express-stormpath": "3.0.1",
     "mailchimp-api": "^2.0.7",
-    "request": "^2.53.0"
+    "request": "^2.73.0"
   },
   "devDependencies": {
     "mocha": "*",
