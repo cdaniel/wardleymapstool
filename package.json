@@ -65,7 +65,7 @@
     "react": "~0.14.7",
     "jquery": "~2.2.0",
     "keymirror": "~0.1.1",
-    "flux": "~2.1.1",
+    "flux": "~3.0.0",
     "object-assign": "~4.0.1",
     "events": "~1.1.0",
     "react-router": "~2.0.0-rc6",
